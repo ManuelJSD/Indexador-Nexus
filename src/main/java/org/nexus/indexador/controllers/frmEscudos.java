@@ -234,6 +234,10 @@ public class frmEscudos {
 
             if (currentGrh != null) {
                 String imagePath = configManager.getGraphicsDir() + currentGrh.getFileNum() + ".png";
+
+                if (!new File(imagePath).exists()) {
+                    imagePath = configManager.getGraphicsDir() + currentGrh.getFileNum() + ".bmp";
+                }
                 
                 // Obtener imagen desde el caché
                 Image frameImage = imageCache.getImage(imagePath);

@@ -134,6 +134,11 @@ public class frmCascos {
     private void drawHelmets(HelmetData selectedHelmet, int helmeting) {
         // Construir la ruta completa de la imagen para imagePath
         String imagePath = configManager.getGraphicsDir() + selectedHelmet.getTexture() + ".png";
+
+        if (!new File(imagePath).exists()) {
+            imagePath = configManager.getGraphicsDir() + selectedHelmet.getTexture() + ".bmp";
+        }
+
         File imageFile = new File(imagePath);
 
         // ¿La imagen existe?

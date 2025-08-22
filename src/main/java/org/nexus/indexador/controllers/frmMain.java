@@ -330,7 +330,11 @@ public class frmMain {
     private void displayStaticImage(GrhData selectedGrh) {
         // Construir la ruta completa de la imagen para imagePath
         String imagePath = configManager.getGraphicsDir() + selectedGrh.getFileNum() + ".png";
-        
+
+        if (!new File(imagePath).exists()) {
+            imagePath = configManager.getGraphicsDir() + selectedGrh.getFileNum() + ".bmp";
+        }
+
         // Usar el caché de imágenes para obtener la imagen
         Image staticImage = imageCache.getImage(imagePath);
         
@@ -412,6 +416,10 @@ public class frmMain {
 
             if (currentGrh != null) {
                 String imagePath = configManager.getGraphicsDir() + currentGrh.getFileNum() + ".png";
+
+                if (!new File(imagePath).exists()) {
+                    imagePath = configManager.getGraphicsDir() + selectedGrh.getFileNum() + ".bmp";
+                }
                 
                 // Obtener imagen desde el caché
                 Image frameImage = imageCache.getImage(imagePath);

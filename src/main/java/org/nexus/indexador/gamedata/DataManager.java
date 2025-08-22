@@ -99,7 +99,7 @@ public class DataManager {
         grhList = FXCollections.observableArrayList();
 
         // Creamos un objeto File para el archivo que contiene los datos de los gráficos
-        File archivo = new File(configManager.getInitDir() + "graficos.ind");
+        File archivo = new File(configManager.getInitDir() + "graphics.ind");
 
         try (RandomAccessFile file = new RandomAccessFile(archivo, "r")) {
             logger.info("Comenzando a leer desde " + archivo.getAbsolutePath());
@@ -179,7 +179,7 @@ public class DataManager {
         headList = FXCollections.observableArrayList();
 
         // Creamos un objeto File para el archivo que contiene los datos de los gráficos
-        File archivo = new File(configManager.getInitDir() + "head.ind");
+        File archivo = new File(configManager.getInitDir() + "heads.ind");
 
         try (RandomAccessFile file = new RandomAccessFile(archivo, "r")) {
             logger.info("Comenzando a leer desde " + archivo.getAbsolutePath());
@@ -236,7 +236,7 @@ public class DataManager {
         helmetList = FXCollections.observableArrayList();
 
         // Creamos un objeto File para el archivo que contiene los datos de los gráficos
-        File archivo = new File(configManager.getInitDir() + "helmet.ind");
+        File archivo = new File(configManager.getInitDir() + "helmets.ind");
 
         try (RandomAccessFile file = new RandomAccessFile(archivo, "r")) {
             logger.info("Comenzando a leer desde " + archivo.getAbsolutePath());
@@ -284,7 +284,7 @@ public class DataManager {
         
         bodyList = FXCollections.observableArrayList();
 
-        File archivo = new File(configManager.getInitDir() + "personajes.ind");
+        File archivo = new File(configManager.getInitDir() + "bodys.ind");
 
         try (RandomAccessFile file = new RandomAccessFile(archivo, "r")) {
             logger.info("Comenzando a leer desde " + archivo.getAbsolutePath());
@@ -321,7 +321,7 @@ public class DataManager {
         
         shieldList = FXCollections.observableArrayList();
 
-        File archivo = new File(configManager.getInitDir() + "escudos.ind");
+        File archivo = new File(configManager.getInitDir() + "shields.ind");
 
         try (RandomAccessFile file = new RandomAccessFile(archivo, "r")) {
             logger.info("Comenzando a leer desde " + archivo.getAbsolutePath());
@@ -356,7 +356,7 @@ public class DataManager {
         
         fxList = FXCollections.observableArrayList();
 
-        File archivo = new File(configManager.getInitDir() + "FXs.ind");
+        File archivo = new File(configManager.getInitDir() + "fxs.ind");
 
         try (RandomAccessFile file = new RandomAccessFile(archivo, "r")) {
             logger.info("Comenzando a leer desde " + archivo.getAbsolutePath());

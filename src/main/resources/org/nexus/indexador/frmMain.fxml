@@ -82,11 +82,11 @@
 
         <ScrollPane fx:id="PaneGrhView" layoutX="221.0" layoutY="41.0" prefHeight="644.0" prefWidth="604.0" style="-fx-background-color: #000000;">
             <content>
-                <ImageView fx:id="imgIndice" layoutX="5.0" layoutY="5.0" onMouseDragged="#onMouseDragged" onMousePressed="#onMousePressed" pickOnBounds="true" preserveRatio="true" smooth="true" />
+                <ImageView fx:id="imgIndice" layoutX="5.0" layoutY="5.0" onMouseDragged="#onMouseDragged" onMousePressed="#onMousePressed" pickOnBounds="true" preserveRatio="true" smooth="true" style="-fx-border-color: #EA3FF7" />
             </content>
         </ScrollPane>
 
-        <Pane layoutX="836.0" layoutY="67.0" prefHeight="386.0" prefWidth="520.0" style="-fx-background-color: #000000; -fx-border-color: #CBCBCB;">
+        <Pane layoutX="836.0" layoutY="67.0" prefHeight="386.0" prefWidth="520.0" style="-fx-background-color: #EA3FF7; -fx-border-color: #CBCBCB;">
             <children>
                 <ImageView fx:id="imgGrafico" fitHeight="374.0" fitWidth="508.0" layoutX="5.0" layoutY="6.0" pickOnBounds="true" preserveRatio="false" />
                 <Rectangle fx:id="rectanguloIndice" fill="TRANSPARENT" stroke="RED" strokeWidth="1.0" />

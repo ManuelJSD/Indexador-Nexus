@@ -134,6 +134,11 @@ public class frmCabezas {
     private void drawHeads(HeadData selectedHead, int heading) {
         // Construir la ruta completa de la imagen para imagePath
         String imagePath = configManager.getGraphicsDir() + selectedHead.getTexture() + ".png";
+
+        if (!new File(imagePath).exists()) {
+            imagePath = configManager.getGraphicsDir() + selectedHead.getTexture() + ".bmp";
+        }
+
         File imageFile = new File(imagePath);
 
         // ¿La imagen existe?

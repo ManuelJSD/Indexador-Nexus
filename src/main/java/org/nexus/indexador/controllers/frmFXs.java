@@ -208,6 +208,11 @@ public class frmFXs {
 
             if (currentGrh != null) {
                 String imagePath = configManager.getGraphicsDir() + currentGrh.getFileNum() + ".png";
+
+                if (!new File(imagePath).exists()) {
+                    imagePath = configManager.getGraphicsDir() + currentGrh.getFileNum() + ".bmp";
+                }
+
                 File imageFile = new File(imagePath);
 
                 // Verificar si el archivo de imagen existe

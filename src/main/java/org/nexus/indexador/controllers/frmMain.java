@@ -12,18 +12,12 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.util.Duration;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
-import org.nexus.indexador.Main;
 import org.nexus.indexador.gamedata.DataManager;
 import org.nexus.indexador.gamedata.models.GrhData;
 import javafx.scene.image.Image;
@@ -32,6 +26,7 @@ import org.nexus.indexador.utils.byteMigration;
 import org.nexus.indexador.utils.ConfigManager;
 import org.nexus.indexador.utils.ImageCache;
 import org.nexus.indexador.utils.Logger;
+import org.nexus.indexador.utils.WindowManager;
 
 import java.io.*;
 import java.util.*;
@@ -158,12 +153,8 @@ public class frmMain {
     // Logger para registro de eventos
     private Logger logger;
 
-    private static boolean consoleOpen = false;
-    private static boolean headsOpen = false;
-    private static boolean helmetsOpen = false;
-    private static boolean bodysOpen = false;
-    private static boolean shieldsOpen = false;
-    private static boolean fxsOpen = false;
+    // Gestor de ventanas
+    private WindowManager windowManager;
 
     // Índice del frame actual en la animación.
     private int currentFrameIndex = 1;
@@ -190,6 +181,7 @@ public class frmMain {
         dataManager = org.nexus.indexador.gamedata.DataManager.getInstance();
         imageCache = ImageCache.getInstance();
         logger = Logger.getInstance();
+        windowManager = WindowManager.getInstance();
 
         logger.info("Inicializando controlador frmMain");
 
@@ -630,29 +622,7 @@ public class frmMain {
      */
     @FXML
     private void mnuConsola_OnAction() {
-        if (!consoleOpen) {
-            // Crea la nueva ventana
-            Stage consoleStage = new Stage();
-            consoleStage.setTitle("Consola");
-
-            // Lee el archivo FXML para la ventana
-            try {
-                Parent consoleRoot = FXMLLoader.load(Main.class.getResource("frmConsola.fxml"));
-                consoleStage.setScene(new Scene(consoleRoot));
-                consoleStage.setResizable(false);
-                consoleStage.show();
-
-                consoleOpen = true; // Actualiza el estado para indicar que la ventana de la consola está abierta
-
-                // Listener para detectar cuándo se cierra la ventana de la consola
-                consoleStage.setOnCloseRequest(event -> {
-                    consoleOpen = false; // Actualiza el estado cuando se cierra la ventana de la consola
-                });
-
-            } catch (Exception e) {
-                logger.error("Error al abrir la ventana de la consola", e);
-            }
-        }
+        windowManager.showWindow("frmConsola", "Consola", false);
     }
 
     /**
@@ -937,128 +907,23 @@ public class frmMain {
     }
 
     public void mnuHead_OnAction(ActionEvent actionEvent) {
-        if (!headsOpen) {
-            // Crea la nueva ventana
-            Stage consoleStage = new Stage();
-            consoleStage.setTitle("Cabezas");
-
-            // Lee el archivo FXML para la ventana
-            try {
-                Parent consoleRoot = FXMLLoader.load(Main.class.getResource("frmCabezas.fxml"));
-                consoleStage.setScene(new Scene(consoleRoot));
-                consoleStage.setResizable(false);
-                consoleStage.show();
-
-                headsOpen = true;
-
-                consoleStage.setOnCloseRequest(event -> {
-                    headsOpen = false;
-                });
-
-            } catch (Exception e) {
-                logger.error("Error al abrir la ventana de cabezas", e);
-            }
-        }
+        windowManager.showWindow("frmCabezas", "Cabezas", false);
     }
 
     public void mnuHelmet_OnAction(ActionEvent actionEvent) {
-        if (!helmetsOpen) {
-            // Crea la nueva ventana
-            Stage consoleStage = new Stage();
-            consoleStage.setTitle("Cascos");
-
-            // Lee el archivo FXML para la ventana
-            try {
-                Parent consoleRoot = FXMLLoader.load(Main.class.getResource("frmCascos.fxml"));
-                consoleStage.setScene(new Scene(consoleRoot));
-                consoleStage.setResizable(false);
-                consoleStage.show();
-
-                helmetsOpen = true;
-
-                consoleStage.setOnCloseRequest(event -> {
-                    helmetsOpen = false;
-                });
-
-            } catch (Exception e) {
-                logger.error("Error al abrir la ventana de cascos", e);
-            }
-        }
+        windowManager.showWindow("frmCascos", "Cascos", false);
     }
 
     public void mnuBody_OnAction(ActionEvent actionEvent) {
-        if (!bodysOpen) {
-            // Crea la nueva ventana
-            Stage consoleStage = new Stage();
-            consoleStage.setTitle("Cuerpos");
-
-            // Lee el archivo FXML para la ventana
-            try {
-                Parent consoleRoot = FXMLLoader.load(Main.class.getResource("frmCuerpos.fxml"));
-                consoleStage.setScene(new Scene(consoleRoot));
-                consoleStage.setResizable(false);
-                consoleStage.show();
-
-                bodysOpen = true;
-
-                consoleStage.setOnCloseRequest(event -> {
-                    bodysOpen = false;
-                });
-
-            } catch (Exception e) {
-                logger.error("Error al abrir la ventana de cuerpos", e);
-            }
-        }
+        windowManager.showWindow("frmCuerpos", "Cuerpos", false);
     }
 
     public void mnuShield_OnAction(ActionEvent actionEvent) {
-        if (!shieldsOpen) {
-            // Crea la nueva ventana
-            Stage consoleStage = new Stage();
-            consoleStage.setTitle("Escudos");
-
-            // Lee el archivo FXML para la ventana
-            try {
-                Parent consoleRoot = FXMLLoader.load(Main.class.getResource("frmEscudos.fxml"));
-                consoleStage.setScene(new Scene(consoleRoot));
-                consoleStage.setResizable(false);
-                consoleStage.show();
-
-                shieldsOpen = true;
-
-                consoleStage.setOnCloseRequest(event -> {
-                    shieldsOpen = false;
-                });
-
-            } catch (Exception e) {
-                logger.error("Error al abrir la ventana de escudos", e);
-            }
-        }
+        windowManager.showWindow("frmEscudos", "Escudos", false);
     }
 
     public void mnuFXs_OnAction(ActionEvent actionEvent) {
-        if (!fxsOpen) {
-            // Crea la nueva ventana
-            Stage consoleStage = new Stage();
-            consoleStage.setTitle("FXs");
-
-            // Lee el archivo FXML para la ventana
-            try {
-                Parent consoleRoot = FXMLLoader.load(Main.class.getResource("frmFXs.fxml"));
-                consoleStage.setScene(new Scene(consoleRoot));
-                consoleStage.setResizable(false);
-                consoleStage.show();
-
-                fxsOpen = true;
-
-                consoleStage.setOnCloseRequest(event -> {
-                    fxsOpen = false;
-                });
-
-            } catch (Exception e) {
-                logger.error("Error al abrir la ventana de FXs", e);
-            }
-        }
+        windowManager.showWindow("frmFXs", "FXs", false);
     }
 
     public void mnuAsistente_OnAction(ActionEvent actionEvent) {
@@ -1259,23 +1124,7 @@ public class frmMain {
      */
     @FXML
     private void mnuGrhAdapter_OnAction() {
-        logger.info("Abriendo adaptador de Grh");
-
-        // Crea la nueva ventana
-        Stage adaptadorStage = new Stage();
-        adaptadorStage.setTitle("Adaptador de Grh");
-
-        // Lee el archivo FXML para la ventana
-        try {
-            Parent adaptadorRoot = FXMLLoader.load(Main.class.getResource("frmAdaptador.fxml"));
-            adaptadorStage.setScene(new Scene(adaptadorRoot));
-            adaptadorStage.setResizable(false);
-            adaptadorStage.show();
-
-            logger.info("Ventana de adaptador de Grh abierta exitosamente");
-        } catch (Exception e) {
-            logger.error("Error al abrir la ventana de adaptador de Grh", e);
-        }
+        windowManager.showWindow("frmAdaptador", "Adaptador de Grh", false);
     }
 
     /**

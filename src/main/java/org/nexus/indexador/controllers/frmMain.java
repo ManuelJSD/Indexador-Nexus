@@ -910,6 +910,29 @@ public class frmMain {
     }
 
     /**
+     * Muestra el diálogo "Acerca de" con información de la aplicación.
+     */
+    @FXML
+    private void mnuAbout_OnAction() {
+        Alert about = new Alert(Alert.AlertType.INFORMATION);
+        about.setTitle("Acerca de Indexador Nexus");
+        about.setHeaderText("Indexador Nexus v1.0.0");
+        about.setContentText(
+                "Editor de índices para Argentum Online\n\n" +
+                        "Características:\n" +
+                        "• Visualización y edición de GRHs\n" +
+                        "• Soporte para animaciones\n" +
+                        "• Exportación a INI, JSON y CSV\n" +
+                        "• Validación de integridad\n" +
+                        "• Sistema Undo/Redo\n\n" +
+                        "Autor: Lorwik (github.com/ManuelJSD)\n" +
+                        "Licencia: Open Source\n\n" +
+                        "Java: " + System.getProperty("java.version") + "\n" +
+                        "JavaFX: 17.0.13");
+        about.showAndWait();
+    }
+
+    /**
      * Guarda los cambios realizados en los datos del gráfico seleccionado en la
      * lista.
      * Obtiene el índice seleccionado de la lista y actualiza los atributos del

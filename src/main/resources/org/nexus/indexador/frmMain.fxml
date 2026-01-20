@@ -140,6 +140,8 @@
                                 <KeyCodeCombination alt="UP" code="F1" control="UP" meta="UP" shift="UP" shortcut="UP"/>
                             </accelerator>
                         </MenuItem>
+                        <SeparatorMenuItem />
+                        <MenuItem fx:id="mnuAbout" mnemonicParsing="false" onAction="#mnuAbout_OnAction" text="Acerca de..." />
                     </items>
                 </Menu>
             </menus>

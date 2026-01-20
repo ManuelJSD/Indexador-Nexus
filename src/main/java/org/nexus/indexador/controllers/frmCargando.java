@@ -30,7 +30,8 @@ public class frmCargando {
     }
 
     public void init() {
-        // Ejecutar la lectura de configuración y apertura de nueva ventana en un hilo separado
+        // Ejecutar la lectura de configuración y apertura de nueva ventana en un hilo
+        // separado
         new Thread(() -> {
             try {
                 // Simular tiempo de carga
@@ -72,7 +73,13 @@ public class frmCargando {
                 // Lee el archivo FXML para la nueva ventana
                 try {
                     Parent consoleRoot = FXMLLoader.load(Main.class.getResource("frmMain.fxml"));
-                    newStage.setScene(new Scene(consoleRoot));
+                    Scene mainScene = new Scene(consoleRoot);
+
+                    // Aplicar tema oscuro
+                    String darkTheme = Main.class.getResource("styles/dark-theme.css").toExternalForm();
+                    mainScene.getStylesheets().add(darkTheme);
+
+                    newStage.setScene(mainScene);
                     newStage.setResizable(false);
 
                     // Cerrar la ventana actual (frmCargando)

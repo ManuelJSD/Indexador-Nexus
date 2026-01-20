@@ -73,7 +73,13 @@ public class WindowManager {
             newStage.setTitle(title);
 
             Parent root = FXMLLoader.load(Main.class.getResource(fxmlName + ".fxml"));
-            newStage.setScene(new Scene(root));
+            Scene scene = new Scene(root);
+
+            // Aplicar tema oscuro
+            String darkTheme = Main.class.getResource("styles/dark-theme.css").toExternalForm();
+            scene.getStylesheets().add(darkTheme);
+
+            newStage.setScene(scene);
             newStage.setResizable(resizable);
 
             // Registrar en el mapa y configurar limpieza al cerrar

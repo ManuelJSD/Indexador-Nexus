@@ -18,12 +18,16 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) {
         logger.info("Iniciando aplicación Indexador Nexus");
-        
+
         FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("frmCargando.fxml"));
 
         try {
             Parent root = fxmlLoader.load();
             Scene scene = new Scene(root);
+
+            // Aplicar tema oscuro
+            String darkTheme = Main.class.getResource("styles/dark-theme.css").toExternalForm();
+            scene.getStylesheets().add(darkTheme);
 
             // Obtener el controlador y pasar el Stage
             frmCargando controller = fxmlLoader.getController();
@@ -36,7 +40,7 @@ public class Main extends Application {
             stage.setScene(scene);
             stage.centerOnScreen();
             stage.show();
-            
+
             logger.info("Pantalla de carga iniciada correctamente");
         } catch (IOException e) {
             logger.error("Error al cargar la interfaz de usuario", e);
@@ -48,7 +52,7 @@ public class Main extends Application {
             Logger logger = Logger.getInstance();
             logger.error("Excepción no capturada en el hilo: " + thread.getName(), throwable);
         });
-        
+
         launch();
     }
 }

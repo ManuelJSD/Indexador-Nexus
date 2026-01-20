@@ -8,11 +8,13 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.control.ColorPicker?>
 <?import javafx.scene.effect.DropShadow?>
@@ -173,10 +175,70 @@
                 <DropShadow />
             </effect>
         </MenuBar>
-        <Label fx:id="lblIndices" layoutX="836.0" layoutY="41.0" prefWidth="200.0" style="-fx-background-color: #424242;" text="Indices cargados: 0" textFill="WHITE" />
+        
+        <!-- Toolbar de acciones rápidas -->
+        <ToolBar fx:id="toolBar" layoutX="0.0" layoutY="25.0" prefHeight="35.0" prefWidth="1366.0" 
+                 styleClass="main-toolbar">
+            <items>
+                <Button fx:id="tbtnSave" onAction="#mnuIndexbyMemory" styleClass="toolbar-button">
+                    <text>💾</text>
+                    <tooltip><Tooltip text="Guardar en memoria (Ctrl+S)" /></tooltip>
+                </Button>
+                
+                <Separator orientation="VERTICAL" />
+                
+                <Button fx:id="tbtnUndo" onAction="#mnuUndo_OnAction" styleClass="toolbar-button">
+                    <text>↩️</text>
+                    <tooltip><Tooltip text="Deshacer (Ctrl+Z)" /></tooltip>
+                </Button>
+                <Button fx:id="tbtnRedo" onAction="#mnuRedo_OnAction" styleClass="toolbar-button">
+                    <text>↪️</text>
+                    <tooltip><Tooltip text="Rehacer (Ctrl+Y)" /></tooltip>
+                </Button>
+                
+                <Separator orientation="VERTICAL" />
+                
+                <Button fx:id="tbtnCopy" onAction="#mnuCopy_OnAction" styleClass="toolbar-button">
+                    <text>📋</text>
+                    <tooltip><Tooltip text="Copiar GRH (Ctrl+C)" /></tooltip>
+                </Button>
+                <Button fx:id="tbtnPaste" onAction="#mnuPaste_OnAction" styleClass="toolbar-button">
+                    <text>📄</text>
+                    <tooltip><Tooltip text="Pegar GRH (Ctrl+V)" /></tooltip>
+                </Button>
+                <Button fx:id="tbtnDuplicate" onAction="#mnuDuplicate_OnAction" styleClass="toolbar-button">
+                    <text>📑</text>
+                    <tooltip><Tooltip text="Duplicar GRH (Ctrl+D)" /></tooltip>
+                </Button>
+                
+                <Separator orientation="VERTICAL" />
+                
+                <Button fx:id="tbtnNew" onAction="#btnAdd_OnAction" styleClass="toolbar-button">
+                    <text>➕</text>
+                    <tooltip><Tooltip text="Nuevo GRH" /></tooltip>
+                </Button>
+                <Button fx:id="tbtnDelete" onAction="#btnDelete_OnAction" styleClass="toolbar-button">
+                    <text>🗑️</text>
+                    <tooltip><Tooltip text="Eliminar GRH seleccionado" /></tooltip>
+                </Button>
+                
+                <Separator orientation="VERTICAL" />
+                
+                <Button fx:id="tbtnValidate" onAction="#mnuValidate_OnAction" styleClass="toolbar-button">
+                    <text>✅</text>
+                    <tooltip><Tooltip text="Validar integridad (Ctrl+Shift+V)" /></tooltip>
+                </Button>
+                <Button fx:id="tbtnAutoIndex" onAction="#mnuAutoIndexWizard_OnAction" styleClass="toolbar-button">
+                    <text>🔮</text>
+                    <tooltip><Tooltip text="Asistente de Auto-Indexación" /></tooltip>
+                </Button>
+            </items>
+        </ToolBar>
+        
+        <Label fx:id="lblIndices" layoutX="836.0" layoutY="66.0" prefWidth="200.0" style="-fx-background-color: #424242;" text="Indices cargados: 0" textFill="WHITE" />
         
         <!-- Panel de Filtros Colapsable -->
-        <Pane fx:id="paneFilterHeader" layoutX="12.0" layoutY="41.0" prefHeight="25.0" prefWidth="200.0" 
+        <Pane fx:id="paneFilterHeader" layoutX="12.0" layoutY="66.0" prefHeight="25.0" prefWidth="200.0" 
               style="-fx-background-color: #4a4a4a; -fx-border-color: #555555; -fx-border-width: 1; -fx-cursor: hand;"
               onMouseClicked="#toggleFilters">
             <children>
@@ -185,7 +247,7 @@
             </children>
         </Pane>
         
-        <Pane fx:id="paneFilterContent" layoutX="12.0" layoutY="66.0" prefHeight="125.0" prefWidth="200.0" 
+        <Pane fx:id="paneFilterContent" layoutX="12.0" layoutY="91.0" prefHeight="125.0" prefWidth="200.0" 
               style="-fx-background-color: #3c3c3c; -fx-border-color: #555555; -fx-border-width: 0 1 1 1;">
             <children>
                 <!-- Checkboxes Tipo -->
@@ -206,31 +268,31 @@
             </children>
         </Pane>
         
-        <ListView fx:id="lstIndices" layoutX="12.0" layoutY="196.0" prefHeight="489.0" prefWidth="200.0" style="-fx-background-color: #535353; -fx-border-color: #000000;" />
-        <Label fx:id="lblVersion" layoutX="1056.0" layoutY="41.0" prefHeight="17.0" prefWidth="156.0" style="-fx-background-color: #424242;" text="Versión: 0" textFill="WHITE" />
+        <ListView fx:id="lstIndices" layoutX="12.0" layoutY="221.0" prefHeight="464.0" prefWidth="200.0" style="-fx-background-color: #535353; -fx-border-color: #000000;" />
+        <Label fx:id="lblVersion" layoutX="1056.0" layoutY="66.0" prefHeight="17.0" prefWidth="156.0" style="-fx-background-color: #424242;" text="Versión: 0" textFill="WHITE" />
         <Label fx:id="lblIndice" layoutX="843.0" layoutY="688.0" prefWidth="52.0" style="-fx-background-color: #424242;" text="Indice:" textFill="WHITE" />
         <TextField fx:id="txtIndice" editable="false" layoutX="884.0" layoutY="684.0" prefHeight="25.0" prefWidth="462.0" />
         
-        <ColorPicker fx:id="cpBackground" layoutX="1225.0" layoutY="37.0" prefHeight="25.0" prefWidth="130.0" promptText="Color de Fondo" style="-fx-background-color: #555555; -fx-text-fill: white;">
+        <ColorPicker fx:id="cpBackground" layoutX="1225.0" layoutY="66.0" prefHeight="25.0" prefWidth="130.0" promptText="Color de Fondo" style="-fx-background-color: #555555; -fx-text-fill: white;">
              <tooltip>
                  <Tooltip text="Cambiar el color de fondo del visualizador" />
              </tooltip>
         </ColorPicker>
 
-        <ScrollPane fx:id="PaneGrhView" layoutX="221.0" layoutY="41.0" prefHeight="644.0" prefWidth="604.0" style="-fx-background-color: #000000;">
+        <ScrollPane fx:id="PaneGrhView" layoutX="221.0" layoutY="66.0" prefHeight="619.0" prefWidth="604.0" style="-fx-background-color: #000000;">
             <content>
                 <ImageView fx:id="imgIndice" layoutX="5.0" layoutY="5.0" onMouseDragged="#onMouseDragged" onMousePressed="#onMousePressed" pickOnBounds="true" preserveRatio="true" smooth="true" style="-fx-border-color: #EA3FF7" />
             </content>
         </ScrollPane>
 
-        <Pane fx:id="panePreviewBackground" layoutX="836.0" layoutY="67.0" prefHeight="386.0" prefWidth="520.0" style="-fx-background-color: #EA3FF7; -fx-border-color: #CBCBCB;">
+        <Pane fx:id="panePreviewBackground" layoutX="836.0" layoutY="92.0" prefHeight="361.0" prefWidth="520.0" style="-fx-background-color: #EA3FF7; -fx-border-color: #CBCBCB;">
             <children>
                 <ImageView fx:id="imgGrafico" fitHeight="374.0" fitWidth="508.0" layoutX="5.0" layoutY="6.0" pickOnBounds="true" preserveRatio="false" />
                 <Rectangle fx:id="rectanguloIndice" fill="TRANSPARENT" stroke="RED" strokeWidth="1.0" />
             </children>
         </Pane>
 
-        <Button fx:id="btnAplicar" layoutX="910.0" layoutY="721.0" mnemonicParsing="false" onAction="#saveGrhData" prefHeight="25.0" prefWidth="368.0" text="Aplicar cambios" textAlignment="CENTER">
+        <Button fx:id="btnAplicar" layoutX="910.0" layoutY="721.0" mnemonicParsing="false" onAction="#saveGrhData" prefHeight="25.0" prefWidth="368.0" text="Aplicar cambios" textAlignment="CENTER" styleClass="button-primary">
             <tooltip>
                 <Tooltip text="Guardar cambios del GRH seleccionado" />
             </tooltip>
@@ -255,7 +317,7 @@
                 <Tooltip text="Eliminar GRH seleccionado" />
             </tooltip>
         </Button>
-        <TabPane layoutX="837.0" layoutY="463.0" prefHeight="210.0" prefWidth="514.0" tabClosingPolicy="UNAVAILABLE">
+        <TabPane layoutX="837.0" layoutY="463.0" prefHeight="210.0" prefWidth="519.0" tabClosingPolicy="UNAVAILABLE">
             <tabs>
                 <Tab text="Estatico">
                     <content>

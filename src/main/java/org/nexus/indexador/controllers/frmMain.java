@@ -2389,18 +2389,18 @@ public class frmMain {
             paneFilterContent.setManaged(true);
             lblFilterToggle.setText("▼ Filtros");
 
-            // Ajustar posición de la lista
-            lstIndices.setLayoutY(196);
-            lstIndices.setPrefHeight(489);
+            // Ajustar posición de la lista (con toolbar: +29px del ajuste)
+            lstIndices.setLayoutY(225);
+            lstIndices.setPrefHeight(455);
         } else {
             // Colapsar
             paneFilterContent.setVisible(false);
             paneFilterContent.setManaged(false);
             lblFilterToggle.setText("▶ Filtros");
 
-            // Ajustar posición de la lista (más espacio)
-            lstIndices.setLayoutY(71);
-            lstIndices.setPrefHeight(614);
+            // Ajustar posición de la lista (más espacio, con toolbar)
+            lstIndices.setLayoutY(100);
+            lstIndices.setPrefHeight(580);
         }
     }
 

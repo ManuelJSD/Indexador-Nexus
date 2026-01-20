@@ -232,6 +232,30 @@
     -fx-padding: 6 10 6 10;
 }
 
+/* ===== COLOR PICKER ===== */
+.color-picker {
+    -fx-background-color: #4a4a4a;
+    -fx-background-radius: 4;
+    -fx-border-radius: 4;
+}
+
+.color-picker .color-picker-label {
+    -fx-text-fill: #e0e0e0;
+}
+
+.color-picker:hover {
+    -fx-background-color: #5a5a5a;
+}
+
+.color-picker .arrow-button {
+    -fx-background-color: #4a4a4a;
+}
+
+.color-picker .arrow-button:hover {
+    -fx-background-color: #5a5a5a;
+}
+
+
 /* ===== ALERTS / DIALOGS ===== */
 .dialog-pane {
     -fx-background-color: #2b2b2b;

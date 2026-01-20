@@ -7,7 +7,7 @@
 <?import javafx.scene.effect.InnerShadow?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="520.0" prefWidth="818.0" style="-fx-background-color: #424242;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nexus.indexador.controllers.frmAdaptador">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="520.0" prefWidth="818.0" style="-fx-background-color: #424242;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nexus.indexador.controllers.frmAdaptador">
    <children>
       <TextArea fx:id="txtOriginal" layoutX="15.0" layoutY="28.0" prefHeight="200.0" prefWidth="788.0" promptText="Introduce aquí los Grh que quieres convertir" style="-fx-background-color: #424242; -fx-border-color: #424242;">
          <effect>

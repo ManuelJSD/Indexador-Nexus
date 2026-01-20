@@ -23,7 +23,7 @@ import org.nexus.indexador.utils.ConfigManager;
 import org.nexus.indexador.utils.AnimationState;
 
 import java.io.File;
-import java.io.IOException;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,7 +60,8 @@ public class frmCuerpos {
     @FXML
     public Button btnDelete;
 
-    private BodyData bodyDataManager; // Objeto que gestiona los datos de los cuerpos, incluyendo la carga y manipulación de los mismos
+    private BodyData bodyDataManager; // Objeto que gestiona los datos de los cuerpos, incluyendo la carga y
+                                      // manipulación de los mismos
     private ObservableList<BodyData> bodyList;
     private ObservableList<GrhData> grhList;
 
@@ -73,22 +74,28 @@ public class frmCuerpos {
     private Map<Integer, GrhData> grhDataMap;
 
     /**
-     * Inicializa el controlador, cargando la configuración y los datos de los cuerpos.
+     * Inicializa el controlador, cargando la configuración y los datos de los
+     * cuerpos.
      */
     @FXML
-    protected void initialize() throws IOException {
+    protected void initialize() {
         configManager = ConfigManager.getInstance();
-        dataManager = DataManager.getInstance();
+        try {
+            dataManager = DataManager.getInstance();
 
-        bodyDataManager = new BodyData(); // Crear una instancia de headData
+            bodyDataManager = new BodyData(); // Crear una instancia de headData
 
-        animationStates.put(0, new AnimationState());
-        animationStates.put(1, new AnimationState());
-        animationStates.put(2, new AnimationState());
-        animationStates.put(3, new AnimationState());
+            animationStates.put(0, new AnimationState());
+            animationStates.put(1, new AnimationState());
+            animationStates.put(2, new AnimationState());
+            animationStates.put(3, new AnimationState());
 
-        loadBodyData();
-        setupHeadListListener();
+            loadBodyData();
+            setupHeadListListener();
+        } catch (Exception e) {
+            System.err.println("Error al inicializar frmCuerpos:");
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -122,7 +129,8 @@ public class frmCuerpos {
     }
 
     /**
-     * Configura un listener para el ListView, manejando los eventos de selección de ítems.
+     * Configura un listener para el ListView, manejando los eventos de selección de
+     * ítems.
      */
     private void setupHeadListListener() {
         // Agregar un listener al ListView para capturar los eventos de selección
@@ -163,15 +171,17 @@ public class frmCuerpos {
     }
 
     /**
-     * Dibuja las imágenes de los cuerpos en las diferentes vistas (Norte, Sur, Este, Oeste).
+     * Dibuja las imágenes de los cuerpos en las diferentes vistas (Norte, Sur,
+     * Este, Oeste).
      *
      * @param selectedBody el objeto headData seleccionado.
-     * @param heading la dirección en la que se debe dibujar la cabeza (0: Sur, 1: Norte, 2: Oeste, 3: Este).
+     * @param heading      la dirección en la que se debe dibujar la cabeza (0: Sur,
+     *                     1: Norte, 2: Oeste, 3: Este).
      */
     private void drawBodys(BodyData selectedBody, int heading) {
         int[] bodies = selectedBody.getBody();
 
-        //Obtenemos el Grh de animación desde el indice del body + el heading
+        // Obtenemos el Grh de animación desde el indice del body + el heading
         GrhData selectedGrh = grhDataMap.get(bodies[heading]);
 
         int nFrames = selectedGrh.getNumFrames();
@@ -190,12 +200,15 @@ public class frmCuerpos {
                 new KeyFrame(Duration.ZERO, event -> {
                     // Actualizar la imagen en el ImageView con el frame actual
                     updateFrame(selectedGrh, heading);
-                    animationState.setCurrentFrameIndex((animationState.getCurrentFrameIndex() + 1) % nFrames); // Avanzar al siguiente frame circularmente
+                    animationState.setCurrentFrameIndex((animationState.getCurrentFrameIndex() + 1) % nFrames); // Avanzar
+                                                                                                                // al
+                                                                                                                // siguiente
+                                                                                                                // frame
+                                                                                                                // circularmente
                     if (animationState.getCurrentFrameIndex() == 0) {
                         animationState.setCurrentFrameIndex(1); // Omitir la posición 0
                     }
-                })
-        );
+                }));
 
         animationTimeline.getKeyFrames().add(new KeyFrame(Duration.millis(100)));
         animationTimeline.setCycleCount(Animation.INDEFINITE);
@@ -203,8 +216,10 @@ public class frmCuerpos {
     }
 
     /**
-     * Actualiza el fotograma actual en el ImageView durante la reproducción de una animación.
-     * Obtiene el siguiente fotograma de la animación y actualiza el ImageView con la imagen correspondiente.
+     * Actualiza el fotograma actual en el ImageView durante la reproducción de una
+     * animación.
+     * Obtiene el siguiente fotograma de la animación y actualiza el ImageView con
+     * la imagen correspondiente.
      *
      * @param selectedGrh El gráfico seleccionado.
      */
@@ -233,7 +248,8 @@ public class frmCuerpos {
                 if (imageFile.exists()) {
                     Image frameImage = new Image(imageFile.toURI().toString());
                     PixelReader pixelReader = frameImage.getPixelReader();
-                    WritableImage croppedImage = new WritableImage(pixelReader, currentGrh.getsX(), currentGrh.getsY(), currentGrh.getTileWidth(), currentGrh.getTileHeight());
+                    WritableImage croppedImage = new WritableImage(pixelReader, currentGrh.getsX(), currentGrh.getsY(),
+                            currentGrh.getTileWidth(), currentGrh.getTileHeight());
 
                     switch (heading) {
                         case 0:
@@ -253,7 +269,8 @@ public class frmCuerpos {
                     System.out.println("updateFrame: El archivo de imagen no existe: " + imagePath);
                 }
             } else {
-                System.out.println("updateFrame: No se encontró el GrhData correspondiente para frameId: " + frames[currentFrameIndex]);
+                System.out.println("updateFrame: No se encontró el GrhData correspondiente para frameId: "
+                        + frames[currentFrameIndex]);
             }
         } else {
             System.out.println("updateFrame: El índice actual está fuera del rango adecuado: " + currentFrameIndex);

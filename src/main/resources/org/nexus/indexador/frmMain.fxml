@@ -22,7 +22,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.shape.Rectangle?>
 
-<AnchorPane fx:id="paneMain" maxHeight="649.0" maxWidth="1516.0" minHeight="768.0" minWidth="1366.0" prefHeight="649.0" prefWidth="1065.0" style="-fx-background-color: #424242;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nexus.indexador.controllers.frmMain">
+<AnchorPane fx:id="paneMain" maxHeight="649.0" maxWidth="1516.0" minHeight="768.0" minWidth="1366.0" prefHeight="649.0" prefWidth="1065.0" style="-fx-background-color: #424242;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nexus.indexador.controllers.frmMain">
     <children>
         <MenuBar fx:id="MnuBar" prefHeight="25.0" prefWidth="1366.0" style="-fx-background-color: #999999;">
             <menus>

@@ -87,6 +87,11 @@ public class frmCargando {
                         currentStage.close();
                     }
 
+                    newStage.setOnCloseRequest(event -> {
+                        Platform.exit();
+                        System.exit(0);
+                    });
+
                     newStage.centerOnScreen();
                     newStage.show();
 

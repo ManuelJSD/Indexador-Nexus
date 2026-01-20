@@ -23,7 +23,7 @@ import org.nexus.indexador.utils.AnimationState;
 import org.nexus.indexador.utils.ConfigManager;
 
 import java.io.File;
-import java.io.IOException;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,7 +52,8 @@ public class frmFXs {
     @FXML
     public Button btnDelete;
 
-    private FXData fxDataManager; // Objeto que gestiona los datos de los FXs, incluyendo la carga y manipulación de los mismos
+    private FXData fxDataManager; // Objeto que gestiona los datos de los FXs, incluyendo la carga y manipulación
+                                  // de los mismos
     private ObservableList<FXData> fxList;
     private ObservableList<GrhData> grhList;
 
@@ -70,22 +71,28 @@ public class frmFXs {
     private Timeline animationTimeline;
 
     /**
-     * Inicializa el controlador, cargando la configuración y los datos de los cuerpos.
+     * Inicializa el controlador, cargando la configuración y los datos de los
+     * cuerpos.
      */
     @FXML
-    protected void initialize() throws IOException {
+    protected void initialize() {
         configManager = ConfigManager.getInstance();
-        dataManager = DataManager.getInstance();
+        try {
+            dataManager = DataManager.getInstance();
 
-        fxDataManager = new FXData(); // Crear una instancia de headData
+            fxDataManager = new FXData(); // Crear una instancia de headData
 
-        animationStates.put(0, new AnimationState());
-        animationStates.put(1, new AnimationState());
-        animationStates.put(2, new AnimationState());
-        animationStates.put(3, new AnimationState());
+            animationStates.put(0, new AnimationState());
+            animationStates.put(1, new AnimationState());
+            animationStates.put(2, new AnimationState());
+            animationStates.put(3, new AnimationState());
 
-        loadFxData();
-        setupFXListListener();
+            loadFxData();
+            setupFXListListener();
+        } catch (Exception e) {
+            System.err.println("Error al inicializar frmFXs:");
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -119,7 +126,8 @@ public class frmFXs {
     }
 
     /**
-     * Configura un listener para el ListView, manejando los eventos de selección de ítems.
+     * Configura un listener para el ListView, manejando los eventos de selección de
+     * ítems.
      */
     private void setupFXListListener() {
         // Agregar un listener al ListView para capturar los eventos de selección
@@ -155,15 +163,18 @@ public class frmFXs {
     }
 
     /**
-     * Muestra una animación en el ImageView correspondiente al gráfico seleccionado.
-     * Configura y ejecuta una animación de fotogramas clave para mostrar la animación.
-     * La animación se ejecuta en un bucle infinito hasta que se detenga explícitamente.
+     * Muestra una animación en el ImageView correspondiente al gráfico
+     * seleccionado.
+     * Configura y ejecuta una animación de fotogramas clave para mostrar la
+     * animación.
+     * La animación se ejecuta en un bucle infinito hasta que se detenga
+     * explícitamente.
      *
      * @param selectedFX El gráfico seleccionado.
      */
     private void displayAnimation(FXData selectedFX) {
 
-        //Obtenemos el Grh de animación desde el indice del FX
+        // Obtenemos el Grh de animación desde el indice del FX
         GrhData selectedGrh = grhDataMap.get(selectedFX.getFx());
 
         int nFrames = selectedGrh.getNumFrames();
@@ -191,8 +202,10 @@ public class frmFXs {
     }
 
     /**
-     * Actualiza el fotograma actual en el ImageView durante la reproducción de una animación.
-     * Obtiene el siguiente fotograma de la animación y actualiza el ImageView con la imagen correspondiente.
+     * Actualiza el fotograma actual en el ImageView durante la reproducción de una
+     * animación.
+     * Obtiene el siguiente fotograma de la animación y actualiza el ImageView con
+     * la imagen correspondiente.
      *
      * @param selectedGrh El gráfico seleccionado.
      */
@@ -220,10 +233,12 @@ public class frmFXs {
                     Image frameImage = new Image(imageFile.toURI().toString());
 
                     PixelReader pixelReader = frameImage.getPixelReader();
-                    WritableImage croppedImage = new WritableImage(pixelReader, currentGrh.getsX(), currentGrh.getsY(), currentGrh.getTileWidth(), currentGrh.getTileHeight());
+                    WritableImage croppedImage = new WritableImage(pixelReader, currentGrh.getsX(), currentGrh.getsY(),
+                            currentGrh.getTileWidth(), currentGrh.getTileHeight());
                     imgFX.setImage(croppedImage);
                 } else {
-                    // El archivo no existe, mostrar un mensaje de error o registrar un mensaje de advertencia
+                    // El archivo no existe, mostrar un mensaje de error o registrar un mensaje de
+                    // advertencia
                     System.out.println("updateFrame: El archivo de imagen no existe: " + imagePath);
                 }
             } else {

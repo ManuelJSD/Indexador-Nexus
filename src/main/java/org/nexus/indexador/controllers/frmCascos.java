@@ -18,7 +18,7 @@ import org.nexus.indexador.gamedata.models.HelmetData;
 import org.nexus.indexador.utils.ConfigManager;
 
 import java.io.File;
-import java.io.IOException;
+
 import java.util.Optional;
 
 public class frmCascos {
@@ -48,30 +48,38 @@ public class frmCascos {
     @FXML
     public Button btnDelete;
 
-    private HelmetData helmetDataManager; // Objeto que gestiona los datos de los cascos, incluyendo la carga y manipulación de los mismos
+    private HelmetData helmetDataManager; // Objeto que gestiona los datos de los cascos, incluyendo la carga y
+                                          // manipulación de los mismos
     private ObservableList<HelmetData> helmetList; // Lista observable que contiene los datos de los gráficos indexados.
 
-    private ConfigManager configManager; // Objeto encargado de manejar la configuración de la aplicación, incluyendo la lectura y escritura de archivos de configuración.
+    private ConfigManager configManager; // Objeto encargado de manejar la configuración de la aplicación, incluyendo la
+                                         // lectura y escritura de archivos de configuración.
     private DataManager dataManager;
 
     /**
-     * Inicializa el controlador, cargando la configuración y los datos de los cascos.
+     * Inicializa el controlador, cargando la configuración y los datos de los
+     * cascos.
      */
     @FXML
-    protected void initialize() throws IOException {
+    protected void initialize() {
         configManager = ConfigManager.getInstance();
-        dataManager = DataManager.getInstance();
-
-        helmetDataManager = new HelmetData(); // Crear una instancia de helmetData
-        loadHelmetData();
-        setupHelmetListListener();
+        try {
+            dataManager = DataManager.getInstance();
+            helmetDataManager = new HelmetData(); // Crear una instancia de helmetData
+            loadHelmetData();
+            setupHelmetListListener();
+        } catch (Exception e) {
+            System.err.println("Error al inicializar frmCascos:");
+            e.printStackTrace();
+        }
     }
 
     /**
      * Carga los datos de los cascos desde un archivo y los muestra en la interfaz.
      */
     private void loadHelmetData() {
-        // Llamar al método para leer el archivo binario y obtener la lista de helmetData
+        // Llamar al método para leer el archivo binario y obtener la lista de
+        // helmetData
         helmetList = dataManager.getHelmetList();
 
         // Actualizar el texto de los labels con la información obtenida
@@ -88,7 +96,8 @@ public class frmCascos {
     }
 
     /**
-     * Configura un listener para el ListView, manejando los eventos de selección de ítems.
+     * Configura un listener para el ListView, manejando los eventos de selección de
+     * ítems.
      */
     private void setupHelmetListListener() {
         // Agregar un listener al ListView para capturar los eventos de selección
@@ -126,10 +135,12 @@ public class frmCascos {
     }
 
     /**
-     * Dibuja las imágenes de los cascos en las diferentes vistas (Norte, Sur, Este, Oeste).
+     * Dibuja las imágenes de los cascos en las diferentes vistas (Norte, Sur, Este,
+     * Oeste).
      *
      * @param selectedHelmet el objeto helmetData seleccionado.
-     * @param helmeting la dirección en la que se debe dibujar el casco (0: Sur, 1: Norte, 2: Oeste, 3: Este).
+     * @param helmeting      la dirección en la que se debe dibujar el casco (0:
+     *                       Sur, 1: Norte, 2: Oeste, 3: Este).
      */
     private void drawHelmets(HelmetData selectedHelmet, int helmeting) {
         // Construir la ruta completa de la imagen para imagePath
@@ -150,7 +161,8 @@ public class frmCascos {
             int textureX1 = selectedHelmet.getStartX();
             int textureY1 = (helmeting * textureY2) + selectedHelmet.getStartY();
 
-            // Verificar que las coordenadas de recorte estén dentro de los límites de la imagen
+            // Verificar que las coordenadas de recorte estén dentro de los límites de la
+            // imagen
             if (textureX1 + textureX2 > staticImage.getWidth()) {
                 textureX1 = (int) staticImage.getWidth() - textureX2;
             }
@@ -186,7 +198,8 @@ public class frmCascos {
             }
 
         } else {
-            // El archivo no existe, mostrar un mensaje de error o registrar un mensaje de advertencia
+            // El archivo no existe, mostrar un mensaje de error o registrar un mensaje de
+            // advertencia
             System.out.println("displayStaticImage: El archivo de imagen no existe: " + imagePath);
 
             // Limpiar todos los ImageViews
@@ -198,7 +211,8 @@ public class frmCascos {
     }
 
     /**
-     * Maneja el evento de acción del botón "Guardar". Aplica los cambios al objeto helmetData seleccionado.
+     * Maneja el evento de acción del botón "Guardar". Aplica los cambios al objeto
+     * helmetData seleccionado.
      *
      * @param actionEvent el evento de acción del botón.
      */
@@ -221,7 +235,8 @@ public class frmCascos {
     }
 
     /**
-     * Maneja el evento de acción del botón "Agregar". Agrega un nuevo objeto helmetData a la lista.
+     * Maneja el evento de acción del botón "Agregar". Agrega un nuevo objeto
+     * helmetData a la lista.
      */
     @FXML
     private void btnAdd_OnAction() {
@@ -241,7 +256,8 @@ public class frmCascos {
     }
 
     /**
-     * Maneja el evento de acción del botón "Eliminar". Elimina el objeto helmetData seleccionado de la lista.
+     * Maneja el evento de acción del botón "Eliminar". Elimina el objeto helmetData
+     * seleccionado de la lista.
      *
      * @param actionEvent el evento de acción del botón.
      */

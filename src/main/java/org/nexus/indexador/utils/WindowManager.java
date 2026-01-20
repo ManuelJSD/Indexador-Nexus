@@ -95,6 +95,10 @@ public class WindowManager {
 
         } catch (IOException e) {
             logger.error("Error al abrir ventana '" + fxmlName + "'", e);
+            if (e.getCause() != null) {
+                logger.error(
+                        "Causa del error: " + e.getCause().getClass().getName() + ": " + e.getCause().getMessage());
+            }
             return false;
         }
     }

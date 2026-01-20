@@ -169,7 +169,7 @@ public class DataManager {
         grhList = FXCollections.observableArrayList();
 
         // Creamos un objeto File para el archivo que contiene los datos de los gráficos
-        File archivo = new File(configManager.getInitDir() + "graphics.ind");
+        File archivo = new File(configManager.getInitDir() + "graficos.ind");
 
         try (RandomAccessFile file = new RandomAccessFile(archivo, "r")) {
             logger.info("Comenzando a leer desde " + archivo.getAbsolutePath());
@@ -252,7 +252,7 @@ public class DataManager {
         headList = FXCollections.observableArrayList();
 
         // Creamos un objeto File para el archivo que contiene los datos de los gráficos
-        File archivo = new File(configManager.getInitDir() + "heads.ind");
+        File archivo = new File(configManager.getInitDir() + "cabezas.ind");
 
         try (RandomAccessFile file = new RandomAccessFile(archivo, "r")) {
             logger.info("Comenzando a leer desde " + archivo.getAbsolutePath());
@@ -311,7 +311,7 @@ public class DataManager {
         helmetList = FXCollections.observableArrayList();
 
         // Creamos un objeto File para el archivo que contiene los datos de los gráficos
-        File archivo = new File(configManager.getInitDir() + "helmets.ind");
+        File archivo = new File(configManager.getInitDir() + "cascos.ind");
 
         try (RandomAccessFile file = new RandomAccessFile(archivo, "r")) {
             logger.info("Comenzando a leer desde " + archivo.getAbsolutePath());
@@ -359,7 +359,7 @@ public class DataManager {
 
         bodyList = FXCollections.observableArrayList();
 
-        File archivo = new File(configManager.getInitDir() + "bodys.ind");
+        File archivo = new File(configManager.getInitDir() + "personajes.ind");
 
         try (RandomAccessFile file = new RandomAccessFile(archivo, "r")) {
             logger.info("Comenzando a leer desde " + archivo.getAbsolutePath());
@@ -396,7 +396,7 @@ public class DataManager {
 
         shieldList = FXCollections.observableArrayList();
 
-        File archivo = new File(configManager.getInitDir() + "shields.ind");
+        File archivo = new File(configManager.getInitDir() + "escudos.ind");
 
         try (RandomAccessFile file = new RandomAccessFile(archivo, "r")) {
             logger.info("Comenzando a leer desde " + archivo.getAbsolutePath());

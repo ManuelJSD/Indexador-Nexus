@@ -26,6 +26,7 @@ import org.nexus.indexador.utils.Logger;
 
 import java.io.File;
 import java.io.IOException;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,7 +59,8 @@ public class frmEscudos {
     @FXML
     public Button btnDelete;
 
-    private ShieldData shieldDataManager; // Objeto que gestiona los datos de los escudos, incluyendo la carga y manipulación de los mismos
+    private ShieldData shieldDataManager; // Objeto que gestiona los datos de los escudos, incluyendo la carga y
+                                          // manipulación de los mismos
     private ObservableList<ShieldData> shieldList;
     private ObservableList<GrhData> grhList;
 
@@ -73,28 +75,34 @@ public class frmEscudos {
     private Map<Integer, GrhData> grhDataMap;
 
     /**
-     * Inicializa el controlador, cargando la configuración y los datos de los cuerpos.
+     * Inicializa el controlador, cargando la configuración y los datos de los
+     * cuerpos.
      */
     @FXML
-    protected void initialize() throws IOException {
+    protected void initialize() {
         configManager = ConfigManager.getInstance();
-        dataManager = DataManager.getInstance();
-        imageCache = ImageCache.getInstance();
-        logger = Logger.getInstance();
-        
-        logger.info("Inicializando controlador frmEscudos");
+        try {
+            dataManager = DataManager.getInstance();
+            imageCache = ImageCache.getInstance();
+            logger = Logger.getInstance();
 
-        shieldDataManager = new ShieldData(); // Crear una instancia de headData
+            logger.info("Inicializando controlador frmEscudos");
 
-        animationStates.put(0, new AnimationState());
-        animationStates.put(1, new AnimationState());
-        animationStates.put(2, new AnimationState());
-        animationStates.put(3, new AnimationState());
+            shieldDataManager = new ShieldData(); // Crear una instancia de headData
 
-        loadShieldData();
-        setupHeadListListener();
-        
-        logger.info("Controlador frmEscudos inicializado correctamente");
+            animationStates.put(0, new AnimationState());
+            animationStates.put(1, new AnimationState());
+            animationStates.put(2, new AnimationState());
+            animationStates.put(3, new AnimationState());
+
+            loadShieldData();
+            setupHeadListListener();
+
+            logger.info("Controlador frmEscudos inicializado correctamente");
+        } catch (Exception e) {
+            System.err.println("Error al inicializar frmEscudos:");
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -104,28 +112,28 @@ public class frmEscudos {
         try {
             // Llamar al método para leer el archivo binario y obtener la lista de headData
             shieldList = dataManager.readShieldFile();
-    
+
             // Inicializar el mapa de grhData
             grhDataMap = new HashMap<>();
-    
+
             grhList = dataManager.getGrhList();
-    
+
             // Llenar el mapa con los datos de grhList
             for (GrhData grh : grhList) {
                 grhDataMap.put(grh.getGrh(), grh);
             }
-    
+
             // Actualizar el texto de los labels con la información obtenida
             lblNEscudos.setText("Escudos cargados: " + dataManager.getNumShields());
-    
+
             // Agregar los índices de gráficos al ListView
             ObservableList<String> shieldIndices = FXCollections.observableArrayList();
             for (int i = 1; i < shieldList.size() + 1; i++) {
                 shieldIndices.add(String.valueOf(i));
             }
-    
+
             lstShields.setItems(shieldIndices);
-            
+
             logger.info("Datos de escudos cargados: " + shieldList.size() + " escudos");
         } catch (IOException e) {
             logger.error("Error al cargar datos de escudos", e);
@@ -134,7 +142,8 @@ public class frmEscudos {
     }
 
     /**
-     * Configura un listener para el ListView, manejando los eventos de selección de ítems.
+     * Configura un listener para el ListView, manejando los eventos de selección de
+     * ítems.
      */
     private void setupHeadListListener() {
         // Agregar un listener al ListView para capturar los eventos de selección
@@ -151,7 +160,7 @@ public class frmEscudos {
                 for (int i = 0; i <= 3; i++) {
                     drawShields(selectedShield, i);
                 }
-                
+
                 logger.debug("Escudo seleccionado: índice " + (selectedIndex + 1));
             }
         });
@@ -173,15 +182,17 @@ public class frmEscudos {
     }
 
     /**
-     * Dibuja las imágenes de los cuerpos en las diferentes vistas (Norte, Sur, Este, Oeste).
+     * Dibuja las imágenes de los cuerpos en las diferentes vistas (Norte, Sur,
+     * Este, Oeste).
      *
      * @param selectedShield el objeto headData seleccionado.
-     * @param heading la dirección en la que se debe dibujar la cabeza (0: Sur, 1: Norte, 2: Oeste, 3: Este).
+     * @param heading        la dirección en la que se debe dibujar la cabeza (0:
+     *                       Sur, 1: Norte, 2: Oeste, 3: Este).
      */
     private void drawShields(ShieldData selectedShield, int heading) {
         int[] bodies = selectedShield.getShield();
 
-        //Obtenemos el Grh de animación desde el indice del shield + el heading
+        // Obtenemos el Grh de animación desde el indice del shield + el heading
         GrhData selectedGrh = grhDataMap.get(bodies[heading]);
 
         int nFrames = selectedGrh.getNumFrames();
@@ -200,23 +211,28 @@ public class frmEscudos {
                 new KeyFrame(Duration.ZERO, event -> {
                     // Actualizar la imagen en el ImageView con el frame actual
                     updateFrame(selectedGrh, heading);
-                    animationState.setCurrentFrameIndex((animationState.getCurrentFrameIndex() + 1) % nFrames); // Avanzar al siguiente frame circularmente
+                    animationState.setCurrentFrameIndex((animationState.getCurrentFrameIndex() + 1) % nFrames); // Avanzar
+                                                                                                                // al
+                                                                                                                // siguiente
+                                                                                                                // frame
+                                                                                                                // circularmente
                     if (animationState.getCurrentFrameIndex() == 0) {
                         animationState.setCurrentFrameIndex(1); // Omitir la posición 0
                     }
-                })
-        );
+                }));
 
         animationTimeline.getKeyFrames().add(new KeyFrame(Duration.millis(100)));
         animationTimeline.setCycleCount(Animation.INDEFINITE);
         animationTimeline.play();
-        
+
         logger.debug("Animación iniciada para dirección " + heading);
     }
 
     /**
-     * Actualiza el fotograma actual en el ImageView durante la reproducción de una animación.
-     * Obtiene el siguiente fotograma de la animación y actualiza el ImageView con la imagen correspondiente.
+     * Actualiza el fotograma actual en el ImageView durante la reproducción de una
+     * animación.
+     * Obtiene el siguiente fotograma de la animación y actualiza el ImageView con
+     * la imagen correspondiente.
      *
      * @param selectedGrh El gráfico seleccionado.
      */
@@ -238,20 +254,19 @@ public class frmEscudos {
                 if (!new File(imagePath).exists()) {
                     imagePath = configManager.getGraphicsDir() + currentGrh.getFileNum() + ".bmp";
                 }
-                
+
                 // Obtener imagen desde el caché
                 Image frameImage = imageCache.getImage(imagePath);
-                
+
                 if (frameImage != null) {
                     // Obtener la imagen recortada del caché
                     WritableImage croppedImage = imageCache.getCroppedImage(
-                        imagePath, 
-                        currentGrh.getsX(), 
-                        currentGrh.getsY(), 
-                        currentGrh.getTileWidth(), 
-                        currentGrh.getTileHeight()
-                    );
-                    
+                            imagePath,
+                            currentGrh.getsX(),
+                            currentGrh.getsY(),
+                            currentGrh.getTileWidth(),
+                            currentGrh.getTileHeight());
+
                     if (croppedImage != null) {
                         switch (heading) {
                             case 0:

@@ -13,8 +13,9 @@ public class ConfigManager {
     private String exportDir;
 
     private static final String CONFIG_FILE_NAME = "config.ini";
-    private static final String CONFIG_FILE_PATH = Thread.currentThread().getContextClassLoader()
-            .getResource(CONFIG_FILE_NAME).getPath();
+    // Usar directorio del usuario en lugar de resources
+    private static final String CONFIG_FILE_PATH = System.getProperty("user.home") +
+            File.separator + ".indexador-nexus" + File.separator + CONFIG_FILE_NAME;
 
     private ConfigManager() {
     }
@@ -30,21 +31,44 @@ public class ConfigManager {
         return instance;
     }
 
-    // Getters
+    /**
+     * Verifica si existe el archivo de configuración.
+     * 
+     * @return true si existe, false si es la primera vez
+     */
+    public boolean configExists() {
+        File configFile = new File(CONFIG_FILE_PATH);
+        return configFile.exists();
+    }
+
+    // Getters - normalizan las rutas para asegurar separador final
     public String getGraphicsDir() {
-        return graphicsDir;
+        return normalizePath(graphicsDir);
     }
 
     public String getInitDir() {
-        return initDir;
+        return normalizePath(initDir);
     }
 
     public String getDatDir() {
-        return datDir;
+        return normalizePath(datDir);
     }
 
     public String getExportDir() {
-        return exportDir;
+        return normalizePath(exportDir);
+    }
+
+    /**
+     * Normaliza una ruta asegurando que termine con separador.
+     */
+    private String normalizePath(String path) {
+        if (path == null || path.isEmpty()) {
+            return "";
+        }
+        if (!path.endsWith(File.separator) && !path.endsWith("/") && !path.endsWith("\\")) {
+            return path + File.separator;
+        }
+        return path;
     }
 
     // Setters
@@ -86,18 +110,18 @@ public class ConfigManager {
                         }
                     }
                 }
-            } catch (IOException e) {
-                // Manejar la excepción de lectura del archivo
-                System.err.println("Error al leer el archivo de configuración: " + e.getMessage());
-                throw e; // Lanzar la excepción para que sea manejada en otro lugar si es necesario
             }
-        } else {
-            // Manejar el caso en el que el archivo de configuración no existe
-            System.err.println("El archivo de configuración no existe: " + CONFIG_FILE_PATH);
         }
     }
 
     public void writeConfig() throws IOException {
+        // Crear directorio si no existe
+        File configFile = new File(CONFIG_FILE_PATH);
+        File configDir = configFile.getParentFile();
+        if (!configDir.exists()) {
+            configDir.mkdirs();
+        }
+
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(CONFIG_FILE_PATH))) {
             writer.write("Graficos=" + graphicsDir);
             writer.newLine();

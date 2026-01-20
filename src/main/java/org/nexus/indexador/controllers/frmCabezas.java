@@ -18,7 +18,7 @@ import org.nexus.indexador.gamedata.models.HeadData;
 import org.nexus.indexador.utils.ConfigManager;
 
 import java.io.File;
-import java.io.IOException;
+
 import java.util.Optional;
 
 public class frmCabezas {
@@ -48,23 +48,31 @@ public class frmCabezas {
     @FXML
     public Button btnDelete;
 
-    private HeadData headDataManager; // Objeto que gestiona los datos de las cabezas, incluyendo la carga y manipulación de los mismos
+    private HeadData headDataManager; // Objeto que gestiona los datos de las cabezas, incluyendo la carga y
+                                      // manipulación de los mismos
     private ObservableList<HeadData> headList; // Lista observable que contiene los datos de los gráficos indexados.
 
-    private ConfigManager configManager; // Objeto encargado de manejar la configuración de la aplicación, incluyendo la lectura y escritura de archivos de configuración.
+    private ConfigManager configManager; // Objeto encargado de manejar la configuración de la aplicación, incluyendo la
+                                         // lectura y escritura de archivos de configuración.
     private DataManager dataManager;
 
     /**
-     * Inicializa el controlador, cargando la configuración y los datos de las cabezas.
+     * Inicializa el controlador, cargando la configuración y los datos de las
+     * cabezas.
      */
     @FXML
-    protected void initialize() throws IOException {
+    protected void initialize() {
         configManager = ConfigManager.getInstance();
-        dataManager = DataManager.getInstance();
+        try {
+            dataManager = DataManager.getInstance();
 
-        headDataManager = new HeadData(); // Crear una instancia de headData
-        loadHeadData();
-        setupHeadListListener();
+            headDataManager = new HeadData(); // Crear una instancia de headData
+            loadHeadData();
+            setupHeadListListener();
+        } catch (Exception e) {
+            System.err.println("Error al inicializar frmCabezas:");
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -88,7 +96,8 @@ public class frmCabezas {
     }
 
     /**
-     * Configura un listener para el ListView, manejando los eventos de selección de ítems.
+     * Configura un listener para el ListView, manejando los eventos de selección de
+     * ítems.
      */
     private void setupHeadListListener() {
         // Agregar un listener al ListView para capturar los eventos de selección
@@ -126,10 +135,12 @@ public class frmCabezas {
     }
 
     /**
-     * Dibuja las imágenes de las cabezas en las diferentes vistas (Norte, Sur, Este, Oeste).
+     * Dibuja las imágenes de las cabezas en las diferentes vistas (Norte, Sur,
+     * Este, Oeste).
      *
      * @param selectedHead el objeto headData seleccionado.
-     * @param heading la dirección en la que se debe dibujar la cabeza (0: Sur, 1: Norte, 2: Oeste, 3: Este).
+     * @param heading      la dirección en la que se debe dibujar la cabeza (0: Sur,
+     *                     1: Norte, 2: Oeste, 3: Este).
      */
     private void drawHeads(HeadData selectedHead, int heading) {
         // Construir la ruta completa de la imagen para imagePath
@@ -150,7 +161,8 @@ public class frmCabezas {
             int textureX1 = selectedHead.getStartX();
             int textureY1 = (heading * textureY2) + selectedHead.getStartY();
 
-            // Verificar que las coordenadas de recorte estén dentro de los límites de la imagen
+            // Verificar que las coordenadas de recorte estén dentro de los límites de la
+            // imagen
             if (textureX1 + textureX2 > staticImage.getWidth()) {
                 textureX1 = (int) staticImage.getWidth() - textureX2;
             }
@@ -186,7 +198,8 @@ public class frmCabezas {
             }
 
         } else {
-            // El archivo no existe, mostrar un mensaje de error o registrar un mensaje de advertencia
+            // El archivo no existe, mostrar un mensaje de error o registrar un mensaje de
+            // advertencia
             System.out.println("displayStaticImage: El archivo de imagen no existe: " + imagePath);
 
             // Limpiar todos los ImageViews
@@ -198,7 +211,8 @@ public class frmCabezas {
     }
 
     /**
-     * Maneja el evento de acción del botón "Guardar". Aplica los cambios al objeto headData seleccionado.
+     * Maneja el evento de acción del botón "Guardar". Aplica los cambios al objeto
+     * headData seleccionado.
      *
      * @param actionEvent el evento de acción del botón.
      */
@@ -221,7 +235,8 @@ public class frmCabezas {
     }
 
     /**
-     * Maneja el evento de acción del botón "Agregar". Agrega un nuevo objeto headData a la lista.
+     * Maneja el evento de acción del botón "Agregar". Agrega un nuevo objeto
+     * headData a la lista.
      */
     @FXML
     private void btnAdd_OnAction() {
@@ -241,7 +256,8 @@ public class frmCabezas {
     }
 
     /**
-     * Maneja el evento de acción del botón "Eliminar". Elimina el objeto headData seleccionado de la lista.
+     * Maneja el evento de acción del botón "Eliminar". Elimina el objeto headData
+     * seleccionado de la lista.
      *
      * @param actionEvent el evento de acción del botón.
      */

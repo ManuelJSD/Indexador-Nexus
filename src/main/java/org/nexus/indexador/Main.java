@@ -19,6 +19,53 @@ public class Main extends Application {
     public void start(Stage stage) {
         logger.info("Iniciando aplicación Indexador Nexus");
 
+        // Verificar si es la primera vez que se ejecuta
+        org.nexus.indexador.utils.ConfigManager config = org.nexus.indexador.utils.ConfigManager.getInstance();
+
+        if (!config.configExists()) {
+            // Primera vez - mostrar wizard de configuración
+            showInitialSetup(() -> showLoadingScreen(stage));
+        } else {
+            // Ya configurado - mostrar pantalla de carga directamente
+            showLoadingScreen(stage);
+        }
+    }
+
+    /**
+     * Muestra el wizard de configuración inicial.
+     */
+    private void showInitialSetup(Runnable onComplete) {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("frmInitialSetup.fxml"));
+            Parent root = fxmlLoader.load();
+            Scene scene = new Scene(root);
+
+            // Aplicar tema oscuro
+            String darkTheme = Main.class.getResource("styles/dark-theme.css").toExternalForm();
+            scene.getStylesheets().add(darkTheme);
+
+            // Configurar controller
+            org.nexus.indexador.controllers.frmInitialSetup controller = fxmlLoader.getController();
+
+            Stage setupStage = new Stage();
+            controller.setStage(setupStage);
+            controller.setOnComplete(onComplete);
+
+            setupStage.setTitle("Indexador Nexus - Configuración Inicial");
+            setupStage.setScene(scene);
+            setupStage.setResizable(false);
+            setupStage.show();
+
+            logger.info("Wizard de configuración inicial mostrado");
+        } catch (IOException e) {
+            logger.error("Error al cargar wizard de configuración", e);
+        }
+    }
+
+    /**
+     * Muestra la pantalla de carga principal.
+     */
+    private void showLoadingScreen(Stage stage) {
         FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("frmCargando.fxml"));
 
         try {

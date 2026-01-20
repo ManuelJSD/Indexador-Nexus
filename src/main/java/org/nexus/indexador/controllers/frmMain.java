@@ -24,8 +24,10 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import org.nexus.indexador.utils.byteMigration;
 import org.nexus.indexador.utils.ConfigManager;
+import org.nexus.indexador.utils.ExportService;
 import org.nexus.indexador.utils.ImageCache;
 import org.nexus.indexador.utils.Logger;
+import org.nexus.indexador.utils.ValidationService;
 import org.nexus.indexador.utils.WindowManager;
 
 import java.io.*;
@@ -672,10 +674,126 @@ public class frmMain {
             }
 
             logger.info("Indices exportados!");
+            showInfoAlert("Exportación Completa", "Índices exportados a:\n" + file.getAbsolutePath());
 
         } catch (IOException e) {
             logger.error("Error al exportar los datos de gráficos", e);
+            showErrorAlert("Error de Exportación", "No se pudieron exportar los índices.");
         }
+    }
+
+    /**
+     * Exporta los índices a formato JSON.
+     */
+    @FXML
+    private void mnuExportJson_OnAction() {
+        File file = new File(configManager.getExportDir() + "graficos.json");
+
+        ExportService exportService = ExportService.getInstance();
+        if (exportService.exportToJson(grhList, file)) {
+            showInfoAlert("Exportación JSON Completa",
+                    "Índices exportados a:\n" + file.getAbsolutePath());
+        } else {
+            showErrorAlert("Error de Exportación", "No se pudo exportar a JSON.");
+        }
+    }
+
+    /**
+     * Exporta los índices a formato CSV.
+     */
+    @FXML
+    private void mnuExportCsv_OnAction() {
+        File file = new File(configManager.getExportDir() + "graficos.csv");
+
+        ExportService exportService = ExportService.getInstance();
+        if (exportService.exportToCsv(grhList, file)) {
+            showInfoAlert("Exportación CSV Completa",
+                    "Índices exportados a:\n" + file.getAbsolutePath());
+        } else {
+            showErrorAlert("Error de Exportación", "No se pudo exportar a CSV.");
+        }
+    }
+
+    /**
+     * Valida la integridad de los datos de GRH.
+     */
+    @FXML
+    private void mnuValidate_OnAction() {
+        ValidationService validationService = ValidationService.getInstance();
+        ValidationService.ValidationResult result = validationService.validate(
+                grhList, configManager.getGraphicsDir());
+
+        StringBuilder message = new StringBuilder();
+        message.append("Resultado de la validación:\n\n");
+
+        if (result.hasErrors()) {
+            message.append("❌ ERRORES (").append(result.getErrors().size()).append("):\n");
+            for (int i = 0; i < Math.min(5, result.getErrors().size()); i++) {
+                message.append("  • ").append(result.getErrors().get(i)).append("\n");
+            }
+            if (result.getErrors().size() > 5) {
+                message.append("  ... y ").append(result.getErrors().size() - 5).append(" más\n");
+            }
+            message.append("\n");
+        }
+
+        if (result.hasWarnings()) {
+            message.append("⚠️ ADVERTENCIAS (").append(result.getWarnings().size()).append("):\n");
+            for (int i = 0; i < Math.min(5, result.getWarnings().size()); i++) {
+                message.append("  • ").append(result.getWarnings().get(i)).append("\n");
+            }
+            if (result.getWarnings().size() > 5) {
+                message.append("  ... y ").append(result.getWarnings().size() - 5).append(" más\n");
+            }
+            message.append("\n");
+        }
+
+        // Estadísticas
+        message.append("📊 ESTADÍSTICAS:\n");
+        for (ValidationService.ValidationIssue info : result.getInfos()) {
+            message.append("  • ").append(info.getMessage()).append("\n");
+        }
+
+        if (result.hasErrors()) {
+            showErrorAlert("Validación con Errores", message.toString());
+        } else if (result.hasWarnings()) {
+            showWarningAlert("Validación con Advertencias", message.toString());
+        } else {
+            showInfoAlert("Validación Exitosa", "✅ No se encontraron problemas.\n\n" + message);
+        }
+    }
+
+    /**
+     * Muestra un diálogo de información.
+     */
+    private void showInfoAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
+    /**
+     * Muestra un diálogo de error.
+     */
+    private void showErrorAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
+    /**
+     * Muestra un diálogo de advertencia.
+     */
+    private void showWarningAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 
     /**

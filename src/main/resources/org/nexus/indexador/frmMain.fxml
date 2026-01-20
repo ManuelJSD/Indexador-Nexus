@@ -29,11 +29,14 @@
                     <items>
                         <Menu mnemonicParsing="true" text="_Exportar">
                             <items>
-                                <MenuItem fx:id="mnuExportGrh" mnemonicParsing="false" onAction="#mnuExportGrh_OnAction" text="Indices">
+                                <MenuItem fx:id="mnuExportGrh" mnemonicParsing="false" onAction="#mnuExportGrh_OnAction" text="Indices (.ini)">
                                     <accelerator>
                                         <KeyCodeCombination alt="UP" code="E" control="DOWN" meta="UP" shift="UP" shortcut="UP"/>
                                     </accelerator>
                                 </MenuItem>
+                                <MenuItem fx:id="mnuExportJson" mnemonicParsing="false" onAction="#mnuExportJson_OnAction" text="Indices (.json)" />
+                                <MenuItem fx:id="mnuExportCsv" mnemonicParsing="false" onAction="#mnuExportCsv_OnAction" text="Indices (.csv)" />
+                                <SeparatorMenuItem />
                                 <MenuItem fx:id="mnuExportHead" mnemonicParsing="false" onAction="#mnuExportHead_OnAction" text="Cabezas" />
                                 <MenuItem fx:id="mnuExportHelmet" mnemonicParsing="false" onAction="#mnuExportHelmet_OnAction" text="Cascos" />
                             </items>
@@ -106,6 +109,12 @@
                         <MenuItem fx:id="mnuBuscarGrhLibres" mnemonicParsing="false" onAction="#mnuBuscarGrhLibres_OnAction" text="Buscar Grh Libres">
                             <accelerator>
                                 <KeyCodeCombination alt="UP" code="F" control="DOWN" meta="UP" shift="DOWN" shortcut="UP"/>
+                            </accelerator>
+                        </MenuItem>
+                        <SeparatorMenuItem />
+                        <MenuItem fx:id="mnuValidate" mnemonicParsing="false" onAction="#mnuValidate_OnAction" text="Validar Integridad">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="V" control="DOWN" meta="UP" shift="DOWN" shortcut="UP"/>
                             </accelerator>
                         </MenuItem>
                     </items>

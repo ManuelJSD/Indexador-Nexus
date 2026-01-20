@@ -6,11 +6,18 @@ import java.io.*;
 
 public class DatEditor {
 
-    private static DatEditor instance;
+    private static volatile DatEditor instance;
+
+    private DatEditor() {
+    }
 
     public static DatEditor getInstance() throws IOException {
         if (instance == null) {
-            instance = new DatEditor();
+            synchronized (DatEditor.class) {
+                if (instance == null) {
+                    instance = new DatEditor();
+                }
+            }
         }
         return instance;
     }

@@ -7,13 +7,17 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.shape.Rectangle?>
 
@@ -21,58 +25,104 @@
     <children>
         <MenuBar fx:id="MnuBar" prefHeight="25.0" prefWidth="1366.0" style="-fx-background-color: #999999;">
             <menus>
-                <Menu fx:id="mnuFile" mnemonicParsing="false" text="Archivo">
+                <Menu fx:id="mnuFile" mnemonicParsing="true" text="_Archivo">
                     <items>
-                  <Menu mnemonicParsing="false" text="Exportar">
-                    <items>
-                        <MenuItem fx:id="mnuExportGrh" mnemonicParsing="false" onAction="#mnuExportGrh_OnAction" text="Indices" />
-                        <MenuItem fx:id="mnuExportHead" mnemonicParsing="false" onAction="#mnuExportHead_OnAction" text="Cabezas" />
-                        <MenuItem fx:id="mnuExportHelmet" mnemonicParsing="false" onAction="#mnuExportHelmet_OnAction" text="Cascos" />
-                    </items>
-                  </Menu>
-                  <Menu mnemonicParsing="false" text="Indexar">
-                    <items>
-                        <Menu mnemonicParsing="false" text="Memoria...">
-                          <items>
-                            <MenuItem fx:id="mnuIndexbyMemory" mnemonicParsing="false" onAction="#mnuIndexbyMemory" text="Indices" />
-                          </items>
+                        <Menu mnemonicParsing="true" text="_Exportar">
+                            <items>
+                                <MenuItem fx:id="mnuExportGrh" mnemonicParsing="false" onAction="#mnuExportGrh_OnAction" text="Indices">
+                                    <accelerator>
+                                        <KeyCodeCombination alt="UP" code="E" control="DOWN" meta="UP" shift="UP" shortcut="UP"/>
+                                    </accelerator>
+                                </MenuItem>
+                                <MenuItem fx:id="mnuExportHead" mnemonicParsing="false" onAction="#mnuExportHead_OnAction" text="Cabezas" />
+                                <MenuItem fx:id="mnuExportHelmet" mnemonicParsing="false" onAction="#mnuExportHelmet_OnAction" text="Cascos" />
+                            </items>
                         </Menu>
-                        <Menu mnemonicParsing="false" text="Exportados">
-                           <items>
-                              <MenuItem fx:id="mnuIndexbyExported" mnemonicParsing="false" onAction="#mnuIndexbyExported" text="Indices" />
-                           </items>
+                        <Menu mnemonicParsing="true" text="_Indexar">
+                            <items>
+                                <Menu mnemonicParsing="false" text="Memoria...">
+                                    <items>
+                                        <MenuItem fx:id="mnuIndexbyMemory" mnemonicParsing="false" onAction="#mnuIndexbyMemory" text="Indices">
+                                            <accelerator>
+                                                <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP"/>
+                                            </accelerator>
+                                        </MenuItem>
+                                    </items>
+                                </Menu>
+                                <Menu mnemonicParsing="false" text="Exportados">
+                                    <items>
+                                        <MenuItem fx:id="mnuIndexbyExported" mnemonicParsing="false" onAction="#mnuIndexbyExported" text="Indices" />
+                                    </items>
+                                </Menu>
+                            </items>
                         </Menu>
-                    </items>
-                  </Menu>
-                        <MenuItem fx:id="mnuClose" mnemonicParsing="false" onAction="#mnuClose_OnAction" text="Cerrar" />
+                        <SeparatorMenuItem />
+                        <MenuItem fx:id="mnuClose" mnemonicParsing="false" onAction="#mnuClose_OnAction" text="Cerrar">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="Q" control="DOWN" meta="UP" shift="UP" shortcut="UP"/>
+                            </accelerator>
+                        </MenuItem>
                     </items>
                 </Menu>
-                <Menu fx:id="mnuVer" mnemonicParsing="false" text="Ver..">
+                <Menu fx:id="mnuVer" mnemonicParsing="true" text="_Ver">
                     <items>
-                  <MenuItem fx:id="mnuHead" mnemonicParsing="false" onAction="#mnuHead_OnAction" text="Cabezas" />
-                  <MenuItem fx:id="mnuHelmet" mnemonicParsing="false" onAction="#mnuHelmet_OnAction" text="Cascos" />
-                  <MenuItem fx:id="mnuBody" mnemonicParsing="false" onAction="#mnuBody_OnAction" text="Cuerpos" />
-                  <MenuItem fx:id="mnuShield" mnemonicParsing="false" onAction="#mnuShield_OnAction" text="Escudos" />
-                  <MenuItem fx:id="mnuFXs" mnemonicParsing="false" onAction="#mnuFXs_OnAction" text="FX's" />
-                        <MenuItem fx:id="mnuConsola" mnemonicParsing="false" onAction="#mnuConsola_OnAction" text="Consola" />
+                        <MenuItem fx:id="mnuHead" mnemonicParsing="false" onAction="#mnuHead_OnAction" text="Cabezas">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="DIGIT1" control="DOWN" meta="UP" shift="UP" shortcut="UP"/>
+                            </accelerator>
+                        </MenuItem>
+                        <MenuItem fx:id="mnuHelmet" mnemonicParsing="false" onAction="#mnuHelmet_OnAction" text="Cascos">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="DIGIT2" control="DOWN" meta="UP" shift="UP" shortcut="UP"/>
+                            </accelerator>
+                        </MenuItem>
+                        <MenuItem fx:id="mnuBody" mnemonicParsing="false" onAction="#mnuBody_OnAction" text="Cuerpos">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="DIGIT3" control="DOWN" meta="UP" shift="UP" shortcut="UP"/>
+                            </accelerator>
+                        </MenuItem>
+                        <MenuItem fx:id="mnuShield" mnemonicParsing="false" onAction="#mnuShield_OnAction" text="Escudos">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="DIGIT4" control="DOWN" meta="UP" shift="UP" shortcut="UP"/>
+                            </accelerator>
+                        </MenuItem>
+                        <MenuItem fx:id="mnuFXs" mnemonicParsing="false" onAction="#mnuFXs_OnAction" text="FX's">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="DIGIT5" control="DOWN" meta="UP" shift="UP" shortcut="UP"/>
+                            </accelerator>
+                        </MenuItem>
+                        <SeparatorMenuItem />
+                        <MenuItem fx:id="mnuConsola" mnemonicParsing="false" onAction="#mnuConsola_OnAction" text="Consola">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="F12" control="UP" meta="UP" shift="UP" shortcut="UP"/>
+                            </accelerator>
+                        </MenuItem>
                     </items>
                 </Menu>
-            <Menu mnemonicParsing="false" text="Herramientas">
-              <items>
-                <MenuItem id="mnuGrhAdapter" fx:id="mnuGrhAdapter" mnemonicParsing="false" onAction="#mnuGrhAdapter_OnAction" text="Adaptador de Grh" />
-                  <MenuItem id="mnuGrhAdapter" fx:id="mnuAsistente" mnemonicParsing="false" onAction="#mnuAsistente_OnAction" text="Asistente" />
-                  <MenuItem id="mnuGrhAdapter" fx:id="mnuBuscarGrhLibres" mnemonicParsing="false" onAction="#mnuBuscarGrhLibres_OnAction" text="Buscar Grh Libres" />
-              </items>
-            </Menu>
-                <Menu fx:id="mnuHelp" mnemonicParsing="false" text="Ayuda">
+                <Menu mnemonicParsing="true" text="_Herramientas">
                     <items>
-                        <MenuItem fx:id="mnuCode" mnemonicParsing="false" onAction="#mnuCode_OnAction" text="Codigo Fuente" />
+                        <MenuItem fx:id="mnuGrhAdapter" mnemonicParsing="false" onAction="#mnuGrhAdapter_OnAction" text="Adaptador de Grh" />
+                        <MenuItem fx:id="mnuAsistente" mnemonicParsing="false" onAction="#mnuAsistente_OnAction" text="Asistente" />
+                        <MenuItem fx:id="mnuBuscarGrhLibres" mnemonicParsing="false" onAction="#mnuBuscarGrhLibres_OnAction" text="Buscar Grh Libres">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="F" control="DOWN" meta="UP" shift="DOWN" shortcut="UP"/>
+                            </accelerator>
+                        </MenuItem>
+                    </items>
+                </Menu>
+                <Menu fx:id="mnuHelp" mnemonicParsing="true" text="A_yuda">
+                    <items>
+                        <MenuItem fx:id="mnuCode" mnemonicParsing="false" onAction="#mnuCode_OnAction" text="Codigo Fuente">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="F1" control="UP" meta="UP" shift="UP" shortcut="UP"/>
+                            </accelerator>
+                        </MenuItem>
                     </items>
                 </Menu>
             </menus>
-         <effect>
-            <DropShadow />
-         </effect>
+            <effect>
+                <DropShadow />
+            </effect>
         </MenuBar>
         <Label fx:id="lblIndices" layoutX="836.0" layoutY="41.0" prefWidth="200.0" style="-fx-background-color: #424242;" text="Indices cargados: 0" textFill="WHITE" />
         <ListView fx:id="lstIndices" layoutX="12.0" layoutY="41.0" prefHeight="644.0" prefWidth="200.0" style="-fx-background-color: #535353; -fx-border-color: #000000;" />
@@ -93,46 +143,107 @@
             </children>
         </Pane>
 
-      <Button fx:id="btnAplicar" layoutX="910.0" layoutY="721.0" mnemonicParsing="false" onAction="#saveGrhData" prefHeight="25.0" prefWidth="368.0" text="Aplicar cambios" textAlignment="CENTER" />
-      <TextField fx:id="txtFiltro" layoutX="14.0" layoutY="692.0" prefHeight="25.0" prefWidth="200.0" promptText="Buscar por índice" />
-      <Slider fx:id="sldZoom" layoutX="231.0" layoutY="688.0" max="50.0" min="1.0" prefHeight="66.0" prefWidth="586.0" value="1.0" />
-      <Button fx:id="btnAdd" layoutX="108.0" layoutY="726.0" mnemonicParsing="false" onAction="#btnAdd_OnAction" prefHeight="25.0" prefWidth="104.0" text="Nuevo" />
-      <Button fx:id="btnDelete" layoutX="14.0" layoutY="726.0" mnemonicParsing="false" onAction="#btnDelete_OnAction" prefHeight="25.0" prefWidth="92.0" text="Remover" />
-      <TabPane layoutX="837.0" layoutY="463.0" prefHeight="210.0" prefWidth="514.0" tabClosingPolicy="UNAVAILABLE">
-        <tabs>
-          <Tab text="Estatico">
-            <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="297.0" prefWidth="368.0">
-                     <children>
-                  
-                          <Label fx:id="lblImagen" layoutX="14.0" layoutY="24.0" prefWidth="52.0" style="-fx-background-color: #424242;" text="Imagen:" textFill="WHITE" />
-                          <TextField fx:id="txtImagen" layoutX="78.0" layoutY="20.0" prefHeight="25.0" prefWidth="275.0" />
-                          <Label fx:id="lblPosX" layoutX="14.0" layoutY="54.0" prefWidth="52.0" style="-fx-background-color: #424242;" text="Pos X:" textFill="WHITE" />
-                          <TextField fx:id="txtPosX" layoutX="78.0" layoutY="50.0" prefHeight="25.0" prefWidth="275.0" />
-                          <Label fx:id="lblPosY" layoutX="14.0" layoutY="82.0" prefWidth="52.0" style="-fx-background-color: #424242;" text="Pos Y:" textFill="WHITE" />
-                          <TextField fx:id="txtPosY" layoutX="78.0" layoutY="80.0" prefHeight="25.0" prefWidth="275.0" />
-                          <Label fx:id="lblAncho" layoutX="15.0" layoutY="114.0" prefWidth="52.0" style="-fx-background-color: #424242;" text="Ancho:" textFill="WHITE" />
-                          <TextField fx:id="txtAncho" layoutX="78.0" layoutY="110.0" prefHeight="25.0" prefWidth="275.0" />
-                          <Label fx:id="lblAlto" layoutX="15.0" layoutY="144.0" prefWidth="52.0" style="-fx-background-color: #424242;" text="Alto:" textFill="WHITE" />
-                          <TextField fx:id="txtAlto" layoutX="78.0" layoutY="140.0" prefHeight="25.0" prefWidth="275.0" />
-                     </children>
-                  </AnchorPane>
-            </content>
-          </Tab>
-          <Tab text="Animación">
-            <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                     <children>
-                        <Label fx:id="lblNumFrames1" layoutX="14.0" layoutY="154.0" prefWidth="64.0" style="-fx-background-color: #424242;" text="Speed:" textFill="WHITE" />
-                        <TextField fx:id="txtSpeed" layoutX="56.0" layoutY="150.0" prefHeight="25.0" prefWidth="86.0" />
-                        <ListView fx:id="lstFrames" layoutX="154.0" layoutY="8.0" prefHeight="166.0" prefWidth="200.0" style="-fx-background-color: #535353; -fx-border-color: #000000;" />
-                        <Button fx:id="btnAddFrame" layoutX="21.0" layoutY="14.0" mnemonicParsing="false" onAction="#btnAddFrame_OnAction" prefHeight="25.0" prefWidth="114.0" text="Añadir Grh Sel." />
-                        <Button fx:id="btnRemoveFrame" layoutX="20.0" layoutY="49.0" mnemonicParsing="false" onAction="#btnRemoveFrame_OnAction" prefHeight="25.0" prefWidth="114.0" text="Remover" />
-                     </children>
-                  </AnchorPane>
-            </content>
-          </Tab>
-        </tabs>
-      </TabPane>
+        <Button fx:id="btnAplicar" layoutX="910.0" layoutY="721.0" mnemonicParsing="false" onAction="#saveGrhData" prefHeight="25.0" prefWidth="368.0" text="Aplicar cambios" textAlignment="CENTER">
+            <tooltip>
+                <Tooltip text="Guardar cambios del GRH seleccionado" />
+            </tooltip>
+        </Button>
+        <TextField fx:id="txtFiltro" layoutX="14.0" layoutY="692.0" prefHeight="25.0" prefWidth="200.0" promptText="Buscar por índice (Ctrl+G)">
+            <tooltip>
+                <Tooltip text="Escribe un número de GRH para buscarlo" />
+            </tooltip>
+        </TextField>
+        <Slider fx:id="sldZoom" layoutX="231.0" layoutY="688.0" max="50.0" min="1.0" prefHeight="66.0" prefWidth="586.0" value="1.0">
+            <tooltip>
+                <Tooltip text="Ajustar zoom de la vista previa" />
+            </tooltip>
+        </Slider>
+        <Button fx:id="btnAdd" layoutX="108.0" layoutY="726.0" mnemonicParsing="false" onAction="#btnAdd_OnAction" prefHeight="25.0" prefWidth="104.0" text="Nuevo">
+            <tooltip>
+                <Tooltip text="Crear nuevo GRH" />
+            </tooltip>
+        </Button>
+        <Button fx:id="btnDelete" layoutX="14.0" layoutY="726.0" mnemonicParsing="false" onAction="#btnDelete_OnAction" prefHeight="25.0" prefWidth="92.0" text="Remover">
+            <tooltip>
+                <Tooltip text="Eliminar GRH seleccionado" />
+            </tooltip>
+        </Button>
+        <TabPane layoutX="837.0" layoutY="463.0" prefHeight="210.0" prefWidth="514.0" tabClosingPolicy="UNAVAILABLE">
+            <tabs>
+                <Tab text="Estatico">
+                    <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="297.0" prefWidth="368.0">
+                            <children>
+                                <Label fx:id="lblImagen" layoutX="14.0" layoutY="24.0" prefWidth="52.0" style="-fx-background-color: #424242;" text="Imagen:" textFill="WHITE" />
+                                <TextField fx:id="txtImagen" layoutX="78.0" layoutY="20.0" prefHeight="25.0" prefWidth="275.0">
+                                    <tooltip>
+                                        <Tooltip text="Número de archivo de imagen (FileNum)" />
+                                    </tooltip>
+                                </TextField>
+                                <Label fx:id="lblPosX" layoutX="14.0" layoutY="54.0" prefWidth="52.0" style="-fx-background-color: #424242;" text="Pos X:" textFill="WHITE" />
+                                <TextField fx:id="txtPosX" layoutX="78.0" layoutY="50.0" prefHeight="25.0" prefWidth="275.0">
+                                    <tooltip>
+                                        <Tooltip text="Posición X en la imagen (sX)" />
+                                    </tooltip>
+                                </TextField>
+                                <Label fx:id="lblPosY" layoutX="14.0" layoutY="82.0" prefWidth="52.0" style="-fx-background-color: #424242;" text="Pos Y:" textFill="WHITE" />
+                                <TextField fx:id="txtPosY" layoutX="78.0" layoutY="80.0" prefHeight="25.0" prefWidth="275.0">
+                                    <tooltip>
+                                        <Tooltip text="Posición Y en la imagen (sY)" />
+                                    </tooltip>
+                                </TextField>
+                                <Label fx:id="lblAncho" layoutX="15.0" layoutY="114.0" prefWidth="52.0" style="-fx-background-color: #424242;" text="Ancho:" textFill="WHITE" />
+                                <TextField fx:id="txtAncho" layoutX="78.0" layoutY="110.0" prefHeight="25.0" prefWidth="275.0">
+                                    <tooltip>
+                                        <Tooltip text="Ancho del tile (TileWidth)" />
+                                    </tooltip>
+                                </TextField>
+                                <Label fx:id="lblAlto" layoutX="15.0" layoutY="144.0" prefWidth="52.0" style="-fx-background-color: #424242;" text="Alto:" textFill="WHITE" />
+                                <TextField fx:id="txtAlto" layoutX="78.0" layoutY="140.0" prefHeight="25.0" prefWidth="275.0">
+                                    <tooltip>
+                                        <Tooltip text="Alto del tile (TileHeight)" />
+                                    </tooltip>
+                                </TextField>
+                            </children>
+                        </AnchorPane>
+                    </content>
+                </Tab>
+                <Tab text="Animación">
+                    <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                            <children>
+                                <Label fx:id="lblNumFrames1" layoutX="14.0" layoutY="154.0" prefWidth="64.0" style="-fx-background-color: #424242;" text="Speed:" textFill="WHITE" />
+                                <TextField fx:id="txtSpeed" layoutX="56.0" layoutY="150.0" prefHeight="25.0" prefWidth="86.0">
+                                    <tooltip>
+                                        <Tooltip text="Velocidad de la animación (ms)" />
+                                    </tooltip>
+                                </TextField>
+                                <ListView fx:id="lstFrames" layoutX="154.0" layoutY="8.0" prefHeight="166.0" prefWidth="200.0" style="-fx-background-color: #535353; -fx-border-color: #000000;" />
+                                <Button fx:id="btnAddFrame" layoutX="21.0" layoutY="14.0" mnemonicParsing="false" onAction="#btnAddFrame_OnAction" prefHeight="25.0" prefWidth="114.0" text="Añadir Grh Sel.">
+                                    <tooltip>
+                                        <Tooltip text="Añadir un frame a la animación" />
+                                    </tooltip>
+                                </Button>
+                                <Button fx:id="btnRemoveFrame" layoutX="20.0" layoutY="49.0" mnemonicParsing="false" onAction="#btnRemoveFrame_OnAction" prefHeight="25.0" prefWidth="114.0" text="Remover">
+                                    <tooltip>
+                                        <Tooltip text="Eliminar frame seleccionado" />
+                                    </tooltip>
+                                </Button>
+                            </children>
+                        </AnchorPane>
+                    </content>
+                </Tab>
+            </tabs>
+        </TabPane>
+
+        <!-- Status Bar -->
+        <HBox fx:id="statusBar" layoutX="0.0" layoutY="755.0" prefHeight="25.0" prefWidth="1366.0" spacing="20.0" style="-fx-background-color: #333333; -fx-padding: 5;">
+            <children>
+                <Label fx:id="lblStatus" text="Listo" textFill="#00FF00" />
+                <Label fx:id="lblGrhCount" text="GRHs: 0" textFill="WHITE" />
+                <Label fx:id="lblAnimCount" text="Animaciones: 0" textFill="WHITE" />
+                <Label fx:id="lblModified" text="" textFill="#FFA500" />
+            </children>
+        </HBox>
     </children>
 </AnchorPane>

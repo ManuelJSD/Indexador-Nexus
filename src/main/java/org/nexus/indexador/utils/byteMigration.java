@@ -4,8 +4,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 public class byteMigration {
-    // Instancia única de ByteMigration
-    private static byteMigration instance;
+    // Instancia única de ByteMigration (volatile para thread safety)
+    private static volatile byteMigration instance;
 
     // Constructor privado para evitar instanciación directa
     private byteMigration() {
@@ -13,9 +13,14 @@ public class byteMigration {
     }
 
     // Método estático para obtener la única instancia de ByteMigration
+    // (thread-safe)
     public static byteMigration getInstance() {
         if (instance == null) {
-            instance = new byteMigration();
+            synchronized (byteMigration.class) {
+                if (instance == null) {
+                    instance = new byteMigration();
+                }
+            }
         }
         return instance;
     }
@@ -25,7 +30,7 @@ public class byteMigration {
      * @param bigendian
      * @return
      */
-    public int bigToLittle_Int(int bigendian){
+    public int bigToLittle_Int(int bigendian) {
         ByteBuffer buf = ByteBuffer.allocate(4);
 
         buf.order(ByteOrder.BIG_ENDIAN);
@@ -40,7 +45,7 @@ public class byteMigration {
      * @param bigendian
      * @return
      */
-    public float bigToLittle_Float(float bigendian){
+    public float bigToLittle_Float(float bigendian) {
         ByteBuffer buf = ByteBuffer.allocate(4);
 
         buf.order(ByteOrder.BIG_ENDIAN);
@@ -55,7 +60,7 @@ public class byteMigration {
      * @param bigendian
      * @return
      */
-    public short bigToLittle_Short(short bigendian){
+    public short bigToLittle_Short(short bigendian) {
         ByteBuffer buf = ByteBuffer.allocate(2);
 
         buf.order(ByteOrder.BIG_ENDIAN);

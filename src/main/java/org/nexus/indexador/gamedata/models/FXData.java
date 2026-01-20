@@ -10,20 +10,41 @@ public class FXData {
 
     public FXData(int fx, short offsetX, short offsetY) {
         this.Fx = fx;
+        this.OffsetX = offsetX;
+        this.OffsetY = offsetY;
     }
 
-    public FXData() {}
+    public FXData() {
+    }
 
-    public int getFx() { return Fx; }
-    public short getOffsetX() { return OffsetX; }
-    public short getOffsetY() { return OffsetY; }
+    public int getFx() {
+        return Fx;
+    }
+
+    public short getOffsetX() {
+        return OffsetX;
+    }
+
+    public short getOffsetY() {
+        return OffsetY;
+    }
+
     public static short getNumFxs() {
         return NumFxs;
     }
 
-    public void setFx(int fx) { Fx = fx; }
-    public void setOffsetX(short offsetX) { OffsetX = offsetX; }
-    public void setOffsetY(short offsetY) { OffsetY = offsetY; }
+    public void setFx(int fx) {
+        Fx = fx;
+    }
+
+    public void setOffsetX(short offsetX) {
+        OffsetX = offsetX;
+    }
+
+    public void setOffsetY(short offsetY) {
+        OffsetY = offsetY;
+    }
+
     public static void setNumFxs(short numBodys) {
         NumFxs = numBodys;
     }

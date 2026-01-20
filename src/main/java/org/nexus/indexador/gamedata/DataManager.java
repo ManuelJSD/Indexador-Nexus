@@ -35,7 +35,7 @@ public class DataManager {
     private final DatEditor datEditor;
     private final Logger logger;
 
-    private static DataManager instance;
+    private static volatile DataManager instance;
 
     private DataManager() throws IOException {
 
@@ -50,7 +50,11 @@ public class DataManager {
 
     public static DataManager getInstance() throws IOException {
         if (instance == null) {
-            instance = new DataManager();
+            synchronized (DataManager.class) {
+                if (instance == null) {
+                    instance = new DataManager();
+                }
+            }
         }
         return instance;
     }
@@ -58,38 +62,104 @@ public class DataManager {
     /**
      * Obtiene la lista de gráficos (grh) cargados.
      *
-     * @return Una lista observable de objetos GrhData que representan los gráficos cargados.
+     * @return Una lista observable de objetos GrhData que representan los gráficos
+     *         cargados.
      */
-    public ObservableList<GrhData> getGrhList() { return grhList; }
-    public ObservableList<HeadData> getHeadList() { return headList; }
-    public ObservableList<HelmetData> getHelmetList() { return helmetList; }
-    public ObservableList<BodyData> getBodyList() { return bodyList; }
-    public ObservableList<ShieldData> getShieldList() { return shieldList; }
-    public ObservableList<FXData> getFXList() { return fxList; }
+    public ObservableList<GrhData> getGrhList() {
+        return grhList;
+    }
 
-    public int getGrhCount() { return GrhCount; }
-    public int getGrhVersion() {return GrhVersion;}
-    public short getNumHeads() { return NumHeads; }
-    public short getNumHelmets() { return NumHelmets; }
-    public short getNumBodys() { return NumBodys; }
-    public short getNumShields() { return NumShields; }
-    public short getNumFXs() { return NumFXs; }
-    public short getNumObjs() { return NumObjs; }
+    public ObservableList<HeadData> getHeadList() {
+        return headList;
+    }
 
-    public void setGrhCount(int GrhCount) { this.GrhCount = GrhCount; }
-    public void setGrhVersion(int GrhVersion) { this.GrhVersion = GrhVersion; }
-    public void setNumHelmets(short numHelmets) { NumHelmets = numHelmets; }
-    public void setNumHeads(short numHeads) { NumHeads = numHeads; }
-    public void setNumBodys(short numBodys) { NumBodys = numBodys; }
-    public void setNumShields(short numShields) { NumShields = numShields; }
-    public void setNumFXs(short numFXs) { NumFXs = numFXs; }
-    public void setNumObjs(short numObjs) { NumObjs = numObjs; }
+    public ObservableList<HelmetData> getHelmetList() {
+        return helmetList;
+    }
+
+    public ObservableList<BodyData> getBodyList() {
+        return bodyList;
+    }
+
+    public ObservableList<ShieldData> getShieldList() {
+        return shieldList;
+    }
+
+    public ObservableList<FXData> getFXList() {
+        return fxList;
+    }
+
+    public int getGrhCount() {
+        return GrhCount;
+    }
+
+    public int getGrhVersion() {
+        return GrhVersion;
+    }
+
+    public short getNumHeads() {
+        return NumHeads;
+    }
+
+    public short getNumHelmets() {
+        return NumHelmets;
+    }
+
+    public short getNumBodys() {
+        return NumBodys;
+    }
+
+    public short getNumShields() {
+        return NumShields;
+    }
+
+    public short getNumFXs() {
+        return NumFXs;
+    }
+
+    public short getNumObjs() {
+        return NumObjs;
+    }
+
+    public void setGrhCount(int GrhCount) {
+        this.GrhCount = GrhCount;
+    }
+
+    public void setGrhVersion(int GrhVersion) {
+        this.GrhVersion = GrhVersion;
+    }
+
+    public void setNumHelmets(short numHelmets) {
+        NumHelmets = numHelmets;
+    }
+
+    public void setNumHeads(short numHeads) {
+        NumHeads = numHeads;
+    }
+
+    public void setNumBodys(short numBodys) {
+        NumBodys = numBodys;
+    }
+
+    public void setNumShields(short numShields) {
+        NumShields = numShields;
+    }
+
+    public void setNumFXs(short numFXs) {
+        NumFXs = numFXs;
+    }
+
+    public void setNumObjs(short numObjs) {
+        NumObjs = numObjs;
+    }
 
     /**
-     * Lee los datos de un archivo binario que contiene información sobre gráficos (grh) y los convierte en objetos grhData.
+     * Lee los datos de un archivo binario que contiene información sobre gráficos
+     * (grh) y los convierte en objetos grhData.
      * Cada gráfico puede ser una imagen estática o una animación.
      *
-     * @return Una lista observable de objetos grhData que representan los gráficos leídos del archivo.
+     * @return Una lista observable de objetos grhData que representan los gráficos
+     *         leídos del archivo.
      * @throws IOException Si ocurre un error de entrada/salida al leer el archivo.
      */
     public ObservableList<GrhData> loadGrhData() throws IOException {
@@ -104,16 +174,16 @@ public class DataManager {
         try (RandomAccessFile file = new RandomAccessFile(archivo, "r")) {
             logger.info("Comenzando a leer desde " + archivo.getAbsolutePath());
 
-            //Nos posicionamos al inicio del fichero
+            // Nos posicionamos al inicio del fichero
             file.seek(0);
 
-            //Leemos la versión del archivo
+            // Leemos la versión del archivo
             GrhVersion = byteMigration.bigToLittle_Int(file.readInt());
 
-            //Leemos la cantidad de Grh indexados
+            // Leemos la cantidad de Grh indexados
             GrhCount = byteMigration.bigToLittle_Int(file.readInt());
 
-            //Mientras no llegue al final del archivo leemos...
+            // Mientras no llegue al final del archivo leemos...
             for (;;) {
                 int grh = byteMigration.bigToLittle_Int(file.readInt());
                 short numFrames = byteMigration.bigToLittle_Short(file.readShort());
@@ -126,7 +196,7 @@ public class DataManager {
 
                     int speed = (int) byteMigration.bigToLittle_Float(file.readFloat());
 
-                    //Creamos un objeto de grhData usando el constructor para animación
+                    // Creamos un objeto de grhData usando el constructor para animación
                     GrhData grhData = new GrhData(grh, numFrames, frames, speed);
 
                     grhList.add(grhData);
@@ -138,7 +208,7 @@ public class DataManager {
                     short tileWidth = byteMigration.bigToLittle_Short(file.readShort());
                     short tileHeight = byteMigration.bigToLittle_Short(file.readShort());
 
-                    //Creamos un objeto de grhData usando el constructor para imagenes estáticas
+                    // Creamos un objeto de grhData usando el constructor para imagenes estáticas
                     GrhData grhData = new GrhData(grh, numFrames, fileNum, x, y, tileWidth, tileHeight);
 
                     grhList.add(grhData);
@@ -146,7 +216,8 @@ public class DataManager {
                 }
 
                 // Si he recorrido todos los bytes, salgo del bucle
-                if (file.getFilePointer() == file.length()) break;
+                if (file.getFilePointer() == file.length())
+                    break;
             }
         } catch (FileNotFoundException e) {
             logger.error("Archivo no encontrado: " + archivo.getAbsolutePath(), e);
@@ -160,21 +231,23 @@ public class DataManager {
             throw e; // Relanzar la excepción para manejarla fuera del método
 
         }
-        
+
         logger.info("Loaded " + grhList.size() + " gráficos exitosamente");
         return grhList;
     }
 
     /**
-     * Lee los datos de cabeza desde un archivo y los devuelve como una lista observable.
+     * Lee los datos de cabeza desde un archivo y los devuelve como una lista
+     * observable.
      *
-     * @return una {@code ObservableList<headData>} que contiene los datos de cabeza leídos del archivo.
+     * @return una {@code ObservableList<headData>} que contiene los datos de cabeza
+     *         leídos del archivo.
      * @throws IOException si ocurre un error de entrada/salida.
      */
     public ObservableList<HeadData> readHeadFile() throws IOException {
 
         logger.info("Cargando datos de cabezas...");
-        
+
         // Creamos una lista observable para almacenar los gráficos leídos del archivo
         headList = FXCollections.observableArrayList();
 
@@ -217,21 +290,23 @@ public class DataManager {
             logger.error("Error de E/S al leer el archivo: " + archivo.getAbsolutePath(), e);
             throw e; // Relanzar la excepción para manejarla fuera del método
         }
-        
+
         logger.info("Cargadas " + headList.size() + " cabezas exitosamente");
         return headList;
     }
 
     /**
-     * Lee los datos de los cascos desde un archivo y los carga en una lista observable.
+     * Lee los datos de los cascos desde un archivo y los carga en una lista
+     * observable.
      *
-     * @return una lista observable de objetos {@code helmetData} que contiene los datos de los cascos leídos del archivo.
+     * @return una lista observable de objetos {@code helmetData} que contiene los
+     *         datos de los cascos leídos del archivo.
      * @throws IOException si ocurre un error al leer el archivo.
      */
     public ObservableList<HelmetData> readHelmetFile() throws IOException {
 
         logger.info("Cargando datos de cascos...");
-        
+
         // Creamos una lista observable para almacenar los gráficos leídos del archivo
         helmetList = FXCollections.observableArrayList();
 
@@ -274,14 +349,14 @@ public class DataManager {
             logger.error("Error de E/S al leer el archivo: " + archivo.getAbsolutePath(), e);
             throw e; // Relanzar la excepción para manejarla fuera del método
         }
-        
+
         logger.info("Cargados " + helmetList.size() + " cascos exitosamente");
         return helmetList;
     }
 
     public ObservableList<BodyData> readBodyFile() throws IOException {
         logger.info("Cargando datos de cuerpos...");
-        
+
         bodyList = FXCollections.observableArrayList();
 
         File archivo = new File(configManager.getInitDir() + "bodys.ind");
@@ -318,7 +393,7 @@ public class DataManager {
 
     public ObservableList<ShieldData> readShieldFile() throws IOException {
         logger.info("Cargando datos de escudos...");
-        
+
         shieldList = FXCollections.observableArrayList();
 
         File archivo = new File(configManager.getInitDir() + "shields.ind");
@@ -353,7 +428,7 @@ public class DataManager {
 
     public ObservableList<FXData> readFXsdFile() throws IOException {
         logger.info("Cargando datos de FXs...");
-        
+
         fxList = FXCollections.observableArrayList();
 
         File archivo = new File(configManager.getInitDir() + "fxs.ind");
@@ -369,7 +444,7 @@ public class DataManager {
                 short offsetX = byteMigration.bigToLittle_Short(file.readShort());
                 short offsetY = byteMigration.bigToLittle_Short(file.readShort());
 
-                FXData data = new FXData(fx,offsetX, offsetY);
+                FXData data = new FXData(fx, offsetX, offsetY);
                 fxList.add(data);
 
             }

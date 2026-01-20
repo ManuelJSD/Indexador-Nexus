@@ -125,22 +125,36 @@ public class frmMain {
     @FXML
     private Slider sldZoom;
 
+    // Status bar components
+    @FXML
+    private Label lblStatus;
+
+    @FXML
+    private Label lblGrhCount;
+
+    @FXML
+    private Label lblAnimCount;
+
+    @FXML
+    private Label lblModified;
+
     // Lista observable que contiene los datos de los gráficos indexados.
     private ObservableList<GrhData> grhList;
 
     // Clase con los datos de la animación y el mapa para la búsqueda rápida
     private Map<Integer, GrhData> grhDataMap;
 
-    // Objeto encargado de manejar la configuración de la aplicación, incluyendo la lectura y escritura de archivos de configuración.
+    // Objeto encargado de manejar la configuración de la aplicación, incluyendo la
+    // lectura y escritura de archivos de configuración.
     private ConfigManager configManager;
 
     private byteMigration byteMigration;
 
     private DataManager dataManager;
-    
+
     // Caché de imágenes para optimizar la carga y uso de recursos
     private ImageCache imageCache;
-    
+
     // Logger para registro de eventos
     private Logger logger;
 
@@ -156,14 +170,16 @@ public class frmMain {
     // Línea de tiempo que controla la animación de los frames en el visor.
     private Timeline animationTimeline;
 
-    // Coordenadas originales del cursor del mouse en la escena al presionar el botón del mouse.
+    // Coordenadas originales del cursor del mouse en la escena al presionar el
+    // botón del mouse.
     private double orgSceneX, orgSceneY;
 
     // Valores de traducción originales del ImageView al arrastrar el mouse.
     private double orgTranslateX, orgTranslateY;
 
     /**
-     * Método de inicialización del controlador. Carga los datos de gráficos y configura el ListView.
+     * Método de inicialización del controlador. Carga los datos de gráficos y
+     * configura el ListView.
      */
     @FXML
     protected void initialize() throws IOException {
@@ -174,41 +190,48 @@ public class frmMain {
         dataManager = org.nexus.indexador.gamedata.DataManager.getInstance();
         imageCache = ImageCache.getInstance();
         logger = Logger.getInstance();
-        
+
         logger.info("Inicializando controlador frmMain");
 
         loadGrh();
         setupGrhListListener();
         setupFilterTextFieldListener();
         setupSliderZoom();
-        
+
         logger.info("Controlador frmMain inicializado correctamente");
     }
 
     /**
-     * Carga los datos de gráficos desde archivos binarios y actualiza la interfaz de usuario con la información obtenida.
-     * Muestra los índices de gráficos en el ListView y actualiza los textos de los labels con información relevante.
+     * Carga los datos de gráficos desde archivos binarios y actualiza la interfaz
+     * de usuario con la información obtenida.
+     * Muestra los índices de gráficos en el ListView y actualiza los textos de los
+     * labels con información relevante.
      *
-     * @throws IOException Sí ocurre un error durante la lectura de los archivos binarios.
+     * @throws IOException Sí ocurre un error durante la lectura de los archivos
+     *                     binarios.
      */
     private void loadGrh() {
 
         // Llamar al método para leer el archivo binario y obtener la lista de grhData
         try {
             grhList = dataManager.loadGrhData();
-            
+
             // Inicializar el mapa de grhData
             grhDataMap = new HashMap<>();
-    
+
             // Llenar el mapa con los datos de grhList
+            int animationCount = 0;
             for (GrhData grh : grhList) {
                 grhDataMap.put(grh.getGrh(), grh);
+                if (grh.getNumFrames() > 1) {
+                    animationCount++;
+                }
             }
-    
+
             // Actualizar el texto de los labels con la información obtenida
             lblIndices.setText("Indices cargados: " + dataManager.getGrhCount());
             lblVersion.setText("Versión de Indices: " + dataManager.getGrhVersion());
-    
+
             // Agregar los índices de gráficos al ListView
             ObservableList<String> grhIndices = FXCollections.observableArrayList();
             for (GrhData grh : grhList) {
@@ -219,17 +242,23 @@ public class frmMain {
                 grhIndices.add(indice);
             }
             lstIndices.setItems(grhIndices);
-            
+
+            // Actualizar status bar
+            updateStatusBar("Listo", grhList.size(), animationCount, false);
+
             logger.info("Gráficos cargados correctamente: " + grhList.size() + " índices");
-            
+
         } catch (IOException e) {
             logger.error("Error al cargar los datos de gráficos", e);
+            updateStatusBar("Error al cargar datos", 0, 0, false);
         }
     }
 
     /**
-     * Configura un listener para el ListView para capturar los eventos de selección.
-     * Cuando se selecciona un índice de gráfico, actualiza el editor y el visor con la información correspondiente.
+     * Configura un listener para el ListView para capturar los eventos de
+     * selección.
+     * Cuando se selecciona un índice de gráfico, actualiza el editor y el visor con
+     * la información correspondiente.
      */
     private void setupGrhListListener() {
         // Agregar un listener al ListView para capturar los eventos de selección
@@ -254,7 +283,8 @@ public class frmMain {
 
     /**
      * Actualiza el editor con la información del gráfico seleccionado.
-     * Muestra los detalles del gráfico seleccionado en los campos de texto correspondientes.
+     * Muestra los detalles del gráfico seleccionado en los campos de texto
+     * correspondientes.
      *
      * @param selectedGrh El gráfico seleccionado.
      */
@@ -277,7 +307,8 @@ public class frmMain {
 
         if (nFrames == 1) { // ¿Es estatico?
 
-            txtIndice.setText("Grh" + selectedGrh.getGrh() + "=" + nFrames + "-" + fileGrh + "-" + x + "-" + y + "-" + width + "-" + height);
+            txtIndice.setText("Grh" + selectedGrh.getGrh() + "=" + nFrames + "-" + fileGrh + "-" + x + "-" + y + "-"
+                    + width + "-" + height);
 
             lstFrames.getItems().clear();
 
@@ -305,7 +336,8 @@ public class frmMain {
 
     /**
      * Actualiza el visor con el gráfico seleccionado.
-     * Si el gráfico es estático, muestra la imagen estática correspondiente. Si es una animación, muestra la animación.
+     * Si el gráfico es estático, muestra la imagen estática correspondiente. Si es
+     * una animación, muestra la animación.
      *
      * @param selectedGrh El gráfico seleccionado.
      */
@@ -320,9 +352,11 @@ public class frmMain {
     }
 
     /**
-     * Muestra una imagen estática en el ImageView correspondiente al gráfico seleccionado.
+     * Muestra una imagen estática en el ImageView correspondiente al gráfico
+     * seleccionado.
      * Si el archivo de imagen existe, carga la imagen y la muestra en el ImageView.
-     * Además, recorta la región adecuada de la imagen completa para mostrar solo la parte relevante del gráfico.
+     * Además, recorta la región adecuada de la imagen completa para mostrar solo la
+     * parte relevante del gráfico.
      * Si el archivo de imagen no existe, imprime un mensaje de advertencia.
      *
      * @param selectedGrh El gráfico seleccionado.
@@ -337,28 +371,28 @@ public class frmMain {
 
         // Usar el caché de imágenes para obtener la imagen
         Image staticImage = imageCache.getImage(imagePath);
-        
+
         if (staticImage != null) {
             // Mandamos a dibujar el grafico completo en otro ImageView
             drawFullImage(staticImage, selectedGrh);
-            
+
             // Obtener la imagen recortada del caché
             WritableImage croppedImage = imageCache.getCroppedImage(
-                imagePath, 
-                selectedGrh.getsX(), 
-                selectedGrh.getsY(), 
-                selectedGrh.getTileWidth(), 
-                selectedGrh.getTileHeight()
-            );
-            
+                    imagePath,
+                    selectedGrh.getsX(),
+                    selectedGrh.getsY(),
+                    selectedGrh.getTileWidth(),
+                    selectedGrh.getTileHeight());
+
             if (croppedImage != null) {
-                // Establecer el tamaño preferido del ImageView para que coincida con el tamaño de la imagen
+                // Establecer el tamaño preferido del ImageView para que coincida con el tamaño
+                // de la imagen
                 imgIndice.setFitWidth(selectedGrh.getTileWidth()); // Ancho de la imagen
                 imgIndice.setFitHeight(selectedGrh.getTileHeight()); // Alto de la imagen
-                
+
                 // Desactivar la preservación de la relación de aspecto
                 imgIndice.setPreserveRatio(false);
-                
+
                 // Mostrar la región recortada en el ImageView
                 imgIndice.setImage(croppedImage);
             }
@@ -368,9 +402,12 @@ public class frmMain {
     }
 
     /**
-     * Muestra una animación en el ImageView correspondiente al gráfico seleccionado.
-     * Configura y ejecuta una animación de fotogramas clave para mostrar la animación.
-     * La animación se ejecuta en un bucle infinito hasta que se detenga explícitamente.
+     * Muestra una animación en el ImageView correspondiente al gráfico
+     * seleccionado.
+     * Configura y ejecuta una animación de fotogramas clave para mostrar la
+     * animación.
+     * La animación se ejecuta en un bucle infinito hasta que se detenga
+     * explícitamente.
      *
      * @param selectedGrh El gráfico seleccionado.
      * @param nFrames     El número total de fotogramas en la animación.
@@ -399,8 +436,10 @@ public class frmMain {
     }
 
     /**
-     * Actualiza el fotograma actual en el ImageView durante la reproducción de una animación.
-     * Obtiene el siguiente fotograma de la animación y actualiza el ImageView con la imagen correspondiente.
+     * Actualiza el fotograma actual en el ImageView durante la reproducción de una
+     * animación.
+     * Obtiene el siguiente fotograma de la animación y actualiza el ImageView con
+     * la imagen correspondiente.
      *
      * @param selectedGrh El gráfico seleccionado.
      */
@@ -420,23 +459,22 @@ public class frmMain {
                 if (!new File(imagePath).exists()) {
                     imagePath = configManager.getGraphicsDir() + selectedGrh.getFileNum() + ".bmp";
                 }
-                
+
                 // Obtener imagen desde el caché
                 Image frameImage = imageCache.getImage(imagePath);
-                
+
                 if (frameImage != null) {
                     // Mandar a dibujar el gráfico completo en otro ImageView
                     drawFullImage(frameImage, currentGrh);
-                    
+
                     // Obtener subimagen recortada desde el caché
                     WritableImage croppedImage = imageCache.getCroppedImage(
-                        imagePath,
-                        currentGrh.getsX(),
-                        currentGrh.getsY(),
-                        currentGrh.getTileWidth(),
-                        currentGrh.getTileHeight()
-                    );
-                    
+                            imagePath,
+                            currentGrh.getsX(),
+                            currentGrh.getsY(),
+                            currentGrh.getTileWidth(),
+                            currentGrh.getTileHeight());
+
                     if (croppedImage != null) {
                         // Mostrar la región recortada en el ImageView
                         imgIndice.setImage(croppedImage);
@@ -453,9 +491,11 @@ public class frmMain {
     }
 
     /**
-     * Dibuja un rectángulo alrededor de la región del índice seleccionado en la imagen completa del gráfico.
+     * Dibuja un rectángulo alrededor de la región del índice seleccionado en la
+     * imagen completa del gráfico.
      *
-     * @param selectedGrh El gráfico seleccionado que contiene la información de la región del índice.
+     * @param selectedGrh El gráfico seleccionado que contiene la información de la
+     *                    región del índice.
      */
     private void drawRectangle(GrhData selectedGrh) {
         try {
@@ -468,8 +508,10 @@ public class frmMain {
             double imgViewWidth = imgGrafico.getFitWidth();
             double imgViewHeight = imgGrafico.getFitHeight();
 
-            if (imgViewWidth == 0) imgViewWidth = imgGrafico.getBoundsInLocal().getWidth();
-            if (imgViewHeight == 0) imgViewHeight = imgGrafico.getBoundsInLocal().getHeight();
+            if (imgViewWidth == 0)
+                imgViewWidth = imgGrafico.getBoundsInLocal().getWidth();
+            if (imgViewHeight == 0)
+                imgViewHeight = imgGrafico.getBoundsInLocal().getHeight();
 
             // Obtener las dimensiones de la imagen original
             double originalWidth = imgGrafico.getImage().getWidth();
@@ -479,25 +521,29 @@ public class frmMain {
             double scaleX = imgViewWidth / originalWidth;
             double scaleY = imgViewHeight / originalHeight;
 
-            // Si la imagen se está ajustando para preservar la relación, usar la escala más pequeña
+            // Si la imagen se está ajustando para preservar la relación, usar la escala más
+            // pequeña
             if (imgGrafico.isPreserveRatio()) {
                 double scale = Math.min(scaleX, scaleY);
                 scaleX = scale;
                 scaleY = scale;
             }
 
-            // Obtener las coordenadas del rectángulo en relación con las coordenadas del ImageView
+            // Obtener las coordenadas del rectángulo en relación con las coordenadas del
+            // ImageView
             double rectX = selectedGrh.getsX() * scaleX + 5;
             double rectY = selectedGrh.getsY() * scaleY + 5;
             double rectWidth = selectedGrh.getTileWidth() * scaleX;
             double rectHeight = selectedGrh.getTileHeight() * scaleY;
 
             // Si la imagen está centrada en el ImageView, ajustar las coordenadas
-            double xOffset = (imgViewWidth - (originalWidth * scaleX)) / 2 ;
+            double xOffset = (imgViewWidth - (originalWidth * scaleX)) / 2;
             double yOffset = (imgViewHeight - (originalHeight * scaleY)) / 2;
 
-            if (xOffset > 0) rectX += xOffset;
-            if (yOffset > 0) rectY += yOffset;
+            if (xOffset > 0)
+                rectX += xOffset;
+            if (yOffset > 0)
+                rectY += yOffset;
 
             // Configurar las propiedades del rectángulo
             rectanguloIndice.setX(rectX);
@@ -507,15 +553,16 @@ public class frmMain {
             rectanguloIndice.setVisible(true);
 
             logger.debug("Rectángulo dibujado en: x=" + rectX + ", y=" + rectY +
-                         ", ancho=" + rectWidth + ", alto=" + rectHeight +
-                         ", escala: " + scaleX + "x" + scaleY);
+                    ", ancho=" + rectWidth + ", alto=" + rectHeight +
+                    ", escala: " + scaleX + "x" + scaleY);
         } catch (Exception e) {
             logger.error("Error al dibujar el rectángulo", e);
         }
     }
 
     /**
-     * Dibuja la imagen completa en un ImageView para visualización y coloca un rectángulo 
+     * Dibuja la imagen completa en un ImageView para visualización y coloca un
+     * rectángulo
      * alrededor de la región específica que representa el gráfico.
      *
      * @param image La imagen a dibujar.
@@ -525,7 +572,7 @@ public class frmMain {
         try {
             // Establecer la imagen completa en el ImageView
             imgGrafico.setImage(image);
-            
+
             // Dibujar el rectángulo que marca la región del gráfico
             drawRectangle(grh);
         } catch (Exception e) {
@@ -535,8 +582,10 @@ public class frmMain {
 
     /**
      * Maneja el evento de presionar el mouse.
-     * Este método se invoca cuando el usuario presiona el botón del mouse. Si se presiona el botón
-     * secundario del mouse (generalmente el botón derecho), registra las coordenadas de la escena
+     * Este método se invoca cuando el usuario presiona el botón del mouse. Si se
+     * presiona el botón
+     * secundario del mouse (generalmente el botón derecho), registra las
+     * coordenadas de la escena
      * iniciales y los valores de traducción del ImageView.
      *
      * @param event El MouseEvent que representa el evento de presionar el mouse.
@@ -553,9 +602,12 @@ public class frmMain {
 
     /**
      * Maneja el evento de arrastrar el mouse.
-     * Este método se invoca cuando el usuario arrastra el mouse después de presionarlo. Si se presiona
-     * el botón secundario del mouse (generalmente el botón derecho), calcula el desplazamiento desde
-     * la posición inicial y actualiza los valores de traducción del ImageView en consecuencia.
+     * Este método se invoca cuando el usuario arrastra el mouse después de
+     * presionarlo. Si se presiona
+     * el botón secundario del mouse (generalmente el botón derecho), calcula el
+     * desplazamiento desde
+     * la posición inicial y actualiza los valores de traducción del ImageView en
+     * consecuencia.
      *
      * @param event El MouseEvent que representa el evento de arrastrar el mouse.
      */
@@ -573,7 +625,8 @@ public class frmMain {
     }
 
     /**
-     * Método para manejar la acción cuando se hace clic en el elemento del menú "Consola"
+     * Método para manejar la acción cuando se hace clic en el elemento del menú
+     * "Consola"
      */
     @FXML
     private void mnuConsola_OnAction() {
@@ -603,9 +656,12 @@ public class frmMain {
     }
 
     /**
-     * Exporta los datos de gráficos al archivo "graficos.ini" en el directorio de exportación configurado.
-     * Los datos exportados incluyen el número total de gráficos, la versión de los índices y la información detallada de cada gráfico.
-     * Si se produce algún error durante el proceso de exportación, se imprime un mensaje de error.
+     * Exporta los datos de gráficos al archivo "graficos.ini" en el directorio de
+     * exportación configurado.
+     * Los datos exportados incluyen el número total de gráficos, la versión de los
+     * índices y la información detallada de cada gráfico.
+     * Si se produce algún error durante el proceso de exportación, se imprime un
+     * mensaje de error.
      */
     @FXML
     private void mnuExportGrh_OnAction() {
@@ -663,26 +719,29 @@ public class frmMain {
     @FXML
     private void mnuCode_OnAction() {
         /**
-        if (Desktop.isDesktopSupported()) {
-            Desktop desktop = Desktop.getDesktop();
-            if (desktop.isSupported(Desktop.Action.BROWSE)) {
-                try {
-                    desktop.browse(new URI("https://github.com/Lorwik/Indexador-Nexus"));
-                } catch (IOException | URISyntaxException e) {
-                    logger.error("Error al abrir el enlace", e);
-                }
-            } else {
-                logger.warning("El navegador web no es compatible.");
-            }
-        } else {
-            logger.warning("La funcionalidad de escritorio no es compatible.");
-        }
+         * if (Desktop.isDesktopSupported()) {
+         * Desktop desktop = Desktop.getDesktop();
+         * if (desktop.isSupported(Desktop.Action.BROWSE)) {
+         * try {
+         * desktop.browse(new URI("https://github.com/Lorwik/Indexador-Nexus"));
+         * } catch (IOException | URISyntaxException e) {
+         * logger.error("Error al abrir el enlace", e);
+         * }
+         * } else {
+         * logger.warning("El navegador web no es compatible.");
+         * }
+         * } else {
+         * logger.warning("La funcionalidad de escritorio no es compatible.");
+         * }
          **/
     }
 
     /**
-     * Guarda los cambios realizados en los datos del gráfico seleccionado en la lista.
-     * Obtiene el índice seleccionado de la lista y actualiza los atributos del objeto grhData correspondiente con los valores ingresados en los campos de texto.
+     * Guarda los cambios realizados en los datos del gráfico seleccionado en la
+     * lista.
+     * Obtiene el índice seleccionado de la lista y actualiza los atributos del
+     * objeto grhData correspondiente con los valores ingresados en los campos de
+     * texto.
      * Si no hay ningún índice seleccionado, no se realizan cambios.
      * Se imprime un mensaje indicando que los cambios se han aplicado con éxito.
      */
@@ -708,10 +767,12 @@ public class frmMain {
     }
 
     /**
-     * Configura un listener para el TextField de filtro para detectar cambios en su contenido.
+     * Configura un listener para el TextField de filtro para detectar cambios en su
+     * contenido.
      */
     private void setupFilterTextFieldListener() {
-        // Agregar un listener al TextField de filtro para detectar cambios en su contenido
+        // Agregar un listener al TextField de filtro para detectar cambios en su
+        // contenido
         txtFiltro.textProperty().addListener((observable, oldValue, newValue) -> {
             filterIndices(newValue); // Llamar al método para filtrar los índices
         });
@@ -752,7 +813,8 @@ public class frmMain {
 
     /**
      * Configura el deslizador de zoom.
-     * Este método configura un listener para el deslizador de zoom, que ajusta la escala del ImageView
+     * Este método configura un listener para el deslizador de zoom, que ajusta la
+     * escala del ImageView
      * según el valor del deslizador.
      */
     private void setupSliderZoom() {
@@ -787,10 +849,13 @@ public class frmMain {
     }
 
     /**
-     * Método que se activa al hacer clic en el botón "Añadir". Incrementa el contador de gráficos (grhCount) en el grhDataManager,
-     * crea un nuevo objeto grhData con valores predeterminados y lo agrega tanto al ListView como al grhList.
+     * Método que se activa al hacer clic en el botón "Añadir". Incrementa el
+     * contador de gráficos (grhCount) en el grhDataManager,
+     * crea un nuevo objeto grhData con valores predeterminados y lo agrega tanto al
+     * ListView como al grhList.
      *
-     * @throws IllegalArgumentException Si ocurre algún error al obtener el contador de gráficos del grhDataManager.
+     * @throws IllegalArgumentException Si ocurre algún error al obtener el contador
+     *                                  de gráficos del grhDataManager.
      */
     @FXML
     private void btnAdd_OnAction() {
@@ -811,16 +876,20 @@ public class frmMain {
 
     /**
      * Guarda los datos de los gráficos en memoria en un archivo binario.
-     * Los datos incluyen la versión del archivo, la cantidad de gráficos indexados y la información de cada gráfico.
+     * Los datos incluyen la versión del archivo, la cantidad de gráficos indexados
+     * y la información de cada gráfico.
      * Si el archivo no existe, se crea. Si existe, se sobrescribe.
-     * Se utilizan las instancias de `configManager` y `byteMigration` para manejar la configuración y la conversión de bytes.
+     * Se utilizan las instancias de `configManager` y `byteMigration` para manejar
+     * la configuración y la conversión de bytes.
      *
-     * @throws IOException Si ocurre un error de entrada/salida al intentar escribir en el archivo.
+     * @throws IOException Si ocurre un error de entrada/salida al intentar escribir
+     *                     en el archivo.
      */
     @FXML
     private void mnuIndexbyMemory() throws IOException {
 
-        // Crear un objeto File para el archivo donde se guardarán los datos de los gráficos
+        // Crear un objeto File para el archivo donde se guardarán los datos de los
+        // gráficos
         File archivo = new File(configManager.getInitDir() + "Graficos.ind");
 
         logger.info("Iniciando el guardado de índices desde memoria.");
@@ -1016,25 +1085,27 @@ public class frmMain {
                     // Solo podemos añadir los indices estáticos
                     if (grhList.get(numero).getNumFrames() == 1) {
 
-                        grhList.get(selectedIndex).setNumFrames((short) (grhList.get(selectedIndex).getNumFrames() + 1));
+                        grhList.get(selectedIndex)
+                                .setNumFrames((short) (grhList.get(selectedIndex).getNumFrames() + 1));
 
                         int[] frames = grhList.get(selectedIndex).getFrames();
 
                         int[] newFrames = Arrays.copyOf(frames, frames.length + 1);
                         newFrames[frames.length] = numero;
 
-                        // Establecer el nuevo array utilizando el método setFrames(), si está disponible
+                        // Establecer el nuevo array utilizando el método setFrames(), si está
+                        // disponible
                         grhList.get(selectedIndex).setFrames(newFrames);
 
                         updateEditor(grhList.get(selectedIndex));
-
 
                     } else {
                         logger.warning("El indice seleccionado no es valido.");
                     }
 
                 } else {
-                    logger.warning("Indice invalido. Solo se aceptan indices desde el 1 hasta el " + dataManager.getGrhCount());
+                    logger.warning("Indice invalido. Solo se aceptan indices desde el 1 hasta el "
+                            + dataManager.getGrhCount());
                 }
 
             } catch (NumberFormatException e) {
@@ -1140,7 +1211,8 @@ public class frmMain {
                     alert.setContentText("No se encontraron secuencias de " + grhLibres + " Grh libres.");
                     alert.showAndWait();
                 } else {
-                    StringBuilder mensaje = new StringBuilder("Se encontraron secuencias de Grh libres desde Grh" + (grhLibres - (numGrhLibres - 1)) + " hasta Grh" + grhLibres);
+                    StringBuilder mensaje = new StringBuilder("Se encontraron secuencias de Grh libres desde Grh"
+                            + (grhLibres - (numGrhLibres - 1)) + " hasta Grh" + grhLibres);
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle("Grh libres encontrados");
                     alert.setHeaderText(null);
@@ -1188,7 +1260,7 @@ public class frmMain {
     @FXML
     private void mnuGrhAdapter_OnAction() {
         logger.info("Abriendo adaptador de Grh");
-        
+
         // Crea la nueva ventana
         Stage adaptadorStage = new Stage();
         adaptadorStage.setTitle("Adaptador de Grh");
@@ -1199,10 +1271,34 @@ public class frmMain {
             adaptadorStage.setScene(new Scene(adaptadorRoot));
             adaptadorStage.setResizable(false);
             adaptadorStage.show();
-            
+
             logger.info("Ventana de adaptador de Grh abierta exitosamente");
         } catch (Exception e) {
             logger.error("Error al abrir la ventana de adaptador de Grh", e);
+        }
+    }
+
+    /**
+     * Actualiza la barra de estado con información relevante.
+     *
+     * @param status     Mensaje de estado a mostrar.
+     * @param grhCount   Número total de GRHs.
+     * @param animCount  Número de animaciones.
+     * @param isModified Indica si hay cambios sin guardar.
+     */
+    private void updateStatusBar(String status, int grhCount, int animCount, boolean isModified) {
+        if (lblStatus != null) {
+            lblStatus.setText(status);
+            lblStatus.setStyle(status.contains("Error") ? "-fx-text-fill: #FF6B6B;" : "-fx-text-fill: #00FF00;");
+        }
+        if (lblGrhCount != null) {
+            lblGrhCount.setText("GRHs: " + grhCount);
+        }
+        if (lblAnimCount != null) {
+            lblAnimCount.setText("Animaciones: " + animCount);
+        }
+        if (lblModified != null) {
+            lblModified.setText(isModified ? "● Modificado" : "");
         }
     }
 }

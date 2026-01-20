@@ -1,32 +1,28 @@
-# Indexador Nexus
+# Nexus Indexer
 
 ![Java](https://img.shields.io/badge/Java-17-orange) ![JavaFX](https://img.shields.io/badge/JavaFX-17-blue) ![Maven](https://img.shields.io/badge/Maven-3.8.6-red)
 
-*[Versión en español](README.md)*
+*[Spanish Version](Readme.md)*
 
 ## Description
 
-Indexer for Argentum Online programmed in Java. This tool allows you to view, edit, and manage the graphic resources used in the Argentum Online game. Currently works with resource types 0.13 or AOLibre.
+Indexer for Argentum Online programmed in Java. This tool allows you to view, edit, and manage the graphic resources used in the Argentum Online game. Currently works with resource types from version 0.13 or AOLibre.
 
 ## Features
 
-- Visualization of graphics (GRHs)
-- Editing of graphic properties
+- Graphics (GRHs) visualization
+- Graphic properties editing
 - Animation management
 - Cache system to optimize performance
 - Visualization of shields, helmets, and other game features
-- **Configurable Background Color**: Integrated color picker to customize the viewer background.
-- **Path Management**: Flexible configuration for resource paths.
+- **Background Color Configuration**: Integrated color picker to customize the viewer background.
+- **Path Management**: Flexible configuration for resource paths (Graphics, Init, Dat).
 - Centralized logging system
 - Intuitive graphical interface with JavaFX
 
 ## Screenshots
 
-![Main View](https://github.com/Lorwik/Indexador-Nexus/assets/1338437/ea753277-4461-4e4e-a67d-8397823a2500)
-
-![Shield Editor](https://github.com/Lorwik/Indexador-Nexus/assets/1338437/05fb4355-b4eb-48fb-81a1-d97ddff02761)
-
-![Graphics Editor](https://github.com/Lorwik/Indexador-Nexus/assets/1338437/bff3274b-6dec-459a-8141-245c3754563e)
+<img width="1364" height="798" alt="image" src="https://github.com/user-attachments/assets/06e583c1-6f24-4dad-8988-943fbd5ffbbe" />
 
 ## System Requirements
 
@@ -38,11 +34,11 @@ Indexer for Argentum Online programmed in Java. This tool allows you to view, ed
 
 ### Installation Options
 
-#### 1. Repository Cloning (Development)
+#### 1. Clone Repository (Development)
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/Lorwik/Indexador-Nexus.git
+   git clone https://github.com/ManuelJSD/Indexador-Nexus.git
    ```
 
 2. Navigate to the project directory:
@@ -58,7 +54,7 @@ Indexer for Argentum Online programmed in Java. This tool allows you to view, ed
 #### 2. Direct Download (Users)
 
 1. Download the latest version from the [Releases section](https://github.com/Lorwik/Indexador-Nexus/releases)
-2. Uncompress the downloaded file to a location of your choice
+2. Unzip the downloaded file to your desired location
 
 ## Running the Application
 
@@ -78,20 +74,20 @@ Indexer for Argentum Online programmed in Java. This tool allows you to view, ed
    java -jar indexador-1.0-SNAPSHOT.jar
    ```
 
-### Initial Setup
+### Initial Configuration
 
 When starting the application for the first time:
 
-1. Select the path where the Argentum Online resources are located
-2. The application will automatically load the available graphics
-3. Use the interface to navigate between the different resources
-4. You can change the viewer background color using the color picker located above the preview pane.
+1. Select the path where the Argentum Online resources are located.
+2. The application will automatically load the available graphics.
+3. Use the interface to navigate between the different resources.
+4. You can change the viewer background color using the color picker located above the preview panel.
 
 ## Project Status
 
 This project is in active development. Some planned features include:
 
-- Import from plain text file
+- Import from plain text files
 - Performance optimization for large amounts of graphics
 - Support for new resource formats
 
@@ -109,7 +105,7 @@ Additionally, it contains utilities to improve performance:
 
 ## Contributing
 
-If you want to contribute to the project, follow these steps:
+If you wish to contribute to the project, follow these steps:
 
 1. Fork the project
 2. Create a new branch (`git checkout -b feature/new-feature`)
@@ -119,7 +115,7 @@ If you want to contribute to the project, follow these steps:
 
 ## Reporting Issues
 
-If you encounter any problems or have suggestions, please [create an issue](https://github.com/Lorwik/Indexador-Nexus/issues/new) with the following details:
+If you find any issues or have suggestions, please [create an issue](https://github.com/Lorwik/Indexador-Nexus/issues/new) with the following details:
 
 - Description of the problem
 - Steps to reproduce it

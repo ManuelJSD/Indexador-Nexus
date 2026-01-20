@@ -1587,6 +1587,38 @@ public class frmMain {
         windowManager.showWindow("frmAdaptador", "Adaptador de Grh", false);
     }
 
+    /**
+     * Abre el asistente visual de Auto-Indexación.
+     */
+    @FXML
+    private void mnuAutoIndexWizard_OnAction() {
+        try {
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
+                    getClass().getResource("/org/nexus/indexador/frmAutoIndexWizard.fxml"));
+            javafx.scene.Parent root = loader.load();
+
+            frmAutoIndexWizard wizardController = loader.getController();
+            wizardController.setMainController(this);
+
+            javafx.stage.Stage wizardStage = new javafx.stage.Stage();
+            wizardStage.setTitle("Auto-Indexar");
+            wizardStage.setScene(new javafx.scene.Scene(root));
+            wizardStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+            wizardStage.setResizable(false);
+
+            wizardController.setStage(wizardStage);
+
+            // Aplicar estilos
+            wizardStage.getScene().getStylesheets().add(
+                    getClass().getResource("/org/nexus/indexador/styles/dark-theme.css").toExternalForm());
+
+            wizardStage.showAndWait();
+        } catch (Exception e) {
+            logger.error("Error al abrir asistente de indexación", e);
+            showErrorAlert("Error", "No se pudo abrir el asistente: " + e.getMessage());
+        }
+    }
+
     // ========== AUTO-INDEXAR: MODOS ==========
 
     /**
@@ -1718,7 +1750,7 @@ public class frmMain {
      * MODO: Cuerpo Animado (4 direcciones x N frames)
      */
     @FXML
-    private void mnuAutoBody_OnAction() {
+    public void mnuAutoBody_OnAction() {
         ImageDetectionResult result = loadAndDetectSprites("Cuerpo Animado");
         if (result == null || result.regions.isEmpty()) {
             if (result != null)
@@ -1833,7 +1865,7 @@ public class frmMain {
      * MODO: Sprites Individuales (solo estáticos, sin animación)
      */
     @FXML
-    private void mnuAutoSprites_OnAction() {
+    public void mnuAutoSprites_OnAction() {
         ImageDetectionResult result = loadAndDetectSprites("Sprites Individuales");
         if (result == null || result.regions.isEmpty()) {
             if (result != null)
@@ -1983,7 +2015,7 @@ public class frmMain {
      * tiles)
      */
     @FXML
-    private void mnuAutoSurfaces_OnAction() {
+    public void mnuAutoSurfaces_OnAction() {
         TextInputDialog fileDialog = new TextInputDialog();
         fileDialog.setTitle("Superficies");
         fileDialog.setHeaderText("Introduce el número de archivo de imagen:");
@@ -2090,7 +2122,7 @@ public class frmMain {
      * MODO: Animación Simple (1 fila = 1 animación)
      */
     @FXML
-    private void mnuAutoAnimation_OnAction() {
+    public void mnuAutoAnimation_OnAction() {
         ImageDetectionResult result = loadAndDetectSprites("Animación Simple");
         if (result == null || result.regions.isEmpty()) {
             if (result != null)

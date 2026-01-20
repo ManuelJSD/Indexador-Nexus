@@ -270,3 +270,51 @@
 .info {
     -fx-text-fill: #2196f3;
 }
+
+/* ===== WIZARD STYLES ===== */
+.wizard-container {
+    -fx-background-color: #2b2b2b;
+}
+
+.wizard-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #e0e0e0;
+}
+
+.wizard-option {
+    -fx-background-color: #3c3c3c;
+    -fx-padding: 15;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #555555;
+    -fx-border-width: 1;
+    -fx-cursor: hand;
+    -fx-min-width: 110;
+    -fx-max-width: 110;
+}
+
+.wizard-option:hover {
+    -fx-background-color: #4a4a4a;
+    -fx-border-color: #4a90d9;
+}
+
+.wizard-option-title {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #e0e0e0;
+}
+
+.wizard-option-desc {
+    -fx-font-size: 10px;
+    -fx-text-fill: #808080;
+}
+
+.wizard-cancel-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #808080;
+}
+
+.wizard-cancel-btn:hover {
+    -fx-text-fill: #e0e0e0;
+}

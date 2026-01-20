@@ -141,15 +141,7 @@
                                 <KeyCodeCombination alt="UP" code="F" control="DOWN" meta="UP" shift="DOWN" shortcut="UP"/>
                             </accelerator>
                         </MenuItem>
-                        <Menu text="Auto-Indexar">
-                            <items>
-                                <MenuItem fx:id="mnuAutoBody" mnemonicParsing="false" onAction="#mnuAutoBody_OnAction" text="Cuerpo Animado (4 dirs)" />
-                                <MenuItem fx:id="mnuAutoSprites" mnemonicParsing="false" onAction="#mnuAutoSprites_OnAction" text="Sprites Individuales" />
-                                <MenuItem fx:id="mnuAutoGrid" mnemonicParsing="false" onAction="#mnuAutoGrid_OnAction" text="Grid de Tiles" />
-                                <MenuItem fx:id="mnuAutoSurfaces" mnemonicParsing="false" onAction="#mnuAutoSurfaces_OnAction" text="Superficies" />
-                                <MenuItem fx:id="mnuAutoAnimation" mnemonicParsing="false" onAction="#mnuAutoAnimation_OnAction" text="Animación Simple" />
-                            </items>
-                        </Menu>
+                        <MenuItem fx:id="mnuAutoIndexWizard" mnemonicParsing="false" onAction="#mnuAutoIndexWizard_OnAction" text="Auto-Indexar..." />
                         <SeparatorMenuItem />
                         <MenuItem fx:id="mnuValidate" mnemonicParsing="false" onAction="#mnuValidate_OnAction" text="Validar Integridad">
                             <accelerator>

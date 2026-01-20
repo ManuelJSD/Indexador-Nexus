@@ -79,6 +79,22 @@
                                 <KeyCodeCombination alt="UP" code="Y" control="DOWN" meta="UP" shift="UP" shortcut="UP"/>
                             </accelerator>
                         </MenuItem>
+                        <SeparatorMenuItem />
+                        <MenuItem fx:id="mnuCopy" mnemonicParsing="false" onAction="#mnuCopy_OnAction" text="Copiar GRH">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="C" control="DOWN" meta="UP" shift="UP" shortcut="UP"/>
+                            </accelerator>
+                        </MenuItem>
+                        <MenuItem fx:id="mnuPaste" mnemonicParsing="false" onAction="#mnuPaste_OnAction" text="Pegar GRH">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="V" control="DOWN" meta="UP" shift="UP" shortcut="UP"/>
+                            </accelerator>
+                        </MenuItem>
+                        <MenuItem fx:id="mnuDuplicate" mnemonicParsing="false" onAction="#mnuDuplicate_OnAction" text="Duplicar GRH">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="D" control="DOWN" meta="UP" shift="UP" shortcut="UP"/>
+                            </accelerator>
+                        </MenuItem>
                     </items>
                 </Menu>
                 <Menu fx:id="mnuVer" mnemonicParsing="true" text="_Ver">

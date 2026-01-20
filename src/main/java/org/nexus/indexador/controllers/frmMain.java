@@ -159,6 +159,9 @@ public class frmMain {
     // Gestor de ventanas
     private WindowManager windowManager;
 
+    // Clipboard para copiar/pegar GRH
+    private GrhData copiedGrh = null;
+
     // Índice del frame actual en la animación.
     private int currentFrameIndex = 1;
     // Línea de tiempo que controla la animación de los frames en el visor.
@@ -682,6 +685,125 @@ public class frmMain {
     }
 
     /**
+     * Copia el GRH seleccionado al clipboard interno.
+     */
+    @FXML
+    private void mnuCopy_OnAction() {
+        int selectedIndex = lstIndices.getSelectionModel().getSelectedIndex();
+        if (selectedIndex >= 0 && selectedIndex < grhList.size()) {
+            GrhData original = grhList.get(selectedIndex);
+            // Crear copia profunda
+            if (original.getNumFrames() > 1) {
+                // Animación
+                int[] framesCopy = original.getFrames() != null ? original.getFrames().clone() : null;
+                copiedGrh = new GrhData(original.getGrh(), original.getNumFrames(), framesCopy, original.getSpeed());
+            } else {
+                // Estático
+                copiedGrh = new GrhData(
+                        original.getGrh(), original.getNumFrames(), original.getFileNum(),
+                        original.getsX(), original.getsY(),
+                        original.getTileWidth(), original.getTileHeight());
+            }
+            logger.info("GRH " + original.getGrh() + " copiado al clipboard");
+            showInfoAlert("Copiado", "GRH " + original.getGrh() + " copiado al clipboard.");
+        } else {
+            showWarningAlert("Sin selección", "Seleccione un GRH para copiar.");
+        }
+    }
+
+    /**
+     * Pega las propiedades del GRH copiado sobre el GRH seleccionado.
+     */
+    @FXML
+    private void mnuPaste_OnAction() {
+        if (copiedGrh == null) {
+            showWarningAlert("Clipboard vacío", "No hay ningún GRH copiado. Use Ctrl+C primero.");
+            return;
+        }
+
+        int selectedIndex = lstIndices.getSelectionModel().getSelectedIndex();
+        if (selectedIndex >= 0 && selectedIndex < grhList.size()) {
+            GrhData target = grhList.get(selectedIndex);
+
+            // Aplicar propiedades del copiado al seleccionado (mantener el ID)
+            target.setNumFrames(copiedGrh.getNumFrames());
+            if (copiedGrh.getNumFrames() > 1) {
+                target.setFrames(copiedGrh.getFrames() != null ? copiedGrh.getFrames().clone() : null);
+                target.setSpeed(copiedGrh.getSpeed());
+            } else {
+                target.setFileNum(copiedGrh.getFileNum());
+                target.setsX(copiedGrh.getsX());
+                target.setsY(copiedGrh.getsY());
+                target.setTileWidth(copiedGrh.getTileWidth());
+                target.setTileHeight(copiedGrh.getTileHeight());
+            }
+
+            // Actualizar vista
+            updateEditor(target);
+            updateViewer(target);
+
+            UndoManager.getInstance().executeAction(new UndoManager.UndoableAction() {
+                @Override
+                public void execute() {
+                }
+
+                @Override
+                public void undo() {
+                    updateEditor(target);
+                    updateViewer(target);
+                }
+
+                @Override
+                public String getDescription() {
+                    return "Pegar en GRH " + target.getGrh();
+                }
+            });
+
+            logger.info("Propiedades pegadas en GRH " + target.getGrh());
+            showInfoAlert("Pegado", "Propiedades pegadas en GRH " + target.getGrh());
+        } else {
+            showWarningAlert("Sin selección", "Seleccione un GRH donde pegar.");
+        }
+    }
+
+    /**
+     * Duplica el GRH seleccionado en una nueva entrada.
+     */
+    @FXML
+    private void mnuDuplicate_OnAction() {
+        int selectedIndex = lstIndices.getSelectionModel().getSelectedIndex();
+        if (selectedIndex >= 0 && selectedIndex < grhList.size()) {
+            GrhData original = grhList.get(selectedIndex);
+
+            // Crear nuevo ID
+            int newId = dataManager.getGrhCount() + 1;
+            dataManager.setGrhCount(newId);
+
+            // Crear copia
+            GrhData duplicate;
+            if (original.getNumFrames() > 1) {
+                int[] framesCopy = original.getFrames() != null ? original.getFrames().clone() : null;
+                duplicate = new GrhData(newId, original.getNumFrames(), framesCopy, original.getSpeed());
+            } else {
+                duplicate = new GrhData(
+                        newId, original.getNumFrames(), original.getFileNum(),
+                        original.getsX(), original.getsY(),
+                        original.getTileWidth(), original.getTileHeight());
+            }
+
+            grhList.add(duplicate);
+            lstIndices.getItems().add(String.valueOf(newId));
+            lstIndices.getSelectionModel().select(grhList.size() - 1);
+            lstIndices.scrollTo(grhList.size() - 1);
+
+            logger.info("GRH " + original.getGrh() + " duplicado como GRH " + newId);
+            showInfoAlert("Duplicado", "GRH " + original.getGrh() + " duplicado como GRH " + newId);
+        } else {
+            showWarningAlert("Sin selección", "Seleccione un GRH para duplicar.");
+        }
+    }
+
+    /**
      * Exporta los datos de gráficos al archivo "graficos.ini" en el directorio de
      * exportación configurado.
      * Los datos exportados incluyen el número total de gráficos, la versión de los
@@ -1014,11 +1136,30 @@ public class frmMain {
      * según el valor del deslizador.
      */
     private void setupSliderZoom() {
+        // Listener para el slider
         sldZoom.valueProperty().addListener((observable, oldValue, newValue) -> {
             double zoomValue = newValue.doubleValue();
             // Aplica la escala al ImageView
             imgIndice.setScaleX(zoomValue);
             imgIndice.setScaleY(zoomValue);
+        });
+
+        // Zoom con rueda del mouse
+        imgIndice.setOnScroll(event -> {
+            double delta = event.getDeltaY();
+            double currentZoom = sldZoom.getValue();
+            double zoomStep = 0.1;
+
+            if (delta > 0) {
+                // Zoom in
+                currentZoom = Math.min(sldZoom.getMax(), currentZoom + zoomStep);
+            } else {
+                // Zoom out
+                currentZoom = Math.max(sldZoom.getMin(), currentZoom - zoomStep);
+            }
+
+            sldZoom.setValue(currentZoom);
+            event.consume();
         });
     }
 

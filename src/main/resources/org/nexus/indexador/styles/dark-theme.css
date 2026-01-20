@@ -349,3 +349,30 @@
 .button-primary:hover {
     -fx-background-color: #5aa0e9;
 }
+
+/* ===== FILTER PANEL STYLES ===== */
+.filter-title {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.button-small {
+    -fx-font-size: 10px;
+    -fx-padding: 3 8 3 8;
+}
+
+/* ===== CONFIGURATION DIALOG STYLES ===== */
+.config-container {
+    -fx-background-color: #2b2b2b;
+}
+
+.config-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #e0e0e0;
+}
+
+.config-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: #b0b0b0;
+}

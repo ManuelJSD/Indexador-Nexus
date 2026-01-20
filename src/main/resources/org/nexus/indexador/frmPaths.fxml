@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" 
+      fx:controller="org.nexus.indexador.controllers.frmPaths"
+      spacing="15" style="-fx-padding: 20; -fx-background-color: #2b2b2b;"
+      prefWidth="600" prefHeight="280">
+    
+    <Label text="Configuración de Rutas" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #e0e0e0;"/>
+    
+    <GridPane hgap="10" vgap="12">
+        <Label text="Gráficos:" GridPane.rowIndex="0" GridPane.columnIndex="0" style="-fx-text-fill: #b0b0b0;"/>
+        <TextField fx:id="txtGraphicsPath" GridPane.rowIndex="0" GridPane.columnIndex="1" prefWidth="400"/>
+        <Button fx:id="btnBrowseGraphics" text="..." onAction="#onBrowseGraphics" GridPane.rowIndex="0" GridPane.columnIndex="2" prefWidth="40"/>
+        
+        <Label text="Init:" GridPane.rowIndex="1" GridPane.columnIndex="0" style="-fx-text-fill: #b0b0b0;"/>
+        <TextField fx:id="txtInitPath" GridPane.rowIndex="1" GridPane.columnIndex="1" prefWidth="400"/>
+        <Button fx:id="btnBrowseInit" text="..." onAction="#onBrowseInit" GridPane.rowIndex="1" GridPane.columnIndex="2" prefWidth="40"/>
+        
+        <Label text="Dat:" GridPane.rowIndex="2" GridPane.columnIndex="0" style="-fx-text-fill: #b0b0b0;"/>
+        <TextField fx:id="txtDatPath" GridPane.rowIndex="2" GridPane.columnIndex="1" prefWidth="400"/>
+        <Button fx:id="btnBrowseDat" text="..." onAction="#onBrowseDat" GridPane.rowIndex="2" GridPane.columnIndex="2" prefWidth="40"/>
+        
+        <Label text="Exportados:" GridPane.rowIndex="3" GridPane.columnIndex="0" style="-fx-text-fill: #b0b0b0;"/>
+        <TextField fx:id="txtExportPath" GridPane.rowIndex="3" GridPane.columnIndex="1" prefWidth="400"/>
+        <Button fx:id="btnBrowseExport" text="..." onAction="#onBrowseExport" GridPane.rowIndex="3" GridPane.columnIndex="2" prefWidth="40"/>
+    </GridPane>
+    
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <padding>
+            <Insets top="20"/>
+        </padding>
+        <Button fx:id="btnSave" text="Guardar" onAction="#onSave" prefWidth="100"/>
+        <Button fx:id="btnCancel" text="Cancelar" onAction="#onCancel" prefWidth="100"/>
+    </HBox>
+</VBox>

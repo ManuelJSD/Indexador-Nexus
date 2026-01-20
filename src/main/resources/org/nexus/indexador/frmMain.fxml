@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Menu?>
@@ -57,6 +58,11 @@
                                         <MenuItem fx:id="mnuIndexbyExported" mnemonicParsing="false" onAction="#mnuIndexbyExported" text="Indices" />
                                     </items>
                                 </Menu>
+                            </items>
+                        </Menu>
+                        <Menu mnemonicParsing="true" text="_Configuración">
+                            <items>
+                                <MenuItem fx:id="mnuConfigPaths" mnemonicParsing="false" onAction="#mnuConfigPaths_OnAction" text="Rutas..." />
                             </items>
                         </Menu>
                         <SeparatorMenuItem />
@@ -135,7 +141,6 @@
                 <Menu mnemonicParsing="true" text="_Herramientas">
                     <items>
                         <MenuItem fx:id="mnuGrhAdapter" mnemonicParsing="false" onAction="#mnuGrhAdapter_OnAction" text="Adaptador de Grh" />
-                        <MenuItem fx:id="mnuAsistente" mnemonicParsing="false" onAction="#mnuAsistente_OnAction" text="Asistente" />
                         <MenuItem fx:id="mnuBuscarGrhLibres" mnemonicParsing="false" onAction="#mnuBuscarGrhLibres_OnAction" text="Buscar Grh Libres">
                             <accelerator>
                                 <KeyCodeCombination alt="UP" code="F" control="DOWN" meta="UP" shift="DOWN" shortcut="UP"/>
@@ -168,7 +173,39 @@
             </effect>
         </MenuBar>
         <Label fx:id="lblIndices" layoutX="836.0" layoutY="41.0" prefWidth="200.0" style="-fx-background-color: #424242;" text="Indices cargados: 0" textFill="WHITE" />
-        <ListView fx:id="lstIndices" layoutX="12.0" layoutY="41.0" prefHeight="644.0" prefWidth="200.0" style="-fx-background-color: #535353; -fx-border-color: #000000;" />
+        
+        <!-- Panel de Filtros Colapsable -->
+        <Pane fx:id="paneFilterHeader" layoutX="12.0" layoutY="41.0" prefHeight="25.0" prefWidth="200.0" 
+              style="-fx-background-color: #4a4a4a; -fx-border-color: #555555; -fx-border-width: 1; -fx-cursor: hand;"
+              onMouseClicked="#toggleFilters">
+            <children>
+                <Label fx:id="lblFilterToggle" layoutX="10.0" layoutY="5.0" text="▼ Filtros" textFill="#e0e0e0" 
+                       styleClass="filter-title" style="-fx-cursor: hand;"/>
+            </children>
+        </Pane>
+        
+        <Pane fx:id="paneFilterContent" layoutX="12.0" layoutY="66.0" prefHeight="125.0" prefWidth="200.0" 
+              style="-fx-background-color: #3c3c3c; -fx-border-color: #555555; -fx-border-width: 0 1 1 1;">
+            <children>
+                <!-- Checkboxes Tipo -->
+                <CheckBox fx:id="chkAnimations" layoutX="10.0" layoutY="5.0" text="Animaciones" textFill="#e0e0e0"/>
+                <CheckBox fx:id="chkStatics" layoutX="10.0" layoutY="25.0" text="Estáticos" textFill="#e0e0e0"/>
+                
+                <!-- Campos de búsqueda -->
+                <Label layoutX="10.0" layoutY="50.0" text="FileNum:" textFill="#b0b0b0" style="-fx-font-size: 10px;"/>
+                <TextField fx:id="txtFilterFileNum" layoutX="65.0" layoutY="46.0" prefHeight="20.0" prefWidth="60.0" promptText=""/>
+                
+                <Label layoutX="10.0" layoutY="75.0" text="Anch/Alt:" textFill="#b0b0b0"  style="-fx-font-size: 10px;"/>
+                <TextField fx:id="txtFilterWidth" layoutX="65.0" layoutY="71.0" prefHeight="20.0" prefWidth="30.0" promptText="W"/>
+                <TextField fx:id="txtFilterHeight" layoutX="100.0" layoutY="71.0" prefHeight="20.0" prefWidth="30.0" promptText="H"/>
+                
+                <!-- Botones -->
+                <Button fx:id="btnApplyFilters" layoutX="10.0" layoutY="100.0" text="Aplicar" onAction="#onApplyFilters" prefWidth="80.0" styleClass="button-small"/>
+                <Button fx:id="btnClearFilters" layoutX="95.0" layoutY="100.0" text="Limpiar" onAction="#onClearFilters" prefWidth="80.0" styleClass="button-small"/>
+            </children>
+        </Pane>
+        
+        <ListView fx:id="lstIndices" layoutX="12.0" layoutY="196.0" prefHeight="489.0" prefWidth="200.0" style="-fx-background-color: #535353; -fx-border-color: #000000;" />
         <Label fx:id="lblVersion" layoutX="1056.0" layoutY="41.0" prefHeight="17.0" prefWidth="156.0" style="-fx-background-color: #424242;" text="Versión: 0" textFill="WHITE" />
         <Label fx:id="lblIndice" layoutX="843.0" layoutY="688.0" prefWidth="52.0" style="-fx-background-color: #424242;" text="Indice:" textFill="WHITE" />
         <TextField fx:id="txtIndice" editable="false" layoutX="884.0" layoutY="684.0" prefHeight="25.0" prefWidth="462.0" />

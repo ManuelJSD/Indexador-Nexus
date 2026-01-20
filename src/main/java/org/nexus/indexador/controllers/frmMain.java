@@ -12,6 +12,11 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.util.Duration;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Rectangle;
@@ -113,6 +118,31 @@ public class frmMain {
     @FXML
     private TextField txtFiltro;
 
+    // Filtros avanzados
+    @FXML
+    private javafx.scene.control.CheckBox chkAnimations;
+
+    @FXML
+    private javafx.scene.control.CheckBox chkStatics;
+
+    @FXML
+    private TextField txtFilterFileNum;
+
+    @FXML
+    private TextField txtFilterWidth;
+
+    @FXML
+    private TextField txtFilterHeight;
+
+    @FXML
+    private javafx.scene.layout.Pane paneFilterHeader;
+
+    @FXML
+    private javafx.scene.layout.Pane paneFilterContent;
+
+    @FXML
+    private Label lblFilterToggle;
+
     @FXML
     private ImageView imgIndice;
 
@@ -151,6 +181,9 @@ public class frmMain {
     private byteMigration byteMigration;
 
     private DataManager dataManager;
+
+    // Estado del panel de filtros (expandido/colapsado)
+    private boolean filterExpanded = true;
 
     // Caché de imágenes para optimizar la carga y uso de recursos
     private ImageCache imageCache;
@@ -1013,6 +1046,31 @@ public class frmMain {
         }
     }
 
+    /**
+     * Abre el diálogo de configuración de rutas.
+     */
+    @FXML
+    private void mnuConfigPaths_OnAction() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/nexus/indexador/frmPaths.fxml"));
+            VBox root = loader.load();
+
+            frmPaths controller = loader.getController();
+
+            Stage stage = new Stage();
+            stage.setTitle("Configuración de Rutas");
+            stage.setScene(new Scene(root));
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setResizable(false);
+
+            controller.setStage(stage);
+
+            stage.showAndWait();
+        } catch (IOException e) {
+            logger.error("Error al abrir configuración de rutas", e);
+        }
+    }
+
     @FXML
     private void mnuCode_OnAction() {
         /**
@@ -1384,9 +1442,6 @@ public class frmMain {
 
     public void mnuFXs_OnAction(ActionEvent actionEvent) {
         windowManager.showWindow("frmFXs", "FXs", false);
-    }
-
-    public void mnuAsistente_OnAction(ActionEvent actionEvent) {
     }
 
     @FXML
@@ -2234,5 +2289,130 @@ public class frmMain {
         if (lblModified != null) {
             lblModified.setText(isModified ? "● Modificado" : "");
         }
+    }
+
+    // ========== FILTROS AVANZADOS ==========
+
+    /**
+     * Alterna la visibilidad del panel de filtros (colapsar/expandir).
+     */
+    @FXML
+    private void toggleFilters() {
+        filterExpanded = !filterExpanded;
+
+        if (filterExpanded) {
+            // Expandir
+            paneFilterContent.setVisible(true);
+            paneFilterContent.setManaged(true);
+            lblFilterToggle.setText("▼ Filtros");
+
+            // Ajustar posición de la lista
+            lstIndices.setLayoutY(196);
+            lstIndices.setPrefHeight(489);
+        } else {
+            // Colapsar
+            paneFilterContent.setVisible(false);
+            paneFilterContent.setManaged(false);
+            lblFilterToggle.setText("▶ Filtros");
+
+            // Ajustar posición de la lista (más espacio)
+            lstIndices.setLayoutY(71);
+            lstIndices.setPrefHeight(614);
+        }
+    }
+
+    /**
+     * Aplica los filtros avanzados a la lista de GRHs.
+     */
+    @FXML
+    private void onApplyFilters() {
+        if (grhList == null || grhList.isEmpty()) {
+            return;
+        }
+
+        lstIndices.getItems().clear();
+
+        for (GrhData grh : grhList) {
+            if (matchesFilters(grh)) {
+                String entry = grh.getGrh() + (grh.getNumFrames() > 1 ? " (Animación)" : "");
+                lstIndices.getItems().add(entry);
+            }
+        }
+
+        lblIndices.setText("Indices cargados: " + lstIndices.getItems().size());
+    }
+
+    /**
+     * Limpia todos los filtros y muestra la lista completa.
+     */
+    @FXML
+    private void onClearFilters() {
+        chkAnimations.setSelected(false);
+        chkStatics.setSelected(false);
+        txtFilterFileNum.clear();
+        txtFilterWidth.clear();
+        txtFilterHeight.clear();
+
+        // Recargar lista completa
+        lstIndices.getItems().clear();
+        for (GrhData grh : grhList) {
+            String entry = grh.getGrh() + (grh.getNumFrames() > 1 ? " (Animación)" : "");
+            lstIndices.getItems().add(entry);
+        }
+
+        lblIndices.setText("Indices cargados: " + lstIndices.getItems().size());
+    }
+
+    /**
+     * Verifica si un GRH cumple con todos los filtros activos.
+     */
+    private boolean matchesFilters(GrhData grh) {
+        // Filtro de tipo: Animaciones
+        if (chkAnimations.isSelected() && grh.getNumFrames() <= 1) {
+            return false;
+        }
+
+        // Filtro de tipo: Estáticos
+        if (chkStatics.isSelected() && grh.getNumFrames() > 1) {
+            return false;
+        }
+
+        // Filtro de FileNum
+        if (!txtFilterFileNum.getText().isEmpty()) {
+            try {
+                int filterFileNum = Integer.parseInt(txtFilterFileNum.getText());
+                if (grh.getFileNum() != filterFileNum) {
+                    return false;
+                }
+            } catch (NumberFormatException e) {
+                // Ignorar si no es número válido
+            }
+        }
+
+        // Filtro de Ancho
+        if (!txtFilterWidth.getText().isEmpty()) {
+            try {
+                int filterWidth = Integer.parseInt(txtFilterWidth.getText());
+                if (grh.getTileWidth() != filterWidth) {
+                    return false;
+                }
+            } catch (NumberFormatException e) {
+                // Ignorar
+            }
+        }
+
+        // Filtro de Alto
+        if (!txtFilterHeight.getText().isEmpty()) {
+            try {
+                int filterHeight = Integer.parseInt(txtFilterHeight.getText());
+                if (grh.getTileHeight() != filterHeight) {
+                    return false;
+                }
+            } catch (NumberFormatException e) {
+                // Ignorar
+            }
+        }
+
+        return true;
     }
 }

@@ -40,7 +40,7 @@ jobs:
       run: mvn -B package -DskipTests
     
     - name: Upload JAR artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: indexador-nexus-jar
         path: target/*.jar
@@ -72,7 +72,7 @@ jobs:
         zip -r indexador-nexus-jlink.zip indexador-nexus/
     
     - name: Upload jlink artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: indexador-nexus-jlink
         path: target/indexador-nexus-jlink.zip

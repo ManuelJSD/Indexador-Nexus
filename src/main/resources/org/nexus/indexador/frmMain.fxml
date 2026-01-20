@@ -156,6 +156,7 @@
                                 <KeyCodeCombination alt="UP" code="F1" control="UP" meta="UP" shift="UP" shortcut="UP"/>
                             </accelerator>
                         </MenuItem>
+                        <MenuItem fx:id="mnuShortcuts" mnemonicParsing="false" onAction="#mnuShortcuts_OnAction" text="Atajos de Teclado" />
                         <SeparatorMenuItem />
                         <MenuItem fx:id="mnuAbout" mnemonicParsing="false" onAction="#mnuAbout_OnAction" text="Acerca de..." />
                     </items>
@@ -189,9 +190,9 @@
                 <Tooltip text="Guardar cambios del GRH seleccionado" />
             </tooltip>
         </Button>
-        <TextField fx:id="txtFiltro" layoutX="14.0" layoutY="692.0" prefHeight="25.0" prefWidth="200.0" promptText="Buscar por índice (Ctrl+G)">
+        <TextField fx:id="txtFiltro" layoutX="14.0" layoutY="692.0" prefHeight="25.0" prefWidth="200.0" promptText="Buscar (ID, f:File, w:Ancho...)">
             <tooltip>
-                <Tooltip text="Escribe un número de GRH para buscarlo" />
+                <Tooltip text="Busca GRHs. Enter para siguiente.&#10;Sintaxis:&#10;- 1234 : Por ID&#10;- f:100 : Por FileNum&#10;- w:32 : Por Ancho&#10;- h:32 : Por Alto" />
             </tooltip>
         </TextField>
         <Slider fx:id="sldZoom" layoutX="231.0" layoutY="688.0" max="50.0" min="1.0" prefHeight="66.0" prefWidth="586.0" value="1.0">

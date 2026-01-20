@@ -1088,44 +1088,135 @@ public class frmMain {
      * Configura un listener para el TextField de filtro para detectar cambios en su
      * contenido.
      */
+    /**
+     * Configura un listener para el TextField de filtro para detectar cambios en su
+     * contenido.
+     */
     private void setupFilterTextFieldListener() {
-        // Agregar un listener al TextField de filtro para detectar cambios en su
-        // contenido
+        // Listener de texto (LIVE SEARCH - busca desde el principio)
         txtFiltro.textProperty().addListener((observable, oldValue, newValue) -> {
-            filterIndices(newValue); // Llamar al método para filtrar los índices
+            filterIndices(newValue, false);
+        });
+
+        // Listener de ENTER (FIND NEXT - busca siguiente coincidencia)
+        txtFiltro.setOnAction(event -> {
+            filterIndices(txtFiltro.getText(), true);
         });
     }
 
     /**
-     * Filtra los índices en el ListView según el texto proporcionado.
+     * Filtra o busca índices en el ListView según el texto proporcionado.
+     * Soporta sintaxis avanzada:
+     * - f:123 -> Buscar FileNum 123
+     * - w:32 -> Buscar ancho 32
+     * - h:32 -> Buscar alto 32
+     * - 123 -> Buscar GRH ID 123
      *
-     * @param filterText El texto utilizado para filtrar los índices.
+     * @param filterText El texto utilizado para filtrar.
+     * @param findNext   Si es true, busca la siguiente coincidencia desde la
+     *                   posición actual.
      */
-    private void filterIndices(String filterText) {
-        if (!filterText.isEmpty()) {
-            // El texto de filtro no está vacío
-            try {
-                int filterIndex = Integer.parseInt(filterText);
+    private void filterIndices(String filterText, boolean findNext) {
+        if (filterText.isEmpty()) {
+            lstIndices.getSelectionModel().clearSelection();
+            return;
+        }
 
-                // Buscar el índice en la lista de índices
-                for (int i = 0; i < grhList.size(); i++) {
-                    if (grhList.get(i).getGrh() == filterIndex) {
-                        // Seleccionar el índice correspondiente en el ListView
-                        lstIndices.getSelectionModel().select(i);
-                        lstIndices.scrollTo(i); // Desplazar el ListView para mostrar el índice seleccionado
-                        return; // Salir del bucle una vez que se encuentre el índice
+        try {
+            int startIndex = 0;
+            if (findNext) {
+                startIndex = lstIndices.getSelectionModel().getSelectedIndex() + 1;
+                if (startIndex >= grhList.size())
+                    startIndex = 0; // Wrap around
+            }
+
+            // Detectar tipo de búsqueda
+            String query = filterText.toLowerCase().trim();
+
+            for (int i = startIndex; i < grhList.size(); i++) {
+                GrhData grh = grhList.get(i);
+                boolean match = false;
+
+                if (query.startsWith("f:")) {
+                    // Buscar por FileNum
+                    try {
+                        int fileNum = Integer.parseInt(query.substring(2).trim());
+                        match = (grh.getFileNum() == fileNum);
+                    } catch (NumberFormatException ignored) {
+                    }
+
+                } else if (query.startsWith("w:")) {
+                    // Buscar por Ancho
+                    try {
+                        int width = Integer.parseInt(query.substring(2).trim());
+                        match = (grh.getTileWidth() == width);
+                    } catch (NumberFormatException ignored) {
+                    }
+
+                } else if (query.startsWith("h:")) {
+                    // Buscar por Alto
+                    try {
+                        int height = Integer.parseInt(query.substring(2).trim());
+                        match = (grh.getTileHeight() == height);
+                    } catch (NumberFormatException ignored) {
+                    }
+
+                } else {
+                    // Buscar por GRH ID (default)
+                    try {
+                        int grhId = Integer.parseInt(query);
+                        match = (grh.getGrh() == grhId);
+                    } catch (NumberFormatException ignored) {
                     }
                 }
 
-                // Si no se encuentra el índice, limpiar la selección en el ListView
-                lstIndices.getSelectionModel().clearSelection();
-
-            } catch (NumberFormatException e) {
-                logger.warning("Entrada inválida. Introduce un número válido.");
+                if (match) {
+                    lstIndices.getSelectionModel().select(i);
+                    lstIndices.scrollTo(i);
+                    return;
+                }
             }
-        } else {
-            // Si el texto de filtro está vacío, limpiar la selección en el ListView
-            lstIndices.getSelectionModel().clearSelection();
+
+            // Si buscamos siguiente y no encontramos, probamos desde el principio (wrap
+            // total)
+            if (findNext && startIndex > 0) {
+                // Loop search from 0 to startIndex
+                for (int i = 0; i < startIndex; i++) {
+                    GrhData grh = grhList.get(i);
+                    boolean match = false;
+                    // (Repetir lógica de matching - idealmente extraer a método helper isMatch)
+                    if (query.startsWith("f:")) {
+                        try {
+                            match = (grh.getFileNum() == Integer.parseInt(query.substring(2).trim()));
+                        } catch (Exception e) {
+                        }
+                    } else if (query.startsWith("w:")) {
+                        try {
+                            match = (grh.getTileWidth() == Integer.parseInt(query.substring(2).trim()));
+                        } catch (Exception e) {
+                        }
+                    } else if (query.startsWith("h:")) {
+                        try {
+                            match = (grh.getTileHeight() == Integer.parseInt(query.substring(2).trim()));
+                        } catch (Exception e) {
+                        }
+                    } else {
+                        try {
+                            match = (grh.getGrh() == Integer.parseInt(query));
+                        } catch (Exception e) {
+                        }
+                    }
+
+                    if (match) {
+                        lstIndices.getSelectionModel().select(i);
+                        lstIndices.scrollTo(i);
+                        return;
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            // Ignorar errores de parseo durante la escritura
         }
     }
 
@@ -1492,6 +1583,35 @@ public class frmMain {
     @FXML
     private void mnuGrhAdapter_OnAction() {
         windowManager.showWindow("frmAdaptador", "Adaptador de Grh", false);
+    }
+
+    /**
+     * Muestra un diálogo con los atajos de teclado y tips de uso.
+     */
+    @FXML
+    private void mnuShortcuts_OnAction() {
+        String shortcuts = "Edición:\n" +
+                "• Ctrl+C: Copiar GRH\n" +
+                "• Ctrl+V: Pegar GRH (propiedades)\n" +
+                "• Ctrl+D: Duplicar GRH\n" +
+                "• Ctrl+Z: Deshacer\n" +
+                "• Ctrl+Y: Rehacer\n" +
+                "• Del: Eliminar GRH\n\n" +
+                "Búsqueda (Filtro):\n" +
+                "• f:Num : Buscar por FileNum\n" +
+                "• w:Num : Buscar por Ancho\n" +
+                "• h:Num : Buscar por Alto\n" +
+                "• Enter: Buscar siguiente (cíclico)\n\n" +
+                "Vista:\n" +
+                "• Scroll Mouse: Zoom In/Out\n" +
+                "• Ctrl+1-5: Abrir editores de índices";
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Atajos y Tips");
+        alert.setHeaderText("Guía Rápida de Uso");
+        alert.setContentText(shortcuts);
+        alert.getDialogPane().setMinWidth(400);
+        alert.showAndWait();
     }
 
     /**

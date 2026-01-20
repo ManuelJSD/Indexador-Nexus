@@ -36,10 +36,10 @@ import org.nexus.indexador.utils.UndoManager;
 import org.nexus.indexador.utils.ValidationService;
 import org.nexus.indexador.utils.WindowManager;
 import org.nexus.indexador.utils.AutoTilingService;
-import javafx.concurrent.Task;
 
 import java.io.*;
 import java.util.*;
+import javafx.scene.paint.Color; // Importar Color
 
 public class frmMain {
 
@@ -141,6 +141,12 @@ public class frmMain {
     private javafx.scene.layout.Pane paneFilterContent;
 
     @FXML
+    private javafx.scene.layout.Pane panePreviewBackground;
+
+    @FXML
+    private ColorPicker cpBackground;
+
+    @FXML
     private Label lblFilterToggle;
 
     @FXML
@@ -230,6 +236,10 @@ public class frmMain {
         setupGrhListListener();
         setupFilterTextFieldListener();
         setupSliderZoom();
+        setupColorPicker();
+
+        // Aplicar color de fondo configurado
+        updateBackgroundColor();
 
         logger.info("Controlador frmMain inicializado correctamente");
     }
@@ -664,6 +674,57 @@ public class frmMain {
     @FXML
     private void mnuConsola_OnAction() {
         windowManager.showWindow("frmConsola", "Consola", false);
+    }
+
+    /**
+     * Método para manejar la acción cuando se hace clic en el elemento del menú
+     * "Color de Fondo..."
+     */
+    @FXML
+    private void mnuConfigColor_OnAction() {
+        ColorPicker colorPicker = new ColorPicker();
+        try {
+            colorPicker.setValue(Color.web(configManager.getBackgroundColor()));
+        } catch (IllegalArgumentException e) {
+            colorPicker.setValue(Color.web("#EA3FF7")); // Default fallback
+        }
+
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Seleccionar Color de Fondo");
+        dialog.setHeaderText("Elija el color de fondo para el visor");
+
+        // Aplicar estilos oscuros si es necesario (simple workaround)
+        // dialog.getDialogPane().getStylesheets().add(Main.class.getResource("styles/dark-theme.css").toExternalForm());
+
+        dialog.getDialogPane().setContent(colorPicker);
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+        Optional<ButtonType> result = dialog.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            Color c = colorPicker.getValue();
+            // Convertir a Hex string
+            String hex = String.format("#%02X%02X%02X",
+                    (int) (c.getRed() * 255),
+                    (int) (c.getGreen() * 255),
+                    (int) (c.getBlue() * 255));
+
+            configManager.setBackgroundColor(hex);
+            try {
+                configManager.writeConfig();
+            } catch (IOException e) {
+                logger.error("Error al guardar configuración de color", e);
+                showWarningAlert("Error", "No se pudo guardar la configuración.");
+            }
+            updateBackgroundColor();
+        }
+    }
+
+    private void updateBackgroundColor() {
+        if (panePreviewBackground != null) {
+            String color = configManager.getBackgroundColor();
+            // Mantener el borde gris
+            panePreviewBackground.setStyle("-fx-background-color: " + color + "; -fx-border-color: #CBCBCB;");
+        }
     }
 
     /**
@@ -2415,4 +2476,32 @@ public class frmMain {
 
         return true;
     }
+
+    private void setupColorPicker() {
+        if (cpBackground != null) {
+            String currentColor = configManager.getBackgroundColor();
+            try {
+                cpBackground.setValue(Color.web(currentColor));
+            } catch (Exception e) {
+                cpBackground.setValue(Color.web("#EA3FF7"));
+            }
+
+            cpBackground.setOnAction(event -> {
+                Color c = cpBackground.getValue();
+                String hex = String.format("#%02X%02X%02X",
+                        (int) (c.getRed() * 255),
+                        (int) (c.getGreen() * 255),
+                        (int) (c.getBlue() * 255));
+
+                configManager.setBackgroundColor(hex);
+                try {
+                    configManager.writeConfig();
+                } catch (IOException e) {
+                    logger.error("Error al guardar configuración de color", e);
+                }
+                updateBackgroundColor();
+            });
+        }
+    }
+
 }

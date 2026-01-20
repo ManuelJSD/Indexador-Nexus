@@ -11,6 +11,7 @@ public class ConfigManager {
     private String initDir;
     private String datDir;
     private String exportDir;
+    private String backgroundColor = "#EA3FF7"; // Default magenta
 
     private static final String CONFIG_FILE_NAME = "config.ini";
     // Usar directorio del usuario en lugar de resources
@@ -58,6 +59,10 @@ public class ConfigManager {
         return normalizePath(exportDir);
     }
 
+    public String getBackgroundColor() {
+        return backgroundColor;
+    }
+
     /**
      * Normaliza una ruta asegurando que termine con separador.
      */
@@ -88,6 +93,10 @@ public class ConfigManager {
         this.exportDir = exportDir;
     }
 
+    public void setBackgroundColor(String backgroundColor) {
+        this.backgroundColor = backgroundColor;
+    }
+
     public void readConfig() throws IOException {
         File configFile = new File(CONFIG_FILE_PATH);
         if (configFile.exists()) {
@@ -107,6 +116,8 @@ public class ConfigManager {
                             datDir = value;
                         } else if (key.equals("Exportados")) {
                             exportDir = value;
+                        } else if (key.equals("BackgroundColor")) {
+                            backgroundColor = value;
                         }
                     }
                 }
@@ -130,6 +141,8 @@ public class ConfigManager {
             writer.write("Dat=" + datDir);
             writer.newLine();
             writer.write("Exportados=" + exportDir);
+            writer.newLine();
+            writer.write("BackgroundColor=" + backgroundColor);
         }
     }
 

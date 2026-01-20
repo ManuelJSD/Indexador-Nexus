@@ -14,6 +14,7 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.control.ColorPicker?>
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.input.KeyCodeCombination?>
@@ -209,6 +210,12 @@
         <Label fx:id="lblVersion" layoutX="1056.0" layoutY="41.0" prefHeight="17.0" prefWidth="156.0" style="-fx-background-color: #424242;" text="Versión: 0" textFill="WHITE" />
         <Label fx:id="lblIndice" layoutX="843.0" layoutY="688.0" prefWidth="52.0" style="-fx-background-color: #424242;" text="Indice:" textFill="WHITE" />
         <TextField fx:id="txtIndice" editable="false" layoutX="884.0" layoutY="684.0" prefHeight="25.0" prefWidth="462.0" />
+        
+        <ColorPicker fx:id="cpBackground" layoutX="1225.0" layoutY="37.0" prefHeight="25.0" prefWidth="130.0" promptText="Color de Fondo" style="-fx-background-color: #555555; -fx-text-fill: white;">
+             <tooltip>
+                 <Tooltip text="Cambiar el color de fondo del visualizador" />
+             </tooltip>
+        </ColorPicker>
 
         <ScrollPane fx:id="PaneGrhView" layoutX="221.0" layoutY="41.0" prefHeight="644.0" prefWidth="604.0" style="-fx-background-color: #000000;">
             <content>
@@ -216,7 +223,7 @@
             </content>
         </ScrollPane>
 
-        <Pane layoutX="836.0" layoutY="67.0" prefHeight="386.0" prefWidth="520.0" style="-fx-background-color: #EA3FF7; -fx-border-color: #CBCBCB;">
+        <Pane fx:id="panePreviewBackground" layoutX="836.0" layoutY="67.0" prefHeight="386.0" prefWidth="520.0" style="-fx-background-color: #EA3FF7; -fx-border-color: #CBCBCB;">
             <children>
                 <ImageView fx:id="imgGrafico" fitHeight="374.0" fitWidth="508.0" layoutX="5.0" layoutY="6.0" pickOnBounds="true" preserveRatio="false" />
                 <Rectangle fx:id="rectanguloIndice" fill="TRANSPARENT" stroke="RED" strokeWidth="1.0" />

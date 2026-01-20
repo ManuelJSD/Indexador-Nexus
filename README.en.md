@@ -15,6 +15,8 @@ Indexer for Argentum Online programmed in Java. This tool allows you to view, ed
 - Animation management
 - Cache system to optimize performance
 - Visualization of shields, helmets, and other game features
+- **Configurable Background Color**: Integrated color picker to customize the viewer background.
+- **Path Management**: Flexible configuration for resource paths.
 - Centralized logging system
 - Intuitive graphical interface with JavaFX
 
@@ -83,6 +85,7 @@ When starting the application for the first time:
 1. Select the path where the Argentum Online resources are located
 2. The application will automatically load the available graphics
 3. Use the interface to navigate between the different resources
+4. You can change the viewer background color using the color picker located above the preview pane.
 
 ## Project Status
 

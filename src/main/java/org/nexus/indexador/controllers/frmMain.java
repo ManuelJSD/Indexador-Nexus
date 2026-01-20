@@ -30,6 +30,8 @@ import org.nexus.indexador.utils.Logger;
 import org.nexus.indexador.utils.UndoManager;
 import org.nexus.indexador.utils.ValidationService;
 import org.nexus.indexador.utils.WindowManager;
+import org.nexus.indexador.utils.AutoTilingService;
+import javafx.concurrent.Task;
 
 import java.io.*;
 import java.util.*;
@@ -455,7 +457,7 @@ public class frmMain {
                 String imagePath = configManager.getGraphicsDir() + currentGrh.getFileNum() + ".png";
 
                 if (!new File(imagePath).exists()) {
-                    imagePath = configManager.getGraphicsDir() + selectedGrh.getFileNum() + ".bmp";
+                    imagePath = configManager.getGraphicsDir() + currentGrh.getFileNum() + ".bmp";
                 }
 
                 // Obtener imagen desde el caché
@@ -1583,6 +1585,543 @@ public class frmMain {
     @FXML
     private void mnuGrhAdapter_OnAction() {
         windowManager.showWindow("frmAdaptador", "Adaptador de Grh", false);
+    }
+
+    // ========== AUTO-INDEXAR: MODOS ==========
+
+    /**
+     * Carga una imagen y detecta sprites usando FloodFill.
+     * Devuelve null si hay error.
+     */
+    private ImageDetectionResult loadAndDetectSprites(String title) {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle(title);
+        dialog.setHeaderText("Introduce el número de archivo de imagen (FileNum):");
+        dialog.setContentText("Imagen:");
+
+        Optional<String> result = dialog.showAndWait();
+        if (!result.isPresent())
+            return null;
+
+        try {
+            int fileNum = Integer.parseInt(result.get());
+            String imagePath = configManager.getGraphicsDir() + File.separator + fileNum + ".png";
+
+            File f = new File(imagePath);
+            if (!f.exists()) {
+                imagePath = configManager.getGraphicsDir() + File.separator + fileNum + ".bmp";
+                f = new File(imagePath);
+                if (!f.exists()) {
+                    showErrorAlert("Error", "No se encontró la imagen: " + fileNum);
+                    return null;
+                }
+            }
+
+            Image image = imageCache.getImage(imagePath);
+            if (image == null) {
+                showErrorAlert("Error", "No se pudo cargar la imagen.");
+                return null;
+            }
+
+            List<Rectangle> regions = AutoTilingService.getInstance().detectSprites(image);
+            return new ImageDetectionResult(fileNum, image, regions);
+
+        } catch (NumberFormatException e) {
+            showErrorAlert("Error", "Número de archivo inválido.");
+            return null;
+        }
+    }
+
+    /** Resultado de detección de imagen */
+    private static class ImageDetectionResult {
+        int fileNum;
+        Image image;
+        List<Rectangle> regions;
+
+        ImageDetectionResult(int fileNum, Image image, List<Rectangle> regions) {
+            this.fileNum = fileNum;
+            this.image = image;
+            this.regions = regions;
+        }
+    }
+
+    /**
+     * Crea GRHs estáticos a partir de rectángulos detectados.
+     * Devuelve lista de IDs creados.
+     */
+    private List<Integer> createStaticGrhs(List<Rectangle> regions, int fileNum) {
+        int startId = dataManager.getGrhCount() + 1;
+        List<Integer> createdIds = new ArrayList<>();
+
+        for (int i = 0; i < regions.size(); i++) {
+            Rectangle r = regions.get(i);
+            int grhId = startId + i;
+
+            GrhData newGrh = new GrhData();
+            newGrh.setGrh(grhId);
+            newGrh.setFileNum(fileNum);
+            newGrh.setsX((short) r.getX());
+            newGrh.setsY((short) r.getY());
+            newGrh.setTileWidth((short) r.getWidth());
+            newGrh.setTileHeight((short) r.getHeight());
+            newGrh.setNumFrames((short) 1);
+
+            grhList.add(newGrh);
+            if (grhDataMap != null)
+                grhDataMap.put(grhId, newGrh);
+            lstIndices.getItems().add(String.valueOf(grhId));
+            createdIds.add(grhId);
+        }
+
+        dataManager.setGrhCount(dataManager.getGrhCount() + createdIds.size());
+        return createdIds;
+    }
+
+    /**
+     * Crea animaciones GRH a partir de IDs estáticos.
+     */
+    private int createAnimationGrhs(List<Integer> staticIds, int framesPerAnim, int fileNum) {
+        int animCount = 0;
+        int currentId = dataManager.getGrhCount();
+
+        for (int i = 0; i < staticIds.size(); i += framesPerAnim) {
+            if (i + framesPerAnim > staticIds.size())
+                break;
+
+            currentId++;
+            GrhData animGrh = new GrhData();
+            animGrh.setGrh(currentId);
+            animGrh.setFileNum(fileNum);
+            animGrh.setNumFrames((short) framesPerAnim);
+
+            int[] frames = new int[framesPerAnim + 1];
+            frames[0] = 0;
+            for (int f = 0; f < framesPerAnim; f++) {
+                frames[f + 1] = staticIds.get(i + f);
+            }
+
+            animGrh.setFrames(frames);
+            animGrh.setSpeed(120.0f);
+
+            grhList.add(animGrh);
+            if (grhDataMap != null)
+                grhDataMap.put(currentId, animGrh);
+            lstIndices.getItems().add(String.valueOf(currentId) + " (Animación)");
+            animCount++;
+        }
+
+        dataManager.setGrhCount(currentId);
+        return animCount;
+    }
+
+    /**
+     * MODO: Cuerpo Animado (4 direcciones x N frames)
+     */
+    @FXML
+    private void mnuAutoBody_OnAction() {
+        ImageDetectionResult result = loadAndDetectSprites("Cuerpo Animado");
+        if (result == null || result.regions.isEmpty()) {
+            if (result != null)
+                showInfoAlert("Info", "No se detectaron sprites.");
+            return;
+        }
+
+        // Agrupar sprites por filas (basado en Y)
+        List<List<Rectangle>> rows = groupSpritesByRows(result.regions);
+
+        if (rows.isEmpty()) {
+            showInfoAlert("Info", "No se pudieron detectar filas.");
+            return;
+        }
+
+        // Mostrar resumen de lo detectado
+        StringBuilder summary = new StringBuilder();
+        summary.append("Se detectaron ").append(rows.size()).append(" filas:\n");
+        for (int i = 0; i < rows.size(); i++) {
+            summary.append("  Fila ").append(i + 1).append(": ").append(rows.get(i).size()).append(" frames\n");
+        }
+        summary.append("\n¿Crear ").append(rows.size()).append(" animaciones?");
+
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Cuerpo Animado");
+        confirm.setHeaderText("Detección automática de filas");
+        confirm.setContentText(summary.toString());
+
+        if (confirm.showAndWait().orElse(ButtonType.CANCEL) != ButtonType.OK)
+            return;
+
+        // Crear estáticos para todas las filas
+        List<Rectangle> allRects = new ArrayList<>();
+        for (List<Rectangle> row : rows) {
+            allRects.addAll(row);
+        }
+        List<Integer> allStaticIds = createStaticGrhs(allRects, result.fileNum);
+
+        // Crear animaciones por fila
+        int animCount = 0;
+        int offset = 0;
+        for (List<Rectangle> row : rows) {
+            int framesInRow = row.size();
+            if (framesInRow > 0) {
+                List<Integer> rowIds = allStaticIds.subList(offset, offset + framesInRow);
+                createSingleAnimation(rowIds, result.fileNum);
+                animCount++;
+            }
+            offset += framesInRow;
+        }
+
+        showInfoAlert("Éxito", "Se crearon " + allStaticIds.size() + " estáticos y " + animCount + " animaciones.");
+        scrollToEnd();
+    }
+
+    /** Agrupa sprites en filas basándose en coordenada Y */
+    private List<List<Rectangle>> groupSpritesByRows(List<Rectangle> regions) {
+        if (regions.isEmpty())
+            return new ArrayList<>();
+
+        // Calcular altura promedio para tolerancia
+        double avgHeight = regions.stream().mapToDouble(Rectangle::getHeight).average().orElse(32);
+        double tolerance = avgHeight * 0.5;
+
+        List<List<Rectangle>> rows = new ArrayList<>();
+        List<Rectangle> currentRow = new ArrayList<>();
+        double currentRowY = regions.get(0).getY();
+
+        for (Rectangle r : regions) {
+            if (Math.abs(r.getY() - currentRowY) < tolerance) {
+                currentRow.add(r);
+            } else {
+                if (!currentRow.isEmpty())
+                    rows.add(currentRow);
+                currentRow = new ArrayList<>();
+                currentRow.add(r);
+                currentRowY = r.getY();
+            }
+        }
+        if (!currentRow.isEmpty())
+            rows.add(currentRow);
+
+        return rows;
+    }
+
+    /** Crea una sola animación GRH a partir de IDs */
+    private void createSingleAnimation(List<Integer> frameIds, int fileNum) {
+        int currentId = dataManager.getGrhCount() + 1;
+
+        GrhData animGrh = new GrhData();
+        animGrh.setGrh(currentId);
+        animGrh.setFileNum(fileNum);
+        animGrh.setNumFrames((short) frameIds.size());
+
+        int[] frames = new int[frameIds.size() + 1];
+        frames[0] = 0;
+        for (int i = 0; i < frameIds.size(); i++) {
+            frames[i + 1] = frameIds.get(i);
+        }
+
+        animGrh.setFrames(frames);
+        animGrh.setSpeed(120.0f);
+
+        grhList.add(animGrh);
+        if (grhDataMap != null)
+            grhDataMap.put(currentId, animGrh);
+        lstIndices.getItems().add(String.valueOf(currentId) + " (Animación)");
+        dataManager.setGrhCount(currentId);
+    }
+
+    /**
+     * MODO: Sprites Individuales (solo estáticos, sin animación)
+     */
+    @FXML
+    private void mnuAutoSprites_OnAction() {
+        ImageDetectionResult result = loadAndDetectSprites("Sprites Individuales");
+        if (result == null || result.regions.isEmpty()) {
+            if (result != null)
+                showInfoAlert("Info", "No se detectaron sprites.");
+            return;
+        }
+
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Confirmar");
+        confirm.setHeaderText("Se detectaron " + result.regions.size() + " sprites.");
+        confirm.setContentText("¿Crear " + result.regions.size() + " GRHs estáticos?");
+
+        if (confirm.showAndWait().orElse(ButtonType.CANCEL) != ButtonType.OK)
+            return;
+
+        List<Integer> createdIds = createStaticGrhs(result.regions, result.fileNum);
+        showInfoAlert("Éxito", "Se crearon " + createdIds.size() + " GRHs estáticos.");
+        scrollToEnd();
+    }
+
+    /**
+     * MODO: Grid de Tiles (cuadrícula uniforme)
+     */
+    @FXML
+    private void mnuAutoGrid_OnAction() {
+        TextInputDialog fileDialog = new TextInputDialog();
+        fileDialog.setTitle("Grid de Tiles");
+        fileDialog.setHeaderText("Introduce el número de archivo de imagen:");
+        fileDialog.setContentText("FileNum:");
+
+        Optional<String> fileResult = fileDialog.showAndWait();
+        if (!fileResult.isPresent())
+            return;
+
+        try {
+            int fileNum = Integer.parseInt(fileResult.get());
+            String imagePath = configManager.getGraphicsDir() + File.separator + fileNum + ".png";
+
+            File f = new File(imagePath);
+            if (!f.exists()) {
+                imagePath = configManager.getGraphicsDir() + File.separator + fileNum + ".bmp";
+                f = new File(imagePath);
+                if (!f.exists()) {
+                    showErrorAlert("Error", "No se encontró la imagen.");
+                    return;
+                }
+            }
+
+            Image image = imageCache.getImage(imagePath);
+            if (image == null) {
+                showErrorAlert("Error", "No se pudo cargar la imagen.");
+                return;
+            }
+
+            int imgWidth = (int) image.getWidth();
+            int imgHeight = (int) image.getHeight();
+
+            // Elegir modo: por tamaño o por cantidad
+            Alert modeChoice = new Alert(Alert.AlertType.CONFIRMATION);
+            modeChoice.setTitle("Modo de Grid");
+            modeChoice.setHeaderText("Imagen: " + imgWidth + "x" + imgHeight);
+            modeChoice.setContentText("¿Cómo desea dividir la imagen?");
+
+            ButtonType btnBySize = new ButtonType("Por Tamaño (32x32, 64x64...)", ButtonBar.ButtonData.LEFT);
+            ButtonType btnByCount = new ButtonType("Por Cantidad (cols x filas)", ButtonBar.ButtonData.RIGHT);
+            ButtonType btnCancel = new ButtonType("Cancelar", ButtonBar.ButtonData.CANCEL_CLOSE);
+            modeChoice.getButtonTypes().setAll(btnBySize, btnByCount, btnCancel);
+
+            Optional<ButtonType> modeResult = modeChoice.showAndWait();
+            if (!modeResult.isPresent() || modeResult.get() == btnCancel)
+                return;
+
+            int tileWidth, tileHeight, cols, rows;
+
+            if (modeResult.get() == btnBySize) {
+                // Modo por tamaño fijo
+                ChoiceDialog<String> sizeDialog = new ChoiceDialog<>("32x32", "16x16", "32x32", "64x64", "128x128");
+                sizeDialog.setTitle("Tamaño de Tile");
+                sizeDialog.setHeaderText("Imagen: " + imgWidth + "x" + imgHeight);
+                sizeDialog.setContentText("Tamaño de cada tile:");
+
+                Optional<String> sizeResult = sizeDialog.showAndWait();
+                if (!sizeResult.isPresent())
+                    return;
+
+                tileWidth = tileHeight = Integer.parseInt(sizeResult.get().split("x")[0]);
+                cols = imgWidth / tileWidth;
+                rows = imgHeight / tileHeight;
+
+            } else {
+                // Modo por cantidad de tiles
+                TextInputDialog colsDialog = new TextInputDialog("1");
+                colsDialog.setTitle("Número de Columnas");
+                colsDialog.setHeaderText("Imagen: " + imgWidth + "x" + imgHeight);
+                colsDialog.setContentText("¿Cuántas columnas de tiles?");
+
+                Optional<String> colsResult = colsDialog.showAndWait();
+                if (!colsResult.isPresent())
+                    return;
+                cols = Integer.parseInt(colsResult.get());
+
+                TextInputDialog rowsDialog = new TextInputDialog("1");
+                rowsDialog.setTitle("Número de Filas");
+                rowsDialog.setHeaderText("Columnas: " + cols);
+                rowsDialog.setContentText("¿Cuántas filas de tiles?");
+
+                Optional<String> rowsResult = rowsDialog.showAndWait();
+                if (!rowsResult.isPresent())
+                    return;
+                rows = Integer.parseInt(rowsResult.get());
+
+                tileWidth = imgWidth / cols;
+                tileHeight = imgHeight / rows;
+            }
+
+            int total = cols * rows;
+
+            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+            confirm.setTitle("Confirmar Grid");
+            confirm.setHeaderText("Se generarán " + total + " tiles.");
+            confirm.setContentText(
+                    cols + " cols x " + rows + " filas\nTamaño: " + tileWidth + "x" + tileHeight + " px");
+
+            if (confirm.showAndWait().orElse(ButtonType.CANCEL) != ButtonType.OK)
+                return;
+
+            // Crear rectángulos de grid
+            List<Rectangle> gridRects = new ArrayList<>();
+            for (int row = 0; row < rows; row++) {
+                for (int col = 0; col < cols; col++) {
+                    gridRects.add(new Rectangle(col * tileWidth, row * tileHeight, tileWidth, tileHeight));
+                }
+            }
+
+            List<Integer> createdIds = createStaticGrhs(gridRects, fileNum);
+            showInfoAlert("Éxito",
+                    "Se crearon " + createdIds.size() + " tiles de " + tileWidth + "x" + tileHeight + ".");
+            scrollToEnd();
+
+        } catch (NumberFormatException e) {
+            showErrorAlert("Error", "Valor inválido.");
+        }
+    }
+
+    /**
+     * MODO: Superficies (múltiples superficies en una imagen, cada una dividida en
+     * tiles)
+     */
+    @FXML
+    private void mnuAutoSurfaces_OnAction() {
+        TextInputDialog fileDialog = new TextInputDialog();
+        fileDialog.setTitle("Superficies");
+        fileDialog.setHeaderText("Introduce el número de archivo de imagen:");
+        fileDialog.setContentText("FileNum:");
+
+        Optional<String> fileResult = fileDialog.showAndWait();
+        if (!fileResult.isPresent())
+            return;
+
+        try {
+            int fileNum = Integer.parseInt(fileResult.get());
+            String imagePath = configManager.getGraphicsDir() + File.separator + fileNum + ".png";
+
+            File f = new File(imagePath);
+            if (!f.exists()) {
+                imagePath = configManager.getGraphicsDir() + File.separator + fileNum + ".bmp";
+                f = new File(imagePath);
+                if (!f.exists()) {
+                    showErrorAlert("Error", "No se encontró la imagen.");
+                    return;
+                }
+            }
+
+            Image image = imageCache.getImage(imagePath);
+            if (image == null) {
+                showErrorAlert("Error", "No se pudo cargar la imagen.");
+                return;
+            }
+
+            int imgWidth = (int) image.getWidth();
+            int imgHeight = (int) image.getHeight();
+
+            // Pedir tamaño de cada superficie
+            TextInputDialog surfSizeDialog = new TextInputDialog("128");
+            surfSizeDialog.setTitle("Tamaño de Superficie");
+            surfSizeDialog.setHeaderText("Imagen: " + imgWidth + "x" + imgHeight);
+            surfSizeDialog.setContentText("Tamaño de cada superficie (px):");
+
+            Optional<String> surfSizeResult = surfSizeDialog.showAndWait();
+            if (!surfSizeResult.isPresent())
+                return;
+            int surfaceSize = Integer.parseInt(surfSizeResult.get());
+
+            // Pedir tamaño de cada tile
+            TextInputDialog tileSizeDialog = new TextInputDialog("32");
+            tileSizeDialog.setTitle("Tamaño de Tile");
+            tileSizeDialog.setHeaderText("Superficie: " + surfaceSize + "x" + surfaceSize);
+            tileSizeDialog.setContentText("Tamaño de cada tile (px):");
+
+            Optional<String> tileSizeResult = tileSizeDialog.showAndWait();
+            if (!tileSizeResult.isPresent())
+                return;
+            int tileSize = Integer.parseInt(tileSizeResult.get());
+
+            // Calcular cuántas superficies caben
+            int surfaceCols = imgWidth / surfaceSize;
+            int surfaceRows = imgHeight / surfaceSize;
+            int totalSurfaces = surfaceCols * surfaceRows;
+
+            // Calcular tiles por superficie
+            int tilesPerSurfaceRow = surfaceSize / tileSize;
+            int tilesPerSurface = tilesPerSurfaceRow * tilesPerSurfaceRow;
+            int totalTiles = totalSurfaces * tilesPerSurface;
+
+            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+            confirm.setTitle("Confirmar Superficies");
+            confirm.setHeaderText(totalSurfaces + " superficies de " + surfaceSize + "x" + surfaceSize);
+            confirm.setContentText(tilesPerSurface + " tiles por superficie (" + tileSize + "x" + tileSize
+                    + ")\nTotal: " + totalTiles + " tiles");
+
+            if (confirm.showAndWait().orElse(ButtonType.CANCEL) != ButtonType.OK)
+                return;
+
+            // Crear rectángulos: recorrer superficie por superficie
+            List<Rectangle> allTiles = new ArrayList<>();
+
+            for (int surfRow = 0; surfRow < surfaceRows; surfRow++) {
+                for (int surfCol = 0; surfCol < surfaceCols; surfCol++) {
+                    // Origen de esta superficie
+                    int surfX = surfCol * surfaceSize;
+                    int surfY = surfRow * surfaceSize;
+
+                    // Recorrer tiles dentro de esta superficie
+                    for (int tileRow = 0; tileRow < tilesPerSurfaceRow; tileRow++) {
+                        for (int tileCol = 0; tileCol < tilesPerSurfaceRow; tileCol++) {
+                            int x = surfX + (tileCol * tileSize);
+                            int y = surfY + (tileRow * tileSize);
+                            allTiles.add(new Rectangle(x, y, tileSize, tileSize));
+                        }
+                    }
+                }
+            }
+
+            List<Integer> createdIds = createStaticGrhs(allTiles, fileNum);
+            showInfoAlert("Éxito", "Se crearon " + createdIds.size() + " tiles de " + totalSurfaces + " superficies.");
+            scrollToEnd();
+
+        } catch (NumberFormatException e) {
+            showErrorAlert("Error", "Valor inválido.");
+        }
+    }
+
+    /**
+     * MODO: Animación Simple (1 fila = 1 animación)
+     */
+    @FXML
+    private void mnuAutoAnimation_OnAction() {
+        ImageDetectionResult result = loadAndDetectSprites("Animación Simple");
+        if (result == null || result.regions.isEmpty()) {
+            if (result != null)
+                showInfoAlert("Info", "No se detectaron sprites.");
+            return;
+        }
+
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Confirmar Animación");
+        confirm.setHeaderText("Se detectaron " + result.regions.size() + " frames.");
+        confirm.setContentText("¿Crear 1 animación con " + result.regions.size() + " frames?");
+
+        if (confirm.showAndWait().orElse(ButtonType.CANCEL) != ButtonType.OK)
+            return;
+
+        // Crear estáticos
+        List<Integer> staticIds = createStaticGrhs(result.regions, result.fileNum);
+
+        // Crear 1 animación con todos los frames
+        int animCount = createAnimationGrhs(staticIds, staticIds.size(), result.fileNum);
+
+        showInfoAlert("Éxito", "Se crearon " + staticIds.size() + " estáticos y " + animCount + " animación.");
+        scrollToEnd();
+    }
+
+    /** Scroll al final de la lista */
+    private void scrollToEnd() {
+        if (!lstIndices.getItems().isEmpty()) {
+            lstIndices.scrollTo(lstIndices.getItems().size() - 1);
+            lstIndices.getSelectionModel().select(lstIndices.getItems().size() - 1);
+        }
     }
 
     /**

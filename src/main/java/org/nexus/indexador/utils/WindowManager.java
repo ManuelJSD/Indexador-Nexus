@@ -84,6 +84,10 @@ public class WindowManager {
 
             // Registrar en el mapa y configurar limpieza al cerrar
             openWindows.put(fxmlName, newStage);
+
+            // Aplicar icono de aplicación
+            Main.setAppIcon(newStage);
+
             newStage.setOnCloseRequest(event -> {
                 openWindows.remove(fxmlName);
                 logger.debug("Ventana '" + fxmlName + "' cerrada");

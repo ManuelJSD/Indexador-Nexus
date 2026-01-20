@@ -40,6 +40,7 @@ import org.nexus.indexador.utils.AutoTilingService;
 import java.io.*;
 import java.util.*;
 import javafx.scene.paint.Color; // Importar Color
+import org.nexus.indexador.Main;
 
 public class frmMain {
 
@@ -1043,6 +1044,8 @@ public class frmMain {
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(content);
+        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+        Main.setAppIcon(stage);
         alert.showAndWait();
     }
 
@@ -1054,6 +1057,8 @@ public class frmMain {
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(content);
+        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+        Main.setAppIcon(stage);
         alert.showAndWait();
     }
 
@@ -1065,6 +1070,8 @@ public class frmMain {
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(content);
+        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+        Main.setAppIcon(stage);
         alert.showAndWait();
     }
 
@@ -1080,6 +1087,9 @@ public class frmMain {
             alert.setTitle("Confirmar cierre");
             alert.setHeaderText("Hay cambios sin guardar");
             alert.setContentText("¿Desea salir sin guardar los cambios?");
+
+            Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+            Main.setAppIcon(stage);
 
             ButtonType btnGuardar = new ButtonType("Guardar y Salir");
             ButtonType btnSalir = new ButtonType("Salir sin Guardar");
@@ -1119,6 +1129,7 @@ public class frmMain {
             frmPaths controller = loader.getController();
 
             Stage stage = new Stage();
+            Main.setAppIcon(stage);
             stage.setTitle("Configuración de Rutas");
             stage.setScene(new Scene(root));
             stage.initModality(Modality.APPLICATION_MODAL);
@@ -1172,6 +1183,8 @@ public class frmMain {
                         "Licencia: Open Source\n\n" +
                         "Java: " + System.getProperty("java.version") + "\n" +
                         "JavaFX: 17.0.13");
+        Stage stage = (Stage) about.getDialogPane().getScene().getWindow();
+        Main.setAppIcon(stage);
         about.showAndWait();
     }
 
@@ -1389,6 +1402,9 @@ public class frmMain {
             alert.setHeaderText("¿Estás seguro de que quieres eliminar este elemento?");
             alert.setContentText("Esta acción no se puede deshacer.");
 
+            Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+            Main.setAppIcon(stage);
+
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 lstIndices.getItems().remove(selectedIndex);
@@ -1513,6 +1529,9 @@ public class frmMain {
         dialog.setHeaderText("Por favor, introduce un Grh:");
         dialog.setContentText("Grh:");
 
+        Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
+        Main.setAppIcon(stage);
+
         Optional<String> result = dialog.showAndWait();
         if (result.isPresent()) {
             try {
@@ -1571,6 +1590,9 @@ public class frmMain {
             alert.setTitle("Confirmación");
             alert.setHeaderText("¿Estás seguro de que quieres eliminar este elemento?");
             alert.setContentText("Esta acción no se puede deshacer.");
+
+            Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+            Main.setAppIcon(stage);
 
             // Mostramos el diálogo y esperamos la respuesta del usuario
             Optional<ButtonType> result = alert.showAndWait();

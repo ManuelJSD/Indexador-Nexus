@@ -10,6 +10,8 @@ import org.nexus.indexador.controllers.frmCargando;
 import org.nexus.indexador.utils.Logger;
 
 import java.io.IOException;
+import javafx.scene.image.Image;
+import java.io.InputStream;
 
 public class Main extends Application {
 
@@ -18,6 +20,9 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) {
         logger.info("Iniciando aplicación Indexador Nexus");
+
+        // Configurar icono
+        setAppIcon(stage);
 
         // Verificar si es la primera vez que se ejecuta
         org.nexus.indexador.utils.ConfigManager config = org.nexus.indexador.utils.ConfigManager.getInstance();
@@ -52,6 +57,7 @@ public class Main extends Application {
             controller.setOnComplete(onComplete);
 
             setupStage.setTitle("Indexador Nexus - Configuración Inicial");
+            setAppIcon(setupStage);
             setupStage.setScene(scene);
             setupStage.setResizable(false);
             setupStage.show();
@@ -83,6 +89,7 @@ public class Main extends Application {
 
             stage.initStyle(StageStyle.UNDECORATED);
             stage.setTitle("Indexador Nexus: Iniciando");
+            setAppIcon(stage);
             stage.setResizable(false);
             stage.setScene(scene);
             stage.centerOnScreen();
@@ -101,5 +108,21 @@ public class Main extends Application {
         });
 
         launch();
+    }
+
+    /**
+     * Establece el icono de la aplicación para un Stage dado.
+     * 
+     * @param stage El escenario al que aplicar el icono.
+     */
+    public static void setAppIcon(Stage stage) {
+        try {
+            InputStream iconStream = Main.class.getResourceAsStream("/img/icon.png");
+            if (iconStream != null) {
+                stage.getIcons().add(new Image(iconStream));
+            }
+        } catch (Exception e) {
+            System.err.println("No se pudo cargar el icono de la aplicación: " + e.getMessage());
+        }
     }
 }

@@ -68,6 +68,7 @@ public class frmCargando {
             Platform.runLater(() -> {
                 // Crea la nueva ventana
                 Stage newStage = new Stage();
+                Main.setAppIcon(newStage);
                 newStage.setTitle("Indexador Nexus");
 
                 // Lee el archivo FXML para la nueva ventana

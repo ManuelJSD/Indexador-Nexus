@@ -1678,6 +1678,40 @@ public class frmMain {
     }
 
     /**
+     * Muestra la ventana de previsualización de detección.
+     * Retorna true si el usuario confirma, false si cancela.
+     */
+    private boolean showDetectionPreview(ImageDetectionResult result, String title, String modeDescription) {
+        try {
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
+                    getClass().getResource("/org/nexus/indexador/frmDetectionPreview.fxml"));
+            javafx.scene.Parent root = loader.load();
+
+            frmDetectionPreview previewController = loader.getController();
+            previewController.initialize(result.image, result.regions, title, modeDescription);
+
+            javafx.stage.Stage previewStage = new javafx.stage.Stage();
+            previewStage.setTitle("Vista Previa de Detección");
+            previewStage.setScene(new javafx.scene.Scene(root));
+            previewStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+
+            previewController.setStage(previewStage);
+
+            // Aplicar estilos
+            previewStage.getScene().getStylesheets().add(
+                    getClass().getResource("/org/nexus/indexador/styles/dark-theme.css").toExternalForm());
+
+            previewStage.showAndWait();
+
+            return previewController.isConfirmed();
+        } catch (Exception e) {
+            logger.error("Error al mostrar previsualización", e);
+            showErrorAlert("Error", "No se pudo mostrar la previsualización: " + e.getMessage());
+            return false;
+        }
+    }
+
+    /**
      * Crea GRHs estáticos a partir de rectángulos detectados.
      * Devuelve lista de IDs creados.
      */
@@ -1772,15 +1806,12 @@ public class frmMain {
         for (int i = 0; i < rows.size(); i++) {
             summary.append("  Fila ").append(i + 1).append(": ").append(rows.get(i).size()).append(" frames\n");
         }
-        summary.append("\n¿Crear ").append(rows.size()).append(" animaciones?");
 
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Cuerpo Animado");
-        confirm.setHeaderText("Detección automática de filas");
-        confirm.setContentText(summary.toString());
-
-        if (confirm.showAndWait().orElse(ButtonType.CANCEL) != ButtonType.OK)
-            return;
+        // Mostrar vista previa
+        String modeDesc = summary.toString();
+        if (!showDetectionPreview(result, "Cuerpo Animado", modeDesc)) {
+            return; // Usuario canceló
+        }
 
         // Crear estáticos para todas las filas
         List<Rectangle> allRects = new ArrayList<>();
@@ -1873,13 +1904,11 @@ public class frmMain {
             return;
         }
 
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Confirmar");
-        confirm.setHeaderText("Se detectaron " + result.regions.size() + " sprites.");
-        confirm.setContentText("¿Crear " + result.regions.size() + " GRHs estáticos?");
-
-        if (confirm.showAndWait().orElse(ButtonType.CANCEL) != ButtonType.OK)
-            return;
+        // Mostrar vista previa
+        String modeDesc = "Modo: Sprites Individuales (estáticos)";
+        if (!showDetectionPreview(result, "Sprites Individuales", modeDesc)) {
+            return; // Usuario canceló
+        }
 
         List<Integer> createdIds = createStaticGrhs(result.regions, result.fileNum);
         showInfoAlert("Éxito", "Se crearon " + createdIds.size() + " GRHs estáticos.");
@@ -2130,13 +2159,11 @@ public class frmMain {
             return;
         }
 
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Confirmar Animación");
-        confirm.setHeaderText("Se detectaron " + result.regions.size() + " frames.");
-        confirm.setContentText("¿Crear 1 animación con " + result.regions.size() + " frames?");
-
-        if (confirm.showAndWait().orElse(ButtonType.CANCEL) != ButtonType.OK)
-            return;
+        // Mostrar vista previa
+        String modeDesc = "Modo: Animación Simple (" + result.regions.size() + " frames)";
+        if (!showDetectionPreview(result, "Animación Simple", modeDesc)) {
+            return; // Usuario canceló
+        }
 
         // Crear estáticos
         List<Integer> staticIds = createStaticGrhs(result.regions, result.fileNum);

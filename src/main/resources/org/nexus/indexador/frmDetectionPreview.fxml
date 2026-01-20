@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.canvas.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.nexus.indexador.controllers.frmDetectionPreview"
+      spacing="10" prefWidth="800" prefHeight="600"
+      styleClass="preview-container">
+    
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10"/>
+    </padding>
+    
+    <Label fx:id="lblTitle" text="Vista Previa de Detección" styleClass="preview-title"/>
+    
+    <!-- ScrollPane con Canvas para la imagen -->
+    <ScrollPane fx:id="scrollPane" VBox.vgrow="ALWAYS" fitToWidth="true" fitToHeight="true" 
+                pannable="true" styleClass="preview-scroll">
+        <Canvas fx:id="canvas"/>
+    </ScrollPane>
+    
+    <!-- Info bar -->
+    <HBox spacing="20" alignment="CENTER_LEFT">
+        <Label fx:id="lblDetected" text="Detectados: 0 sprites" styleClass="preview-info"/>
+        <Label fx:id="lblMode" text="" styleClass="preview-info"/>
+    </HBox>
+    
+    <!-- Botones -->
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button fx:id="btnAdjust" text="Ajustar Detección" onAction="#onAdjustClick" visible="false"/>
+        <Button fx:id="btnCancel" text="Cancelar" onAction="#onCancelClick"/>
+        <Button fx:id="btnConfirm" text="✓ Crear GRHs" onAction="#onConfirmClick" styleClass="button-primary"/>
+    </HBox>
+</VBox>

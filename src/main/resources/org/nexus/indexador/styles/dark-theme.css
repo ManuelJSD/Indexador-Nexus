@@ -9,24 +9,24 @@
     -fx-background: #1e1e1e;
     -fx-control-inner-background: #3c3c3c;
     -fx-control-inner-background-alt: #454545;
-    
+
     /* Accent colors */
     -fx-accent: #4a90d9;
     -fx-focus-color: #4a90d9;
     -fx-faint-focus-color: rgba(74, 144, 217, 0.3);
-    
+
     /* Text colors */
     -fx-text-base-color: #e0e0e0;
     -fx-text-fill: #e0e0e0;
     -fx-light-text-color: #e0e0e0;
     -fx-mid-text-color: #b0b0b0;
     -fx-dark-text-color: #808080;
-    
+
     /* Border colors */
     -fx-box-border: #555555;
     -fx-text-box-border: #555555;
     -fx-shadow-highlight-color: transparent;
-    
+
     /* Selection */
     -fx-selection-bar: #4a90d9;
     -fx-selection-bar-non-focused: #3a6a9d;
@@ -106,7 +106,8 @@
 }
 
 /* ===== TEXT FIELDS ===== */
-.text-field, .text-area {
+.text-field,
+.text-area {
     -fx-background-color: #3c3c3c;
     -fx-text-fill: #e0e0e0;
     -fx-prompt-text-fill: #808080;
@@ -115,7 +116,8 @@
     -fx-background-radius: 4;
 }
 
-.text-field:focused, .text-area:focused {
+.text-field:focused,
+.text-area:focused {
     -fx-border-color: #4a90d9;
     -fx-border-width: 2;
 }
@@ -317,4 +319,33 @@
 
 .wizard-cancel-btn:hover {
     -fx-text-fill: #e0e0e0;
+}
+
+/* ===== PREVIEW STYLES ===== */
+.preview-container {
+    -fx-background-color: #2b2b2b;
+}
+
+.preview-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #e0e0e0;
+}
+
+.preview-scroll {
+    -fx-background-color: #1e1e1e;
+}
+
+.preview-info {
+    -fx-font-size: 12px;
+    -fx-text-fill: #b0b0b0;
+}
+
+.button-primary {
+    -fx-background-color: #4a90d9;
+    -fx-text-fill: white;
+}
+
+.button-primary:hover {
+    -fx-background-color: #5aa0e9;
 }

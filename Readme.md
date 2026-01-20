@@ -22,7 +22,7 @@ Indexador para Argentum Online programado en Java. Esta herramienta permite visu
 
 ## Capturas de Pantalla
 
-![Vista Principal](https://github.com/Lorwik/Indexador-Nexus/assets/1338437/ea753277-4461-4e4e-a67d-8397823a2500)
+<img width="1364" height="798" alt="image" src="https://github.com/user-attachments/assets/06e583c1-6f24-4dad-8988-943fbd5ffbbe" />
 
 ## Requisitos del Sistema
 
@@ -38,7 +38,7 @@ Indexador para Argentum Online programado en Java. Esta herramienta permite visu
 
 1. Clonar el repositorio:
    ```bash
-   git clone https://github.com/Lorwik/Indexador-Nexus.git
+   git clone https://github.com/ManuelJSD/Indexador-Nexus.git
    ```
 
 2. Navegar al directorio del proyecto:

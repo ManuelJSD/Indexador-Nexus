@@ -67,6 +67,20 @@
                         </MenuItem>
                     </items>
                 </Menu>
+                <Menu mnemonicParsing="true" text="_Editar">
+                    <items>
+                        <MenuItem fx:id="mnuUndo" mnemonicParsing="false" onAction="#mnuUndo_OnAction" text="Deshacer">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="Z" control="DOWN" meta="UP" shift="UP" shortcut="UP"/>
+                            </accelerator>
+                        </MenuItem>
+                        <MenuItem fx:id="mnuRedo" mnemonicParsing="false" onAction="#mnuRedo_OnAction" text="Rehacer">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="Y" control="DOWN" meta="UP" shift="UP" shortcut="UP"/>
+                            </accelerator>
+                        </MenuItem>
+                    </items>
+                </Menu>
                 <Menu fx:id="mnuVer" mnemonicParsing="true" text="_Ver">
                     <items>
                         <MenuItem fx:id="mnuHead" mnemonicParsing="false" onAction="#mnuHead_OnAction" text="Cabezas">

@@ -27,6 +27,7 @@ import org.nexus.indexador.utils.ConfigManager;
 import org.nexus.indexador.utils.ExportService;
 import org.nexus.indexador.utils.ImageCache;
 import org.nexus.indexador.utils.Logger;
+import org.nexus.indexador.utils.UndoManager;
 import org.nexus.indexador.utils.ValidationService;
 import org.nexus.indexador.utils.WindowManager;
 
@@ -628,6 +629,59 @@ public class frmMain {
     }
 
     /**
+     * Deshace la última acción.
+     */
+    @FXML
+    private void mnuUndo_OnAction() {
+        UndoManager undoManager = UndoManager.getInstance();
+        if (undoManager.canUndo()) {
+            String description = undoManager.getUndoDescription();
+            undoManager.undo();
+            logger.info("Undo: " + description);
+
+            // Refrescar la vista
+            int selectedIndex = lstIndices.getSelectionModel().getSelectedIndex();
+            if (selectedIndex >= 0 && selectedIndex < grhList.size()) {
+                updateEditor(grhList.get(selectedIndex));
+            }
+            updateUndoRedoStatus();
+        }
+    }
+
+    /**
+     * Rehace la última acción deshecha.
+     */
+    @FXML
+    private void mnuRedo_OnAction() {
+        UndoManager undoManager = UndoManager.getInstance();
+        if (undoManager.canRedo()) {
+            String description = undoManager.getRedoDescription();
+            undoManager.redo();
+            logger.info("Redo: " + description);
+
+            // Refrescar la vista
+            int selectedIndex = lstIndices.getSelectionModel().getSelectedIndex();
+            if (selectedIndex >= 0 && selectedIndex < grhList.size()) {
+                updateEditor(grhList.get(selectedIndex));
+            }
+            updateUndoRedoStatus();
+        }
+    }
+
+    /**
+     * Actualiza el estado de los menús Undo/Redo.
+     */
+    private void updateUndoRedoStatus() {
+        UndoManager undoManager = UndoManager.getInstance();
+        // Actualizar status bar para mostrar si hay cambios sin guardar
+        if (undoManager.hasUnsavedChanges()) {
+            if (lblModified != null) {
+                lblModified.setText("● Modificado");
+            }
+        }
+    }
+
+    /**
      * Exporta los datos de gráficos al archivo "graficos.ini" en el directorio de
      * exportación configurado.
      * Los datos exportados incluyen el número total de gráficos, la versión de los
@@ -797,11 +851,42 @@ public class frmMain {
     }
 
     /**
-     * Cierra la aplicación
+     * Cierra la aplicación con confirmación si hay cambios sin guardar.
      */
     @FXML
     private void mnuClose_OnAction() {
-        Platform.exit();
+        UndoManager undoManager = UndoManager.getInstance();
+
+        if (undoManager.hasUnsavedChanges()) {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Confirmar cierre");
+            alert.setHeaderText("Hay cambios sin guardar");
+            alert.setContentText("¿Desea salir sin guardar los cambios?");
+
+            ButtonType btnGuardar = new ButtonType("Guardar y Salir");
+            ButtonType btnSalir = new ButtonType("Salir sin Guardar");
+            ButtonType btnCancelar = new ButtonType("Cancelar", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+            alert.getButtonTypes().setAll(btnGuardar, btnSalir, btnCancelar);
+
+            alert.showAndWait().ifPresent(response -> {
+                if (response == btnGuardar) {
+                    try {
+                        mnuIndexbyMemory();
+                        undoManager.markSaved();
+                        Platform.exit();
+                    } catch (IOException e) {
+                        logger.error("Error al guardar antes de cerrar", e);
+                        showErrorAlert("Error", "No se pudo guardar. ¿Desea salir de todos modos?");
+                    }
+                } else if (response == btnSalir) {
+                    Platform.exit();
+                }
+                // Si es Cancelar, no hacer nada
+            });
+        } else {
+            Platform.exit();
+        }
     }
 
     @FXML

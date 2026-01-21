@@ -43,23 +43,47 @@ public class frmCargando {
 
                 DataManager dataManager = DataManager.getInstance();
 
-                Platform.runLater(() -> lblStatus.setText("Cargando indice de graficos..."));
-                dataManager.loadGrhData();
+                try {
+                    Platform.runLater(() -> lblStatus.setText("Cargando indice de graficos..."));
+                    dataManager.loadGrhData();
+                } catch (Exception e) {
+                    System.err.println("Error al cargar graficos: " + e.getMessage());
+                }
 
-                Platform.runLater(() -> lblStatus.setText("Cargando indice de cabezas..."));
-                dataManager.readHeadFile();
+                try {
+                    Platform.runLater(() -> lblStatus.setText("Cargando indice de cabezas..."));
+                    dataManager.readHeadFile();
+                } catch (Exception e) {
+                    System.err.println("Error al cargar cabezas: " + e.getMessage());
+                }
 
-                Platform.runLater(() -> lblStatus.setText("Cargando indice de cascos..."));
-                dataManager.readHelmetFile();
+                try {
+                    Platform.runLater(() -> lblStatus.setText("Cargando indice de cascos..."));
+                    dataManager.readHelmetFile();
+                } catch (Exception e) {
+                    System.err.println("Error al cargar cascos: " + e.getMessage());
+                }
 
-                Platform.runLater(() -> lblStatus.setText("Cargando indice de cuerpos..."));
-                dataManager.readBodyFile();
+                try {
+                    Platform.runLater(() -> lblStatus.setText("Cargando indice de cuerpos..."));
+                    dataManager.readBodyFile();
+                } catch (Exception e) {
+                    System.err.println("Error al cargar cuerpos: " + e.getMessage());
+                }
 
-                Platform.runLater(() -> lblStatus.setText("Cargando indice de escudos..."));
-                dataManager.readShieldFile();
+                try {
+                    Platform.runLater(() -> lblStatus.setText("Cargando indice de escudos..."));
+                    dataManager.readShieldFile();
+                } catch (Exception e) {
+                    System.err.println("Error al cargar escudos: " + e.getMessage());
+                }
 
-                Platform.runLater(() -> lblStatus.setText("Cargando indice de FXs..."));
-                dataManager.readFXsdFile();
+                try {
+                    Platform.runLater(() -> lblStatus.setText("Cargando indice de FXs..."));
+                    dataManager.readFXsdFile();
+                } catch (Exception e) {
+                    System.err.println("Error al cargar FXs: " + e.getMessage());
+                }
 
             } catch (IOException e) {
                 System.err.println("Error al leer la configuración: " + e.getMessage());

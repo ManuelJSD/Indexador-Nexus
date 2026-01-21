@@ -15,12 +15,12 @@ public class DataManager {
 
     private GrhData grhData;
 
-    private ObservableList<GrhData> grhList;
-    private ObservableList<HeadData> headList;
-    private ObservableList<HelmetData> helmetList;
-    private ObservableList<BodyData> bodyList;
-    private ObservableList<ShieldData> shieldList;
-    private ObservableList<FXData> fxList;
+    private ObservableList<GrhData> grhList = FXCollections.observableArrayList();
+    private ObservableList<HeadData> headList = FXCollections.observableArrayList();
+    private ObservableList<HelmetData> helmetList = FXCollections.observableArrayList();
+    private ObservableList<BodyData> bodyList = FXCollections.observableArrayList();
+    private ObservableList<ShieldData> shieldList = FXCollections.observableArrayList();
+    private ObservableList<FXData> fxList = FXCollections.observableArrayList();
 
     private int GrhCount;
     private int GrhVersion;
@@ -323,14 +323,30 @@ public class DataManager {
     }
 
     public ObservableList<ShieldData> readShieldFile() throws IOException {
-        logger.info("Cargando datos de escudos...");
+        try {
+            return readShieldFileBinary();
+        } catch (FileNotFoundException | EOFException e) {
+            logger.warning("escudos.ind no encontrado o incompleto. Intentando con Escudos.dat...");
+            try {
+                return readShieldFileText();
+            } catch (FileNotFoundException ex) {
+                logger.error("No se encontró ni escudos.ind ni Escudos.dat");
+                return shieldList; // Devolver lista vacía (inicializada) para evitar NPE
+            } catch (Exception ex) {
+                logger.error("Error al leer Escudos.dat", ex);
+                return shieldList;
+            }
+        }
+    }
 
-        shieldList = FXCollections.observableArrayList();
+    public ObservableList<ShieldData> readShieldFileBinary() throws IOException {
+        logger.info("Cargando datos de escudos (Binario)...");
+
+        shieldList.clear();
 
         File archivo = new File(configManager.getInitDir() + "escudos.ind");
 
         try (RandomAccessFile file = new RandomAccessFile(archivo, "r")) {
-            logger.info("Comenzando a leer desde " + archivo.getAbsolutePath());
             logger.info("Comenzando a leer desde " + archivo.getAbsolutePath());
             handleFixedHeader(file, 16);
             NumShields = byteMigration.bigToLittle_Short(file.readShort());
@@ -345,16 +361,83 @@ public class DataManager {
             }
 
         } catch (FileNotFoundException e) {
-            logger.error("Archivo no encontrado: " + archivo.getAbsolutePath(), e);
             throw e;
         } catch (EOFException e) {
-            logger.info("Fin de fichero alcanzado");
+            throw e;
         } catch (IOException e) {
             logger.error("Error de E/S al leer el archivo: " + archivo.getAbsolutePath(), e);
             throw e;
         }
 
         logger.info("Cargados " + shieldList.size() + " escudos exitosamente");
+        return shieldList;
+    }
+
+    public ObservableList<ShieldData> readShieldFileText() throws IOException {
+        logger.info("Cargando datos de escudos (Texto)...");
+        shieldList.clear();
+        File archivo = new File(configManager.getInitDir() + "Escudos.dat");
+
+        if (!archivo.exists()) {
+            throw new FileNotFoundException("Escudos.dat no encontrado");
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(archivo))) {
+            String line;
+            int[] currentShield = new int[4];
+            boolean hasData = false;
+
+            while ((line = reader.readLine()) != null) {
+                line = line.trim();
+                if (line.isEmpty())
+                    continue;
+
+                if (line.startsWith("[")) {
+                    // Si ya teníamos datos de un escudo previo, lo guardamos
+                    if (hasData) {
+                        shieldList.add(new ShieldData(currentShield.clone()));
+                        for (int k = 0; k < 4; k++)
+                            currentShield[k] = 0;
+                        hasData = false;
+                    }
+                    continue;
+                }
+
+                // Limpiar comentarios
+                if (line.contains("'")) {
+                    line = line.split("'")[0].trim();
+                }
+
+                String[] parts = line.split("=");
+                if (parts.length < 2)
+                    continue;
+
+                String key = parts[0].trim().toUpperCase();
+                String value = parts[1].trim();
+
+                try {
+                    int val = Integer.parseInt(value);
+                    if (key.equals("NUMESCUDOS")) {
+                        NumShields = (short) val;
+                    } else if (key.startsWith("DIR")) {
+                        int dirIndex = Integer.parseInt(key.substring(3)) - 1;
+                        if (dirIndex >= 0 && dirIndex < 4) {
+                            currentShield[dirIndex] = val;
+                            hasData = true;
+                        }
+                    }
+                } catch (NumberFormatException e) {
+                    // Ignorar valores no numéricos
+                }
+            }
+
+            // Guardar el último escudo si existe
+            if (hasData) {
+                shieldList.add(new ShieldData(currentShield.clone()));
+            }
+        }
+
+        logger.info("Cargados " + shieldList.size() + " escudos (Texto) exitosamente");
         return shieldList;
     }
 

@@ -9,6 +9,8 @@ import org.nexus.indexador.utils.Logger;
 import org.nexus.indexador.utils.byteMigration;
 
 import java.io.*;
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * Implementación del cargador para el sistema de moldes.
@@ -129,5 +131,10 @@ public class MoldIndexLoader implements IndexLoader {
     @Override
     public IndexingSystem getSystemType() {
         return IndexingSystem.MOLD;
+    }
+
+    @Override
+    public Map<String, IndFileFormat> getDetectedFormats() {
+        return Collections.emptyMap();
     }
 }

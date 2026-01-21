@@ -9,20 +9,19 @@ import org.nexus.indexador.utils.Logger;
 import org.nexus.indexador.utils.byteMigration;
 
 import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Implementación placeholder del cargador para el sistema tradicional.
- * 
- * Este sistema utiliza índices directos a gráficos individuales para
- * representar cabezas y cascos.
- * 
- * NOTA: Esta implementación está pendiente de desarrollo por el usuario.
+ * Implementación del cargador para el sistema tradicional con detección
+ * dinámica de formatos.
  */
 public class TraditionalIndexLoader implements IndexLoader {
 
     private final ConfigManager configManager;
     private final byteMigration byteMigration;
     private final Logger logger;
+    private final Map<String, IndFileFormat> detectedFormats = new HashMap<>();
 
     public TraditionalIndexLoader() throws IOException {
         this.configManager = ConfigManager.getInstance();
@@ -32,100 +31,73 @@ public class TraditionalIndexLoader implements IndexLoader {
 
     @Override
     public ObservableList<HeadData> loadHeads() throws IOException {
-        logger.info("Cargando datos de cabezas (Sistema Tradicional)..." + configManager.getInitDir());
-
+        logger.info("Cargando datos de cabezas (Sistema Tradicional)...");
         ObservableList<HeadData> headList = FXCollections.observableArrayList();
         File archivo = new File(configManager.getInitDir() + "cabezas.ind");
 
         try (RandomAccessFile file = new RandomAccessFile(archivo, "r")) {
-            logger.info("Comenzando a leer desde " + archivo.getAbsolutePath());
+            IndFileFormat format = detectFormat(file, 8, 16);
+            recordFormat("HEADS", format);
 
-            IndFormat format = detectFormat(file);
-            if (!format.valid) {
+            if (!format.isValid()) {
                 logger.error("Formato de cabezas.ind desconocido o corrupto.");
                 return headList;
             }
 
-            file.seek(format.dataOffset);
+            file.seek(format.getDataOffset());
             short numHeads = byteMigration.bigToLittle_Short(file.readShort());
 
             for (int i = 0; i < numHeads; i++) {
-                int[] grh = new int[4]; // [Norte, Sur, Este, Oeste]
-
+                int[] grh = new int[4];
                 for (int j = 0; j < 4; j++) {
-                    if (format.isLong) {
+                    if (format.isLong()) {
                         grh[j] = byteMigration.bigToLittle_Int(file.readInt());
                     } else {
                         grh[j] = byteMigration.bigToLittle_Short(file.readShort());
                     }
                 }
-
-                HeadData headData = new HeadData(grh);
-                headList.add(headData);
-
+                headList.add(new HeadData(grh));
             }
-
         } catch (FileNotFoundException e) {
             logger.error("Archivo no encontrado: " + archivo.getAbsolutePath(), e);
             throw e;
-        } catch (EOFException e) {
-            logger.info("Fin de fichero alcanzado");
-        } catch (IOException e) {
-            logger.error("Error de E/S al leer el archivo: " + archivo.getAbsolutePath(), e);
-            throw e;
         }
-
-        logger.info("Cargadas " + headList.size() + " cabezas exitosamente (Sistema Tradicional)");
         return headList;
-
     }
 
     @Override
     public ObservableList<HelmetData> loadHelmets() throws IOException {
         logger.info("Cargando datos de cascos (Sistema Tradicional)...");
-
         ObservableList<HelmetData> helmetList = FXCollections.observableArrayList();
         File archivo = new File(configManager.getInitDir() + "cascos.ind");
 
         try (RandomAccessFile file = new RandomAccessFile(archivo, "r")) {
-            logger.info("Comenzando a leer desde " + archivo.getAbsolutePath());
+            IndFileFormat format = detectFormat(file, 8, 16);
+            recordFormat("HELMETS", format);
 
-            IndFormat format = detectFormat(file);
-            if (!format.valid) {
+            if (!format.isValid()) {
                 logger.error("Formato de cascos.ind desconocido o corrupto.");
                 return helmetList;
             }
 
-            file.seek(format.dataOffset);
+            file.seek(format.getDataOffset());
             short numHelmets = byteMigration.bigToLittle_Short(file.readShort());
 
             for (int i = 0; i < numHelmets; i++) {
-                int[] grh = new int[4]; // [Norte, Sur, Este, Oeste]
-
+                int[] grh = new int[4];
                 for (int j = 0; j < 4; j++) {
-                    if (format.isLong) {
+                    if (format.isLong()) {
                         grh[j] = byteMigration.bigToLittle_Int(file.readInt());
                     } else {
                         grh[j] = byteMigration.bigToLittle_Short(file.readShort());
                     }
                 }
-
-                HelmetData helmetData = new HelmetData(grh);
-                helmetList.add(helmetData);
-
+                helmetList.add(new HelmetData(grh));
             }
-
         } catch (FileNotFoundException e) {
             logger.error("Archivo no encontrado: " + archivo.getAbsolutePath(), e);
             throw e;
-        } catch (EOFException e) {
-            logger.info("Fin de fichero alcanzado");
-        } catch (IOException e) {
-            logger.error("Error de E/S al leer el archivo: " + archivo.getAbsolutePath(), e);
-            throw e;
         }
-
-        logger.info("Cargados " + helmetList.size() + " cascos exitosamente (Sistema Tradicional)");
         return helmetList;
     }
 
@@ -136,25 +108,30 @@ public class TraditionalIndexLoader implements IndexLoader {
         File archivo = new File(configManager.getInitDir() + "personajes.ind");
 
         try (RandomAccessFile file = new RandomAccessFile(archivo, "r")) {
-            logger.info("Comenzando a leer desde " + archivo.getAbsolutePath());
-            handleFixedHeader(file, 20);
+            IndFileFormat format = detectFormat(file, 12, 20); // 4 indices + 2 shorts
+            recordFormat("BODIES", format);
+
+            file.seek(format.getDataOffset());
             short numBodys = byteMigration.bigToLittle_Short(file.readShort());
 
             for (int i = 0; i < numBodys; i++) {
                 int[] body = new int[4];
                 for (int j = 0; j < 4; j++) {
-                    body[j] = byteMigration.bigToLittle_Int(file.readInt());
+                    if (format.isLong()) {
+                        body[j] = byteMigration.bigToLittle_Int(file.readInt());
+                    } else {
+                        body[j] = byteMigration.bigToLittle_Short(file.readShort());
+                    }
                 }
                 short headOffsetX = byteMigration.bigToLittle_Short(file.readShort());
                 short headOffsetY = byteMigration.bigToLittle_Short(file.readShort());
-                BodyData data = new BodyData(body, headOffsetX, headOffsetY);
-                bodyList.add(data);
+                bodyList.add(new BodyData(body, headOffsetX, headOffsetY));
             }
         } catch (FileNotFoundException e) {
             logger.error("Archivo no encontrado: " + archivo.getAbsolutePath(), e);
             throw e;
         } catch (EOFException e) {
-            logger.info("Fin de fichero alcanzado");
+            logger.info("Fin de fichero alcanzado en personajes.ind");
         }
         return bodyList;
     }
@@ -167,9 +144,6 @@ public class TraditionalIndexLoader implements IndexLoader {
             logger.warning("escudos.ind no encontrado o incompleto. Intentando con Escudos.dat...");
             try {
                 return loadShieldsText();
-            } catch (FileNotFoundException ex) {
-                logger.error("No se encontró ni escudos.ind ni Escudos.dat");
-                return FXCollections.observableArrayList();
             } catch (Exception ex) {
                 logger.error("Error al leer Escudos.dat", ex);
                 return FXCollections.observableArrayList();
@@ -183,16 +157,25 @@ public class TraditionalIndexLoader implements IndexLoader {
         File archivo = new File(configManager.getInitDir() + "escudos.ind");
 
         try (RandomAccessFile file = new RandomAccessFile(archivo, "r")) {
-            handleFixedHeader(file, 16);
+            IndFileFormat format = detectFormat(file, 8, 16);
+            recordFormat("SHIELDS", format);
+
+            file.seek(format.getDataOffset());
             short numShields = byteMigration.bigToLittle_Short(file.readShort());
 
             for (int i = 0; i < numShields; i++) {
                 int[] shield = new int[4];
                 for (int j = 0; j < 4; j++) {
-                    shield[j] = byteMigration.bigToLittle_Int(file.readInt());
+                    if (format.isLong()) {
+                        shield[j] = byteMigration.bigToLittle_Int(file.readInt());
+                    } else {
+                        shield[j] = byteMigration.bigToLittle_Short(file.readShort());
+                    }
                 }
                 shieldList.add(new ShieldData(shield));
             }
+        } catch (EOFException e) {
+            logger.info("Fin de fichero alcanzado en escudos.ind");
         }
         return shieldList;
     }
@@ -256,11 +239,19 @@ public class TraditionalIndexLoader implements IndexLoader {
         File archivo = new File(configManager.getInitDir() + "fxs.ind");
 
         try (RandomAccessFile file = new RandomAccessFile(archivo, "r")) {
-            handleFixedHeader(file, 8);
+            IndFileFormat format = detectFormat(file, 6, 8); // Int=2+2+2, Long=4+2+2
+            recordFormat("FXS", format);
+
+            file.seek(format.getDataOffset());
             short numFXs = byteMigration.bigToLittle_Short(file.readShort());
 
             for (int i = 0; i < numFXs; i++) {
-                int fx = byteMigration.bigToLittle_Int(file.readInt());
+                int fx;
+                if (format.isLong()) {
+                    fx = byteMigration.bigToLittle_Int(file.readInt());
+                } else {
+                    fx = byteMigration.bigToLittle_Short(file.readShort());
+                }
                 short offsetX = byteMigration.bigToLittle_Short(file.readShort());
                 short offsetY = byteMigration.bigToLittle_Short(file.readShort());
                 fxList.add(new FXData(fx, offsetX, offsetY));
@@ -269,7 +260,7 @@ public class TraditionalIndexLoader implements IndexLoader {
             logger.error("Archivo no encontrado: " + archivo.getAbsolutePath(), e);
             throw e;
         } catch (EOFException e) {
-            logger.info("Fin de fichero alcanzado");
+            logger.info("Fin de fichero alcanzado en fxs.ind");
         }
         return fxList;
     }
@@ -282,8 +273,11 @@ public class TraditionalIndexLoader implements IndexLoader {
 
         try (RandomAccessFile file = new RandomAccessFile(archivo, "r")) {
             handleGrhHeader(file);
-            byteMigration.bigToLittle_Int(file.readInt()); // Version (discarded here)
-            byteMigration.bigToLittle_Int(file.readInt()); // Count (discarded here)
+            // Record format for Grhs too
+            recordFormat("GRAFICOS", new IndFileFormat(file.getFilePointer(), true, true));
+
+            byteMigration.bigToLittle_Int(file.readInt()); // Version
+            byteMigration.bigToLittle_Int(file.readInt()); // Count
 
             while (file.getFilePointer() < file.length()) {
                 int grh = byteMigration.bigToLittle_Int(file.readInt());
@@ -309,7 +303,7 @@ public class TraditionalIndexLoader implements IndexLoader {
             logger.error("Archivo no encontrado: " + archivo.getAbsolutePath(), e);
             throw e;
         } catch (EOFException e) {
-            logger.info("Fin de fichero alcanzado");
+            logger.info("Fin de fichero alcanzado en graficos.ind");
         }
         return grhList;
     }
@@ -324,30 +318,10 @@ public class TraditionalIndexLoader implements IndexLoader {
         file.seek(263);
         int vHeader = byteMigration.bigToLittle_Int(file.readInt());
 
-        if (vNoHeader < 0 || vNoHeader > 1000) {
-            if (vHeader >= 0 && vHeader < 1000) {
+        if (vNoHeader < 0 || vNoHeader > 500000) {
+            if (vHeader >= 0 && vHeader < 500000) {
                 file.seek(263);
                 logger.info("Cabecera detectada en Graficos.ind");
-                return;
-            }
-        }
-        file.seek(0);
-    }
-
-    private void handleFixedHeader(RandomAccessFile file, int recordSize) throws IOException {
-        long fileSize = file.length();
-        file.seek(0);
-        short numNoHeader = byteMigration.bigToLittle_Short(file.readShort());
-        if (fileSize == 2 + (long) numNoHeader * recordSize) {
-            file.seek(0);
-            return;
-        }
-        if (fileSize >= 263 + 2) {
-            file.seek(263);
-            short numHeader = byteMigration.bigToLittle_Short(file.readShort());
-            if (fileSize == 263 + 2 + (long) numHeader * recordSize) {
-                file.seek(263);
-                logger.info("Cabecera detectada en archivo de registros fijos.");
                 return;
             }
         }
@@ -359,37 +333,27 @@ public class TraditionalIndexLoader implements IndexLoader {
         return IndexingSystem.TRADITIONAL;
     }
 
-    private static class IndFormat {
-        long dataOffset;
-        boolean isLong; // true=16bytes/reg, false=8bytes/reg
-        boolean valid;
-
-        IndFormat(long offset, boolean isLong, boolean valid) {
-            this.dataOffset = offset;
-            this.isLong = isLong;
-            this.valid = valid;
-        }
+    @Override
+    public Map<String, IndFileFormat> getDetectedFormats() {
+        return detectedFormats;
     }
 
-    /**
-     * Detecta automáticamente el formato del archivo:
-     * - Si tiene cabecera (263 bytes) o no.
-     * - Si usa Integers (2 bytes) o Longs (4 bytes) para los índices.
-     */
-    private IndFormat detectFormat(RandomAccessFile file) throws IOException {
+    private void recordFormat(String key, IndFileFormat format) {
+        detectedFormats.put(key.toUpperCase(), format);
+    }
+
+    private IndFileFormat detectFormat(RandomAccessFile file, int recordSizeInt, int recordSizeLong)
+            throws IOException {
         long fileSize = file.length();
 
         // 1. Chequear SIN cabecera (Offset 0)
         file.seek(0);
         short numNoHeader = byteMigration.bigToLittle_Short(file.readShort());
         if (numNoHeader > 0) {
-            long sizeLong = 2 + (long) numNoHeader * 16;
-            long sizeInt = 2 + (long) numNoHeader * 8;
-
-            if (fileSize == sizeLong)
-                return new IndFormat(0, true, true);
-            if (fileSize == sizeInt)
-                return new IndFormat(0, false, true);
+            if (fileSize == 2 + (long) numNoHeader * recordSizeLong)
+                return new IndFileFormat(0, true, true);
+            if (fileSize == 2 + (long) numNoHeader * recordSizeInt)
+                return new IndFileFormat(0, false, true);
         }
 
         // 2. Chequear CON cabecera (Offset 263)
@@ -397,23 +361,14 @@ public class TraditionalIndexLoader implements IndexLoader {
             file.seek(263);
             short numHeader = byteMigration.bigToLittle_Short(file.readShort());
             if (numHeader > 0) {
-                long sizeLong = 263 + 2 + (long) numHeader * 16;
-                long sizeInt = 263 + 2 + (long) numHeader * 8;
-
-                if (fileSize == sizeLong) {
-                    logger.info("Detectado formato: Con Cabecera + Longs (Moderno)");
-                    return new IndFormat(263, true, true);
-                }
-                if (fileSize == sizeInt) {
-                    logger.info("Detectado formato: Con Cabecera + Integers (Antiguo)");
-                    return new IndFormat(263, false, true);
-                }
+                if (fileSize == 263 + 2 + (long) numHeader * recordSizeLong)
+                    return new IndFileFormat(263, true, true);
+                if (fileSize == 263 + 2 + (long) numHeader * recordSizeInt)
+                    return new IndFileFormat(263, false, true);
             }
         }
 
-        // Fallback: Si no cuadra nada, asumimos estándar moderno con cabecera (si size
-        // > 263) o sin cabecera
-        logger.warning("No se pudo autodetectar formato exacto. Probando default (Con Cabecera + Longs).");
-        return new IndFormat(263, true, true);
+        // Fallback
+        return new IndFileFormat(fileSize > 263 ? 263 : 0, true, true);
     }
 }

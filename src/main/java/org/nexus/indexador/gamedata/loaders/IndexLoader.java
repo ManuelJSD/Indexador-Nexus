@@ -8,8 +8,10 @@ import org.nexus.indexador.gamedata.models.BodyData;
 import org.nexus.indexador.gamedata.models.ShieldData;
 import org.nexus.indexador.gamedata.models.FXData;
 import org.nexus.indexador.gamedata.models.GrhData;
+import org.nexus.indexador.gamedata.models.IndFileFormat;
 
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * Interfaz que define el contrato para los cargadores de índices
@@ -54,4 +56,10 @@ public interface IndexLoader {
      * Obtiene el tipo de sistema de indexado que implementa este loader.
      */
     IndexingSystem getSystemType();
+
+    /**
+     * Obtiene los formatos detectados durante la carga.
+     * La clave es el identificador del archivo (HEADS, HELMETS, etc).
+     */
+    Map<String, IndFileFormat> getDetectedFormats();
 }

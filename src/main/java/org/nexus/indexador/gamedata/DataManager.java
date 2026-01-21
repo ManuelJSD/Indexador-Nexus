@@ -10,10 +10,10 @@ import org.nexus.indexador.utils.ConfigManager;
 import org.nexus.indexador.utils.Logger;
 
 import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DataManager {
-
-    private GrhData grhData;
 
     private ObservableList<GrhData> grhList = FXCollections.observableArrayList();
     private ObservableList<HeadData> headList = FXCollections.observableArrayList();
@@ -37,12 +37,11 @@ public class DataManager {
     private final Logger logger;
 
     private IndexLoader indexLoader;
+    private final Map<String, IndFileFormat> fileFormats = new HashMap<>();
 
     private static volatile DataManager instance;
 
     private DataManager() throws IOException {
-
-        // Obtenemos instancias:
         configManager = ConfigManager.getInstance();
         byteMigration = org.nexus.indexador.utils.byteMigration.getInstance();
         datEditor = DatEditor.getInstance();
@@ -52,17 +51,12 @@ public class DataManager {
         initializeIndexLoader();
     }
 
-    /**
-     * Inicializa el loader de índices según la configuración.
-     */
     private void initializeIndexLoader() throws IOException {
         String systemConfig = configManager.getIndexingSystem();
-
         if ("TRADITIONAL".equals(systemConfig)) {
             indexLoader = new org.nexus.indexador.gamedata.loaders.TraditionalIndexLoader();
             logger.info("Sistema de indexado: Tradicional");
         } else {
-            // Por defecto, usar sistema de moldes
             indexLoader = new org.nexus.indexador.gamedata.loaders.MoldIndexLoader();
             logger.info("Sistema de indexado: Moldes");
         }
@@ -79,12 +73,58 @@ public class DataManager {
         return instance;
     }
 
-    /**
-     * Obtiene la lista de gráficos (grh) cargados.
-     *
-     * @return Una lista observable de objetos GrhData que representan los gráficos
-     *         cargados.
-     */
+    // --- Loading Methods ---
+
+    public ObservableList<GrhData> loadGrhData() throws IOException {
+        this.grhList = indexLoader.loadGrhs();
+        this.GrhCount = grhList.size();
+        syncFormats();
+        return grhList;
+    }
+
+    public ObservableList<HeadData> readHeadFile() throws IOException {
+        this.headList = indexLoader.loadHeads();
+        this.NumHeads = (short) headList.size();
+        syncFormats();
+        return headList;
+    }
+
+    public ObservableList<HelmetData> readHelmetFile() throws IOException {
+        this.helmetList = indexLoader.loadHelmets();
+        this.NumHelmets = (short) helmetList.size();
+        syncFormats();
+        return helmetList;
+    }
+
+    public ObservableList<BodyData> readBodyFile() throws IOException {
+        this.bodyList = indexLoader.loadBodies();
+        this.NumBodys = (short) bodyList.size();
+        syncFormats();
+        return bodyList;
+    }
+
+    public ObservableList<ShieldData> readShieldFile() throws IOException {
+        this.shieldList = indexLoader.loadShields();
+        this.NumShields = (short) shieldList.size();
+        syncFormats();
+        return shieldList;
+    }
+
+    public ObservableList<FXData> readFXsdFile() throws IOException {
+        this.fxList = indexLoader.loadFXs();
+        this.NumFXs = (short) fxList.size();
+        syncFormats();
+        return fxList;
+    }
+
+    private void syncFormats() {
+        if (indexLoader != null) {
+            fileFormats.putAll(indexLoader.getDetectedFormats());
+        }
+    }
+
+    // --- Getters and Setters ---
+
     public ObservableList<GrhData> getGrhList() {
         return grhList;
     }
@@ -109,129 +149,80 @@ public class DataManager {
         return fxList;
     }
 
+    public void setFileFormat(String fileKey, IndFileFormat format) {
+        fileFormats.put(fileKey.toUpperCase(), format);
+        logger.info("Formato registrado para " + fileKey + ": " + format);
+    }
+
+    public IndFileFormat getFileFormat(String fileKey) {
+        return fileFormats.get(fileKey.toUpperCase());
+    }
+
+    public IndexLoader getIndexLoader() {
+        return indexLoader;
+    }
+
     public int getGrhCount() {
         return GrhCount;
+    }
+
+    public void setGrhCount(int grhCount) {
+        GrhCount = grhCount;
     }
 
     public int getGrhVersion() {
         return GrhVersion;
     }
 
+    public void setGrhVersion(int grhVersion) {
+        GrhVersion = grhVersion;
+    }
+
     public short getNumHeads() {
         return NumHeads;
-    }
-
-    public short getNumHelmets() {
-        return NumHelmets;
-    }
-
-    public short getNumBodys() {
-        return NumBodys;
-    }
-
-    public short getNumShields() {
-        return NumShields;
-    }
-
-    public short getNumFXs() {
-        return NumFXs;
-    }
-
-    public short getNumObjs() {
-        return NumObjs;
-    }
-
-    public void setGrhCount(int GrhCount) {
-        this.GrhCount = GrhCount;
-    }
-
-    public void setGrhVersion(int GrhVersion) {
-        this.GrhVersion = GrhVersion;
-    }
-
-    public void setNumHelmets(short numHelmets) {
-        NumHelmets = numHelmets;
     }
 
     public void setNumHeads(short numHeads) {
         NumHeads = numHeads;
     }
 
+    public short getNumHelmets() {
+        return NumHelmets;
+    }
+
+    public void setNumHelmets(short numHelmets) {
+        NumHelmets = numHelmets;
+    }
+
+    public short getNumBodys() {
+        return NumBodys;
+    }
+
     public void setNumBodys(short numBodys) {
         NumBodys = numBodys;
+    }
+
+    public short getNumShields() {
+        return NumShields;
     }
 
     public void setNumShields(short numShields) {
         NumShields = numShields;
     }
 
+    public short getNumFXs() {
+        return NumFXs;
+    }
+
     public void setNumFXs(short numFXs) {
         NumFXs = numFXs;
+    }
+
+    public short getNumObjs() {
+        return NumObjs;
     }
 
     public void setNumObjs(short numObjs) {
         NumObjs = numObjs;
     }
-
-    /**
-     * Lee los datos de un archivo binario que contiene información sobre gráficos
-     * (grh) y los convierte en objetos grhData.
-     * Cada gráfico puede ser una imagen estática o una animación.
-     *
-     * @return Una lista observable de objetos grhData que representan los gráficos
-     *         leídos del archivo.
-     * @throws IOException Si ocurre un error de entrada/salida al leer el archivo.
-     */
-    public ObservableList<GrhData> loadGrhData() throws IOException {
-        this.grhList = indexLoader.loadGrhs();
-        this.GrhCount = grhList.size();
-        return grhList;
-    }
-
-    /**
-     * Lee los datos de cabeza desde un archivo y los devuelve como una lista
-     * observable.
-     *
-     * @return una {@code ObservableList<headData>} que contiene los datos de cabeza
-     *         leídos del archivo.
-     * @throws IOException si ocurre un error de entrada/salida.
-     */
-    public ObservableList<HeadData> readHeadFile() throws IOException {
-        headList = indexLoader.loadHeads();
-        NumHeads = (short) headList.size();
-        return headList;
-    }
-
-    /**
-     * Lee los datos de los cascos desde un archivo y los carga en una lista
-     * observable.
-     *
-     * @return una lista observable de objetos {@code helmetData} que contiene los
-     *         datos de los cascos leídos del archivo.
-     * @throws IOException si ocurre un error al leer el archivo.
-     */
-    public ObservableList<HelmetData> readHelmetFile() throws IOException {
-        helmetList = indexLoader.loadHelmets();
-        NumHelmets = (short) helmetList.size();
-        return helmetList;
-    }
-
-    public ObservableList<BodyData> readBodyFile() throws IOException {
-        this.bodyList = indexLoader.loadBodies();
-        this.NumBodys = (short) bodyList.size();
-        return bodyList;
-    }
-
-    public ObservableList<ShieldData> readShieldFile() throws IOException {
-        this.shieldList = indexLoader.loadShields();
-        this.NumShields = (short) shieldList.size();
-        return shieldList;
-    }
-
-    public ObservableList<FXData> readFXsdFile() throws IOException {
-        this.fxList = indexLoader.loadFXs();
-        this.NumFXs = (short) fxList.size();
-        return fxList;
-    }
-
 }

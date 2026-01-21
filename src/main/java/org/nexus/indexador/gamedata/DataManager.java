@@ -21,6 +21,7 @@ public class DataManager {
     private ObservableList<BodyData> bodyList = FXCollections.observableArrayList();
     private ObservableList<ShieldData> shieldList = FXCollections.observableArrayList();
     private ObservableList<FXData> fxList = FXCollections.observableArrayList();
+    private ObservableList<WeaponData> weaponList = FXCollections.observableArrayList();
 
     private int GrhCount;
     private int GrhVersion;
@@ -29,6 +30,7 @@ public class DataManager {
     private short NumBodys;
     private short NumShields;
     private short NumFXs;
+    private short NumWeapons;
     private short NumObjs;
 
     private final ConfigManager configManager;
@@ -117,6 +119,13 @@ public class DataManager {
         return fxList;
     }
 
+    public ObservableList<WeaponData> readWeaponFile() throws IOException {
+        this.weaponList = indexLoader.loadWeapons();
+        this.NumWeapons = (short) weaponList.size();
+        syncFormats();
+        return weaponList;
+    }
+
     private void syncFormats() {
         if (indexLoader != null) {
             fileFormats.putAll(indexLoader.getDetectedFormats());
@@ -147,6 +156,10 @@ public class DataManager {
 
     public ObservableList<FXData> getFXList() {
         return fxList;
+    }
+
+    public ObservableList<WeaponData> getWeaponList() {
+        return weaponList;
     }
 
     public void setFileFormat(String fileKey, IndFileFormat format) {
@@ -218,11 +231,140 @@ public class DataManager {
         NumFXs = numFXs;
     }
 
+    public short getNumWeapons() {
+        return NumWeapons;
+    }
+
+    public void setNumWeapons(short numWeapons) {
+        NumWeapons = numWeapons;
+    }
+
     public short getNumObjs() {
         return NumObjs;
     }
 
     public void setNumObjs(short numObjs) {
         NumObjs = numObjs;
+    }
+
+    // --- Indexing Orchestration ---
+
+    public void indexFromMemory(String type) throws IOException {
+        logger.info("Indexando desde memoria: " + type);
+        switch (type.toUpperCase()) {
+            case "HEADS":
+                indexLoader.saveHeads(headList);
+                break;
+            case "HELMETS":
+                indexLoader.saveHelmets(helmetList);
+                break;
+            case "BODIES":
+                indexLoader.saveBodies(bodyList);
+                break;
+            case "SHIELDS":
+                indexLoader.saveShields(shieldList);
+                break;
+            case "FXS":
+                indexLoader.saveFXs(fxList);
+                break;
+            case "GRHS":
+                indexLoader.saveGrhs(grhList);
+                break;
+            case "WEAPONS":
+                indexLoader.saveWeapons(weaponList);
+                break;
+        }
+    }
+
+    public void indexFromExported(String type) throws IOException {
+        logger.info("Indexando desde exportados (texto): " + type);
+        switch (type.toUpperCase()) {
+            case "HEADS":
+                headList = indexLoader.loadHeadsText();
+                indexLoader.saveHeads(headList);
+                break;
+            case "HELMETS":
+                helmetList = indexLoader.loadHelmetsText();
+                indexLoader.saveHelmets(helmetList);
+                break;
+            case "BODIES":
+                bodyList = indexLoader.loadBodiesText();
+                indexLoader.saveBodies(bodyList);
+                break;
+            case "SHIELDS":
+                shieldList = indexLoader.loadShieldsText();
+                indexLoader.saveShields(shieldList);
+                break;
+            case "FXS":
+                fxList = indexLoader.loadFXsText();
+                indexLoader.saveFXs(fxList);
+                break;
+            case "GRHS":
+                grhList = indexLoader.loadGrhsText();
+                indexLoader.saveGrhs(grhList);
+                break;
+            case "WEAPONS":
+                weaponList = indexLoader.loadWeaponsText();
+                indexLoader.saveWeapons(weaponList);
+                break;
+        }
+    }
+
+    public void exportToText(String type) throws IOException {
+        logger.info("Exportando a texto: " + type);
+        switch (type.toUpperCase()) {
+            case "HEADS":
+                indexLoader.saveHeadsText(headList);
+                break;
+            case "HELMETS":
+                indexLoader.saveHelmetsText(helmetList);
+                break;
+            case "BODIES":
+                indexLoader.saveBodiesText(bodyList);
+                break;
+            case "SHIELDS":
+                indexLoader.saveShieldsText(shieldList);
+                break;
+            case "FXS":
+                indexLoader.saveFXsText(fxList);
+                break;
+            case "GRHS":
+                indexLoader.saveGrhsText(grhList);
+                break;
+            case "WEAPONS":
+                indexLoader.saveWeaponsText(weaponList);
+                break;
+            case "ALL":
+                indexLoader.saveGrhsText(grhList);
+                indexLoader.saveHeadsText(headList);
+                indexLoader.saveHelmetsText(helmetList);
+                indexLoader.saveBodiesText(bodyList);
+                indexLoader.saveShieldsText(shieldList);
+                indexLoader.saveFXsText(fxList);
+                indexLoader.saveWeaponsText(weaponList);
+                break;
+        }
+    }
+
+    public void indexAllFromMemory() throws IOException {
+        logger.info("Bulk Indexing from Memory (All)");
+        indexFromMemory("GRHS");
+        indexFromMemory("HEADS");
+        indexFromMemory("HELMETS");
+        indexFromMemory("BODIES");
+        indexFromMemory("SHIELDS");
+        indexFromMemory("FXS");
+        indexFromMemory("WEAPONS");
+    }
+
+    public void indexAllFromExported() throws IOException {
+        logger.info("Bulk Indexing from Exported (All)");
+        indexFromExported("GRHS");
+        indexFromExported("HEADS");
+        indexFromExported("HELMETS");
+        indexFromExported("BODIES");
+        indexFromExported("SHIELDS");
+        indexFromExported("FXS");
+        indexFromExported("WEAPONS");
     }
 }

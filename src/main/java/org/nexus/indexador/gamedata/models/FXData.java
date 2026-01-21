@@ -21,6 +21,10 @@ public class FXData {
         return Fx;
     }
 
+    public int getAnimInstance() {
+        return Fx;
+    }
+
     public short getOffsetX() {
         return OffsetX;
     }

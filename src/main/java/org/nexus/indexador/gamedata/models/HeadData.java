@@ -102,9 +102,9 @@ public class HeadData {
         return StartY;
     }
 
-    public int[] getGrhs() {
+    public int[] getGrhIndex() {
         if (systemType != IndexingSystem.TRADITIONAL) {
-            throw new IllegalStateException("Grhs solo disponible en sistema tradicional");
+            throw new IllegalStateException("GrhIndex solo disponible en sistema tradicional");
         }
         return grhs;
     }

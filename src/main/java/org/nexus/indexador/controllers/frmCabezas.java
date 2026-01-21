@@ -176,7 +176,7 @@ public class frmCabezas {
             setVisibleMold(false);
             setVisibleTraditional(true);
 
-            int[] grhs = selectedHead.getGrhs();
+            int[] grhs = selectedHead.getGrhIndex();
             // [Norte, Sur, Este, Oeste]
             if (grhs != null && grhs.length >= 4) {
                 txtHeadUp.setText(String.valueOf(grhs[0])); // Norte
@@ -294,11 +294,8 @@ public class frmCabezas {
     /**
      * Dibuja cabezas usando el sistema tradicional (grhs directos).
      */
-    /**
-     * Dibuja cabezas usando el sistema tradicional (grhs directos).
-     */
     private void drawTraditionalHead(HeadData selectedHead, int heading) {
-        int[] grhs = selectedHead.getGrhs();
+        int[] grhs = selectedHead.getGrhIndex();
         // heading: 0: Sur, 1: Norte, 2: Oeste, 3: Este
         // grhs indices: 0: Norte, 1: Sur, 2: Este, 3: Oeste (según loader)
 
@@ -411,10 +408,10 @@ public class frmCabezas {
                 } else {
                     // Tradicional
                     int[] grhs = new int[4];
-                    grhs[0] = Integer.parseInt(txtHeadUp.getText());
-                    grhs[1] = Integer.parseInt(txtHeadDown.getText());
-                    grhs[2] = Integer.parseInt(txtHeadRight.getText());
-                    grhs[3] = Integer.parseInt(txtHeadLeft.getText());
+                    selectedHead.getGrhIndex()[0] = Integer.parseInt(txtHeadUp.getText());
+                    selectedHead.getGrhIndex()[1] = Integer.parseInt(txtHeadDown.getText());
+                    selectedHead.getGrhIndex()[2] = Integer.parseInt(txtHeadRight.getText());
+                    selectedHead.getGrhIndex()[3] = Integer.parseInt(txtHeadLeft.getText());
                     selectedHead.setGrhs(grhs);
                 }
 

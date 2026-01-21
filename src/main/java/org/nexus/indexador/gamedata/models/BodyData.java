@@ -21,26 +21,41 @@ public class BodyData {
         this.HeadOffsetY = headOffsetY;
     }
 
-    public BodyData() {}
+    public BodyData() {
+    }
 
     public int[] getBody() {
         return Body;
     }
+
+    public int[] getWalkG() {
+        return Body;
+    }
+
     public short getHeadOffsetX() {
         return HeadOffsetX;
     }
-    public short getHeadOffsetY() { return HeadOffsetY; }
+
+    public short getHeadOffsetY() {
+        return HeadOffsetY;
+    }
+
     public static short getNumBodys() {
         return NumBodys;
     }
 
-    public void setBody(int[] body) { Body = body; }
+    public void setBody(int[] body) {
+        Body = body;
+    }
+
     public void setHeadOffsetX(short headOffsetX) {
         HeadOffsetX = headOffsetX;
     }
+
     public void setHeadOffsetY(short headOffsetY) {
         HeadOffsetY = headOffsetY;
     }
+
     public static void setNumBodys(short numBodys) {
         NumBodys = numBodys;
     }

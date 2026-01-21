@@ -176,7 +176,7 @@ public class frmCascos {
             setVisibleMold(false);
             setVisibleTraditional(true);
 
-            int[] grhs = selectedHelmet.getGrhs();
+            int[] grhs = selectedHelmet.getGrhIndex();
             // [Norte, Sur, Este, Oeste]
             if (grhs != null && grhs.length >= 4) {
                 txtHelmUp.setText(String.valueOf(grhs[0])); // Norte
@@ -295,7 +295,7 @@ public class frmCascos {
      * Dibuja cascos usando el sistema tradicional (grhs directos).
      */
     private void drawTraditionalHelmet(HelmetData selectedHelmet, int helmeting) {
-        int[] grhs = selectedHelmet.getGrhs();
+        int[] grhs = selectedHelmet.getGrhIndex();
 
         int grhIndex = -1;
         switch (helmeting) {

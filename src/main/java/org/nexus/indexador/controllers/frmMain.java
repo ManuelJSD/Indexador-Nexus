@@ -18,9 +18,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.image.WritableImage;
-import javafx.scene.input.TransferMode;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.control.*;
@@ -177,6 +174,9 @@ public class frmMain {
 
     @FXML
     private Label lblModified;
+
+    @FXML
+    private ProgressBar progressMain;
 
     // Lista observable que contiene los datos de los gráficos indexados.
     private ObservableList<GrhData> grhList;
@@ -1004,7 +1004,7 @@ public class frmMain {
      * Exporta los índices a formato CSV.
      */
     @FXML
-    private void mnuExportCsv_OnAction() {
+    public void mnuExportCsv_OnAction(ActionEvent actionEvent) {
         File file = new File(configManager.getExportDir() + "graficos.csv");
 
         ExportService exportService = ExportService.getInstance();
@@ -1020,7 +1020,7 @@ public class frmMain {
      * Valida la integridad de los datos de GRH.
      */
     @FXML
-    private void mnuValidate_OnAction() {
+    public void mnuValidate_OnAction(ActionEvent actionEvent) {
         ValidationService validationService = ValidationService.getInstance();
         ValidationService.ValidationResult result = validationService.validate(
                 grhList, configManager.getGraphicsDir());
@@ -1468,86 +1468,430 @@ public class frmMain {
         grhList.add(newGrhData);
     }
 
-    /**
-     * Guarda los datos de los gráficos en memoria en un archivo binario.
-     * Los datos incluyen la versión del archivo, la cantidad de gráficos indexados
-     * y la información de cada gráfico.
-     * Si el archivo no existe, se crea. Si existe, se sobrescribe.
-     * Se utilizan las instancias de `configManager` y `byteMigration` para manejar
-     * la configuración y la conversión de bytes.
-     *
-     * @throws IOException Si ocurre un error de entrada/salida al intentar escribir
-     *                     en el archivo.
-     */
     @FXML
-    private void mnuIndexbyMemory() throws IOException {
-
-        // Crear un objeto File para el archivo donde se guardarán los datos de los
-        // gráficos
-        File archivo = new File(configManager.getInitDir() + "Graficos.ind");
-
-        logger.info("Iniciando el guardado de índices desde memoria.");
-
-        try (RandomAccessFile file = new RandomAccessFile(archivo, "rw")) {
-            // Posicionarse al inicio del archivo
-            file.seek(0);
-
-            // Escribir la versión del archivo
-            file.writeInt(byteMigration.bigToLittle_Int(dataManager.getGrhVersion()));
-
-            // Escribir la cantidad de gráficos indexados
-            file.writeInt(byteMigration.bigToLittle_Int(dataManager.getGrhCount()));
-
-            // Escribir cada gráfico en el archivo
-            for (GrhData grh : grhList) {
-                // Escribir el número de gráfico y el número de frames
-                file.writeInt(byteMigration.bigToLittle_Int(grh.getGrh()));
-                file.writeShort(byteMigration.bigToLittle_Short(grh.getNumFrames()));
-
-                // Si es una animación, escribir los frames y la velocidad
-                if (grh.getNumFrames() > 1) {
-                    int[] frames = grh.getFrames();
-                    for (int i = 1; i <= grh.getNumFrames(); i++) {
-                        file.writeInt(byteMigration.bigToLittle_Int(frames[i]));
-                    }
-                    file.writeFloat(byteMigration.bigToLittle_Float(grh.getSpeed()));
-                } else { // Si es una imagen estática, escribir el resto de los datos
-                    file.writeInt(byteMigration.bigToLittle_Int(grh.getFileNum()));
-                    file.writeShort(byteMigration.bigToLittle_Short(grh.getsX()));
-                    file.writeShort(byteMigration.bigToLittle_Short(grh.getsY()));
-                    file.writeShort(byteMigration.bigToLittle_Short(grh.getTileWidth()));
-                    file.writeShort(byteMigration.bigToLittle_Short(grh.getTileHeight()));
-                }
+    public void mnuIndexMemIndices_OnAction(ActionEvent actionEvent) {
+        runAsyncTask(() -> {
+            try {
+                dataManager.indexFromMemory("GRHS");
+            } catch (IOException e) {
+                logger.error("Error al indexar desde memoria", e);
             }
+        }, "Indexando desde Memoria...", "Indexado completado");
+    }
 
-            logger.info("Índices guardados!");
-        } catch (IOException e) {
-            logger.error("Error al guardar los datos de gráficos", e);
-            throw e; // Relanzar la excepción para manejarla fuera del método
+    @FXML
+    public void mnuIndexMemHeads_OnAction(ActionEvent actionEvent) {
+        runAsyncTask(() -> {
+            try {
+                dataManager.indexFromMemory("HEADS");
+            } catch (IOException e) {
+                logger.error("Error al indexar cabezas desde memoria", e);
+            }
+        }, "Indexando Cabezas...", "Cabezas indexadas correctamente");
+    }
+
+    @FXML
+    public void mnuIndexMemHelmets_OnAction(ActionEvent actionEvent) {
+        runAsyncTask(() -> {
+            try {
+                dataManager.indexFromMemory("HELMETS");
+            } catch (IOException e) {
+                logger.error("Error al indexar cascos desde memoria", e);
+            }
+        }, "Indexando Cascos...", "Cascos indexados correctamente");
+    }
+
+    @FXML
+    public void mnuIndexMemBodies_OnAction(ActionEvent actionEvent) {
+        runAsyncTask(() -> {
+            try {
+                dataManager.indexFromMemory("BODIES");
+            } catch (IOException e) {
+                logger.error("Error al indexar cuerpos desde memoria", e);
+            }
+        }, "Indexando Cuerpos...", "Cuerpos indexados correctamente");
+    }
+
+    @FXML
+    public void mnuIndexMemShields_OnAction(ActionEvent actionEvent) {
+        runAsyncTask(() -> {
+            try {
+                dataManager.indexFromMemory("SHIELDS");
+            } catch (IOException e) {
+                logger.error("Error al indexar escudos desde memoria", e);
+            }
+        }, "Indexando Escudos...", "Escudos indexados correctamente");
+    }
+
+    @FXML
+    public void mnuIndexMemWeapons_OnAction(ActionEvent actionEvent) {
+        runAsyncTask(() -> {
+            try {
+                dataManager.indexFromMemory("WEAPONS");
+            } catch (IOException e) {
+                logger.error("Error al indexar armas desde memoria", e);
+            }
+        }, "Indexando Armas...", "Armas indexadas correctamente");
+    }
+
+    @FXML
+    public void mnuIndexMemFXs_OnAction(ActionEvent actionEvent) {
+        runAsyncTask(() -> {
+            try {
+                dataManager.indexFromMemory("FXS");
+            } catch (IOException e) {
+                logger.error("Error al indexar FXs desde memoria", e);
+            }
+        }, "Indexando FXs...", "FXs indexados correctamente");
+    }
+
+    @FXML
+    public void mnuIndexMemAll_OnAction(ActionEvent actionEvent) {
+        runAsyncTask(() -> {
+            try {
+                dataManager.indexAllFromMemory();
+            } catch (Exception e) {
+                logger.error("Error al indexar todo desde memoria", e);
+            }
+        }, "Indexando TODO desde Memoria...", "Todo indexado correctamente");
+    }
+
+    @FXML
+    public void mnuIndexExpIndices_OnAction(ActionEvent actionEvent) {
+        runAsyncTask(() -> {
+            try {
+                dataManager.indexFromExported("GRHS");
+            } catch (IOException e) {
+                logger.error("Error al indexar desde exportados", e);
+            }
+        }, "Indexando desde Exportados...", "Indexado completado");
+    }
+
+    @FXML
+    public void mnuIndexExpHeads_OnAction(ActionEvent actionEvent) {
+        runAsyncTask(() -> {
+            try {
+                dataManager.indexFromExported("HEADS");
+            } catch (IOException e) {
+                logger.error("Error al indexar cabezas desde exportados", e);
+            }
+        }, "Indexando Cabezas...", "Cabezas indexadas correctamente");
+    }
+
+    @FXML
+    public void mnuIndexExpHelmets_OnAction(ActionEvent actionEvent) {
+        runAsyncTask(() -> {
+            try {
+                dataManager.indexFromExported("HELMETS");
+            } catch (IOException e) {
+                logger.error("Error al indexar cascos desde exportados", e);
+            }
+        }, "Indexando Cascos...", "Cascos indexados correctamente");
+    }
+
+    @FXML
+    public void mnuIndexExpBodies_OnAction(ActionEvent actionEvent) {
+        runAsyncTask(() -> {
+            try {
+                dataManager.indexFromExported("BODIES");
+            } catch (IOException e) {
+                logger.error("Error al indexar cuerpos desde exportados", e);
+            }
+        }, "Indexando Cuerpos...", "Cuerpos indexados correctamente");
+    }
+
+    @FXML
+    public void mnuIndexExpShields_OnAction(ActionEvent actionEvent) {
+        runAsyncTask(() -> {
+            try {
+                dataManager.indexFromExported("SHIELDS");
+            } catch (IOException e) {
+                logger.error("Error al indexar escudos desde exportados", e);
+            }
+        }, "Indexando Escudos...", "Escudos indexados correctamente");
+    }
+
+    @FXML
+    public void mnuIndexExpWeapons_OnAction(ActionEvent actionEvent) {
+        runAsyncTask(() -> {
+            try {
+                dataManager.indexFromExported("WEAPONS");
+            } catch (IOException e) {
+                logger.error("Error al indexar armas desde exportados", e);
+            }
+        }, "Indexando Armas...", "Armas indexadas correctamente");
+    }
+
+    @FXML
+    public void mnuIndexExpAll_OnAction(ActionEvent actionEvent) {
+        runAsyncTask(() -> {
+            try {
+                dataManager.indexAllFromExported();
+            } catch (Exception e) {
+                logger.error("Error al indexar todo desde exportados", e);
+            }
+        }, "Indexando TODO desde Exportados...", "Todo indexado correctamente");
+    }
+
+    @FXML
+    public void mnuExportGrh_OnAction(ActionEvent actionEvent) {
+        runAsyncTask(() -> {
+            try {
+                dataManager.exportToText("GRHS");
+            } catch (IOException e) {
+                logger.error("Error al exportar GRHs", e);
+            }
+        }, "Exportando Indices...", "Indices exportados correctamente");
+    }
+
+    @FXML
+    public void mnuExportHead_OnAction(ActionEvent actionEvent) {
+        runAsyncTask(() -> {
+            try {
+                dataManager.exportToText("HEADS");
+            } catch (IOException e) {
+                logger.error("Error al exportar cabezas", e);
+            }
+        }, "Exportando Cabezas...", "Cabezas exportadas correctamente");
+    }
+
+    @FXML
+    public void mnuExportHelmet_OnAction(ActionEvent actionEvent) {
+        runAsyncTask(() -> {
+            try {
+                dataManager.exportToText("HELMETS");
+            } catch (IOException e) {
+                logger.error("Error al exportar cascos", e);
+            }
+        }, "Exportando Cascos...", "Cascos exportados correctamente");
+    }
+
+    @FXML
+    public void mnuExportBody_OnAction(ActionEvent actionEvent) {
+        runAsyncTask(() -> {
+            try {
+                dataManager.exportToText("BODIES");
+            } catch (IOException e) {
+                logger.error("Error al exportar cuerpos", e);
+            }
+        }, "Exportando Cuerpos...", "Cuerpos exportados correctamente");
+    }
+
+    @FXML
+    public void mnuExportShield_OnAction(ActionEvent actionEvent) {
+        runAsyncTask(() -> {
+            try {
+                dataManager.exportToText("SHIELDS");
+            } catch (IOException e) {
+                logger.error("Error al exportar escudos", e);
+            }
+        }, "Exportando Escudos...", "Escudos exportados correctamente");
+    }
+
+    @FXML
+    public void mnuExportFX_OnAction(ActionEvent actionEvent) {
+        runAsyncTask(() -> {
+            try {
+                dataManager.exportToText("FXS");
+            } catch (IOException e) {
+                logger.error("Error al exportar FXs", e);
+            }
+        }, "Exportando FXs...", "FXs exportados correctamente");
+    }
+
+    @FXML
+    public void mnuExportWeapon_OnAction(ActionEvent actionEvent) {
+        runAsyncTask(() -> {
+            try {
+                dataManager.exportToText("WEAPONS");
+            } catch (IOException e) {
+                logger.error("Error al exportar armas", e);
+            }
+        }, "Exportando Armas...", "Armas exportadas correctamente");
+    }
+
+    @FXML
+    public void mnuExportAll_OnAction(ActionEvent actionEvent) {
+        runAsyncTask(() -> {
+            try {
+                dataManager.exportToText("ALL");
+            } catch (IOException e) {
+                logger.error("Error al exportar todo", e);
+            }
+        }, "Exportando TODO...", "Todo exportado correctamente");
+    }
+
+    @FXML
+    public void mnuExportJson_OnAction(ActionEvent actionEvent) {
+        logger.info("Exportación persistente a JSON no implementada aún.");
+    }
+
+    @FXML
+    public void mnuUndo_OnAction(ActionEvent actionEvent) {
+        UndoManager.getInstance().undo();
+        updateEditorFromCurrentSelection();
+        updateStatusBar("Deshacer completado", grhList.size(), getAnimCount(), true);
+    }
+
+    @FXML
+    public void mnuRedo_OnAction(ActionEvent actionEvent) {
+        UndoManager.getInstance().redo();
+        updateEditorFromCurrentSelection();
+        updateStatusBar("Rehacer completado", grhList.size(), getAnimCount(), true);
+    }
+
+    @FXML
+    public void mnuCopy_OnAction(ActionEvent actionEvent) {
+        int index = lstIndices.getSelectionModel().getSelectedIndex();
+        if (index >= 0) {
+            copiedGrh = grhList.get(index);
+            logger.info("Grh " + copiedGrh.getGrh() + " copiado al portapapeles.");
         }
     }
 
-    public void mnuIndexbyExported(ActionEvent actionEvent) {
+    @FXML
+    public void mnuPaste_OnAction(ActionEvent actionEvent) {
+        if (copiedGrh == null)
+            return;
+        int index = lstIndices.getSelectionModel().getSelectedIndex();
+        if (index >= 0) {
+            GrhData target = grhList.get(index);
+            target.setFileNum(copiedGrh.getFileNum());
+            target.setsX(copiedGrh.getsX());
+            target.setsY(copiedGrh.getsY());
+            target.setTileWidth(copiedGrh.getTileWidth());
+            target.setTileHeight(copiedGrh.getTileHeight());
+            updateEditor(target);
+            logger.info("Propiedades pegadas en Grh " + target.getGrh());
+        }
     }
 
+    @FXML
+    public void mnuDuplicate_OnAction(ActionEvent actionEvent) {
+        int index = lstIndices.getSelectionModel().getSelectedIndex();
+        if (index >= 0) {
+            GrhData source = grhList.get(index);
+            int newId = dataManager.getGrhCount() + 1;
+            GrhData newGrh = new GrhData(newId, source.getNumFrames(), source.getFileNum(), source.getsX(),
+                    source.getsY(), source.getTileWidth(), source.getTileHeight());
+            if (source.getNumFrames() > 1) {
+                newGrh.setFrames(source.getFrames().clone());
+                newGrh.setSpeed(source.getSpeed());
+            }
+            grhList.add(newGrh);
+            grhDataMap.put(newId, newGrh);
+            dataManager.setGrhCount(newId);
+            lstIndices.getItems().add(String.valueOf(newId) + (newGrh.getNumFrames() > 1 ? " (Animación)" : ""));
+            lstIndices.getSelectionModel().selectLast();
+            lstIndices.scrollTo(lstIndices.getItems().size() - 1);
+            logger.info("Grh duplicado con ID: " + newId);
+        }
+    }
+
+    @FXML
     public void mnuHead_OnAction(ActionEvent actionEvent) {
         windowManager.showWindow("frmCabezas", "Cabezas", false);
     }
 
+    @FXML
     public void mnuHelmet_OnAction(ActionEvent actionEvent) {
         windowManager.showWindow("frmCascos", "Cascos", false);
     }
 
+    @FXML
     public void mnuBody_OnAction(ActionEvent actionEvent) {
         windowManager.showWindow("frmCuerpos", "Cuerpos", false);
     }
 
+    @FXML
     public void mnuShield_OnAction(ActionEvent actionEvent) {
         windowManager.showWindow("frmEscudos", "Escudos", false);
     }
 
+    @FXML
+    public void mnuConsola_OnAction(ActionEvent actionEvent) {
+        windowManager.showWindow("frmConsole", "Consola", false);
+    }
+
+    @FXML
+    public void mnuIndexbyMemory() throws IOException {
+        dataManager.indexFromMemory("GRHS");
+        logger.info("Indices guardados desde memoria correctamente.");
+        UndoManager.getInstance().markSaved();
+        updateStatusBar("Guardado en memoria", grhList.size(), getAnimCount(), false);
+    }
+
+    @FXML
+    public void btnAdd_OnAction(ActionEvent actionEvent) {
+        int newId = dataManager.getGrhCount() + 1;
+        GrhData newGrh = new GrhData();
+        newGrh.setGrh(newId);
+        newGrh.setFileNum(0);
+        newGrh.setNumFrames((short) 1);
+
+        grhList.add(newGrh);
+        grhDataMap.put(newId, newGrh);
+        dataManager.setGrhCount(newId);
+
+        lstIndices.getItems().add(String.valueOf(newId));
+        lstIndices.getSelectionModel().selectLast();
+        lstIndices.scrollTo(lstIndices.getItems().size() - 1);
+
+        logger.info("Nuevo Grh creado con ID: " + newId);
+        updateStatusBar("Nuevo Grh añadido", grhList.size(), getAnimCount(), true);
+    }
+
+    private void runAsyncTask(Runnable task, String startMsg, String endMsg) {
+        progressMain.setVisible(true);
+        progressMain.setProgress(ProgressBar.INDETERMINATE_PROGRESS);
+        lblStatus.setText(startMsg);
+        lblStatus.setTextFill(javafx.scene.paint.Color.web("#FFA500"));
+
+        new Thread(() -> {
+            try {
+                task.run();
+                Platform.runLater(() -> {
+                    lblStatus.setText(endMsg);
+                    lblStatus.setTextFill(javafx.scene.paint.Color.web("#00FF00"));
+                    progressMain.setVisible(false);
+                });
+            } catch (Exception e) {
+                logger.error("Error en tarea asíncrona: " + startMsg, e);
+                Platform.runLater(() -> {
+                    lblStatus.setText("Error en la operación");
+                    lblStatus.setTextFill(javafx.scene.paint.Color.RED);
+                    progressMain.setVisible(false);
+                });
+            }
+        }).start();
+    }
+
+    private void updateEditorFromCurrentSelection() {
+        int index = lstIndices.getSelectionModel().getSelectedIndex();
+        if (index >= 0) {
+            updateEditor(grhList.get(index));
+        }
+    }
+
+    private int getAnimCount() {
+        int count = 0;
+        if (grhList == null)
+            return 0;
+        for (GrhData grh : grhList) {
+            if (grh.getNumFrames() > 1)
+                count++;
+        }
+        return count;
+    }
+
+    @FXML
     public void mnuFXs_OnAction(ActionEvent actionEvent) {
         windowManager.showWindow("frmFXs", "FXs", false);
+    }
+
+    @FXML
+    public void mnuWeapon_OnAction(ActionEvent actionEvent) {
+        windowManager.showWindow("frmArmas", "Armas", false);
     }
 
     @FXML
@@ -1668,12 +2012,7 @@ public class frmMain {
         }
     }
 
-    public void mnuExportHead_OnAction(ActionEvent actionEvent) {
-    }
-
-    public void mnuExportHelmet_OnAction(ActionEvent actionEvent) {
-    }
-
+    @FXML
     public void mnuBuscarGrhLibres_OnAction(ActionEvent actionEvent) {
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("Buscar Grh libres");
@@ -1750,7 +2089,7 @@ public class frmMain {
      * Abre una nueva ventana que permite adaptar gráficos.
      */
     @FXML
-    private void mnuGrhAdapter_OnAction() {
+    public void mnuGrhAdapter_OnAction(ActionEvent actionEvent) {
         windowManager.showWindow("frmAdaptador", "Adaptador de Grh", false);
     }
 

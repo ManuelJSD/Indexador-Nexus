@@ -13,6 +13,7 @@
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.control.Tooltip?>
@@ -47,22 +48,39 @@
                                 <SeparatorMenuItem />
                                 <MenuItem fx:id="mnuExportHead" mnemonicParsing="false" onAction="#mnuExportHead_OnAction" text="Cabezas" />
                                 <MenuItem fx:id="mnuExportHelmet" mnemonicParsing="false" onAction="#mnuExportHelmet_OnAction" text="Cascos" />
+                                <MenuItem fx:id="mnuExportBody" mnemonicParsing="false" onAction="#mnuExportBody_OnAction" text="Cuerpos" />
+                                <MenuItem fx:id="mnuExportShield" mnemonicParsing="false" onAction="#mnuExportShield_OnAction" text="Escudos" />
+                                <MenuItem fx:id="mnuExportFX" mnemonicParsing="false" onAction="#mnuExportFX_OnAction" text="FXs" />
+                                <MenuItem fx:id="mnuExportWeapon" mnemonicParsing="false" onAction="#mnuExportWeapon_OnAction" text="Armas" />
+                                <SeparatorMenuItem />
+                                <MenuItem fx:id="mnuExportAll" mnemonicParsing="false" onAction="#mnuExportAll_OnAction" text="TODO (Exportar todo)" />
                             </items>
                         </Menu>
                         <Menu mnemonicParsing="true" text="_Indexar">
                             <items>
                                 <Menu mnemonicParsing="false" text="Memoria...">
                                     <items>
-                                        <MenuItem fx:id="mnuIndexbyMemory" mnemonicParsing="false" onAction="#mnuIndexbyMemory" text="Indices">
-                                            <accelerator>
-                                                <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP"/>
-                                            </accelerator>
-                                        </MenuItem>
+                                        <MenuItem fx:id="mnuIndexMemIndices" mnemonicParsing="false" onAction="#mnuIndexMemIndices_OnAction" text="Indices (Graficos.ind)" />
+                                        <MenuItem fx:id="mnuIndexMemHeads" mnemonicParsing="false" onAction="#mnuIndexMemHeads_OnAction" text="Cabezas" />
+                                        <MenuItem fx:id="mnuIndexMemHelmets" mnemonicParsing="false" onAction="#mnuIndexMemHelmets_OnAction" text="Cascos" />
+                                        <MenuItem fx:id="mnuIndexMemBodies" mnemonicParsing="false" onAction="#mnuIndexMemBodies_OnAction" text="Cuerpos" />
+                                        <MenuItem fx:id="mnuIndexMemShields" mnemonicParsing="false" onAction="#mnuIndexMemShields_OnAction" text="Escudos" />
+                                        <MenuItem fx:id="mnuIndexMemWeapons" mnemonicParsing="false" onAction="#mnuIndexMemWeapons_OnAction" text="Armas" />
+                                        <MenuItem fx:id="mnuIndexMemFXs" mnemonicParsing="false" onAction="#mnuIndexMemFXs_OnAction" text="FXs" />
+                                        <SeparatorMenuItem />
+                                        <MenuItem fx:id="mnuIndexMemAll" mnemonicParsing="false" onAction="#mnuIndexMemAll_OnAction" text="TODO (Indexar todo)" />
                                     </items>
                                 </Menu>
                                 <Menu mnemonicParsing="false" text="Exportados">
                                     <items>
-                                        <MenuItem fx:id="mnuIndexbyExported" mnemonicParsing="false" onAction="#mnuIndexbyExported" text="Indices" />
+                                        <MenuItem fx:id="mnuIndexExpIndices" mnemonicParsing="false" onAction="#mnuIndexExpIndices_OnAction" text="Indices (Graficos.ini)" />
+                                        <MenuItem fx:id="mnuIndexExpHeads" mnemonicParsing="false" onAction="#mnuIndexExpHeads_OnAction" text="Cabezas" />
+                                        <MenuItem fx:id="mnuIndexExpHelmets" mnemonicParsing="false" onAction="#mnuIndexExpHelmets_OnAction" text="Cascos" />
+                                        <MenuItem fx:id="mnuIndexExpBodies" mnemonicParsing="false" onAction="#mnuIndexExpBodies_OnAction" text="Cuerpos" />
+                                        <MenuItem fx:id="mnuIndexExpShields" mnemonicParsing="false" onAction="#mnuIndexExpShields_OnAction" text="Escudos (.dat)" />
+                                        <MenuItem fx:id="mnuIndexExpWeapons" mnemonicParsing="false" onAction="#mnuIndexExpWeapons_OnAction" text="Armas (.dat)" />
+                                        <SeparatorMenuItem />
+                                        <MenuItem fx:id="mnuIndexExpAll" mnemonicParsing="false" onAction="#mnuIndexExpAll_OnAction" text="TODO (Indexar todo)" />
                                     </items>
                                 </Menu>
                             </items>
@@ -135,6 +153,11 @@
                         <MenuItem fx:id="mnuFXs" mnemonicParsing="false" onAction="#mnuFXs_OnAction" text="FX's">
                             <accelerator>
                                 <KeyCodeCombination alt="UP" code="DIGIT5" control="DOWN" meta="UP" shift="UP" shortcut="UP"/>
+                            </accelerator>
+                        </MenuItem>
+                        <MenuItem fx:id="mnuWeapon" mnemonicParsing="false" onAction="#mnuWeapon_OnAction" text="Armas">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="DIGIT6" control="DOWN" meta="UP" shift="UP" shortcut="UP"/>
                             </accelerator>
                         </MenuItem>
                         <SeparatorMenuItem />
@@ -422,6 +445,7 @@
                 <Label fx:id="lblGrhCount" text="GRHs: 0" textFill="WHITE" />
                 <Label fx:id="lblAnimCount" text="Animaciones: 0" textFill="WHITE" />
                 <Label fx:id="lblModified" text="" textFill="#FFA500" />
+                <ProgressBar fx:id="progressMain" prefWidth="200.0" progress="0.0" visible="false" />
             </children>
         </HBox>
     </children>

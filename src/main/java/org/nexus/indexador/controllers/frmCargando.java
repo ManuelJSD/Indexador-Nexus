@@ -85,6 +85,13 @@ public class frmCargando {
                     System.err.println("Error al cargar FXs: " + e.getMessage());
                 }
 
+                try {
+                    Platform.runLater(() -> lblStatus.setText("Cargando indice de armas..."));
+                    dataManager.readWeaponFile();
+                } catch (Exception e) {
+                    System.err.println("Error al cargar armas: " + e.getMessage());
+                }
+
             } catch (IOException e) {
                 System.err.println("Error al leer la configuración: " + e.getMessage());
             }

@@ -3,8 +3,7 @@ package org.nexus.indexador.gamedata.loaders;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.nexus.indexador.gamedata.enums.IndexingSystem;
-import org.nexus.indexador.gamedata.models.HeadData;
-import org.nexus.indexador.gamedata.models.HelmetData;
+import org.nexus.indexador.gamedata.models.*;
 import org.nexus.indexador.utils.ConfigManager;
 import org.nexus.indexador.utils.Logger;
 import org.nexus.indexador.utils.byteMigration;
@@ -128,7 +127,231 @@ public class TraditionalIndexLoader implements IndexLoader {
 
         logger.info("Cargados " + helmetList.size() + " cascos exitosamente (Sistema Tradicional)");
         return helmetList;
+    }
 
+    @Override
+    public ObservableList<BodyData> loadBodies() throws IOException {
+        logger.info("Cargando datos de cuerpos (Sistema Tradicional)...");
+        ObservableList<BodyData> bodyList = FXCollections.observableArrayList();
+        File archivo = new File(configManager.getInitDir() + "personajes.ind");
+
+        try (RandomAccessFile file = new RandomAccessFile(archivo, "r")) {
+            logger.info("Comenzando a leer desde " + archivo.getAbsolutePath());
+            handleFixedHeader(file, 20);
+            short numBodys = byteMigration.bigToLittle_Short(file.readShort());
+
+            for (int i = 0; i < numBodys; i++) {
+                int[] body = new int[4];
+                for (int j = 0; j < 4; j++) {
+                    body[j] = byteMigration.bigToLittle_Int(file.readInt());
+                }
+                short headOffsetX = byteMigration.bigToLittle_Short(file.readShort());
+                short headOffsetY = byteMigration.bigToLittle_Short(file.readShort());
+                BodyData data = new BodyData(body, headOffsetX, headOffsetY);
+                bodyList.add(data);
+            }
+        } catch (FileNotFoundException e) {
+            logger.error("Archivo no encontrado: " + archivo.getAbsolutePath(), e);
+            throw e;
+        } catch (EOFException e) {
+            logger.info("Fin de fichero alcanzado");
+        }
+        return bodyList;
+    }
+
+    @Override
+    public ObservableList<ShieldData> loadShields() throws IOException {
+        try {
+            return loadShieldsBinary();
+        } catch (FileNotFoundException | EOFException e) {
+            logger.warning("escudos.ind no encontrado o incompleto. Intentando con Escudos.dat...");
+            try {
+                return loadShieldsText();
+            } catch (FileNotFoundException ex) {
+                logger.error("No se encontró ni escudos.ind ni Escudos.dat");
+                return FXCollections.observableArrayList();
+            } catch (Exception ex) {
+                logger.error("Error al leer Escudos.dat", ex);
+                return FXCollections.observableArrayList();
+            }
+        }
+    }
+
+    private ObservableList<ShieldData> loadShieldsBinary() throws IOException {
+        logger.info("Cargando datos de escudos (Binario)...");
+        ObservableList<ShieldData> shieldList = FXCollections.observableArrayList();
+        File archivo = new File(configManager.getInitDir() + "escudos.ind");
+
+        try (RandomAccessFile file = new RandomAccessFile(archivo, "r")) {
+            handleFixedHeader(file, 16);
+            short numShields = byteMigration.bigToLittle_Short(file.readShort());
+
+            for (int i = 0; i < numShields; i++) {
+                int[] shield = new int[4];
+                for (int j = 0; j < 4; j++) {
+                    shield[j] = byteMigration.bigToLittle_Int(file.readInt());
+                }
+                shieldList.add(new ShieldData(shield));
+            }
+        }
+        return shieldList;
+    }
+
+    private ObservableList<ShieldData> loadShieldsText() throws IOException {
+        logger.info("Cargando datos de escudos (Texto)...");
+        ObservableList<ShieldData> shieldList = FXCollections.observableArrayList();
+        File archivo = new File(configManager.getInitDir() + "Escudos.dat");
+
+        if (!archivo.exists())
+            throw new FileNotFoundException("Escudos.dat no encontrado");
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(archivo))) {
+            String line;
+            int[] currentShield = new int[4];
+            boolean hasData = false;
+
+            while ((line = reader.readLine()) != null) {
+                line = line.trim();
+                if (line.isEmpty())
+                    continue;
+                if (line.startsWith("[")) {
+                    if (hasData) {
+                        shieldList.add(new ShieldData(currentShield.clone()));
+                        for (int k = 0; k < 4; k++)
+                            currentShield[k] = 0;
+                        hasData = false;
+                    }
+                    continue;
+                }
+                if (line.contains("'"))
+                    line = line.split("'")[0].trim();
+                String[] parts = line.split("=");
+                if (parts.length < 2)
+                    continue;
+
+                String key = parts[0].trim().toUpperCase();
+                String value = parts[1].trim();
+                try {
+                    int val = Integer.parseInt(value);
+                    if (key.startsWith("DIR")) {
+                        int dirIndex = Integer.parseInt(key.substring(3)) - 1;
+                        if (dirIndex >= 0 && dirIndex < 4) {
+                            currentShield[dirIndex] = val;
+                            hasData = true;
+                        }
+                    }
+                } catch (NumberFormatException e) {
+                }
+            }
+            if (hasData)
+                shieldList.add(new ShieldData(currentShield.clone()));
+        }
+        return shieldList;
+    }
+
+    @Override
+    public ObservableList<FXData> loadFXs() throws IOException {
+        logger.info("Cargando datos de FXs...");
+        ObservableList<FXData> fxList = FXCollections.observableArrayList();
+        File archivo = new File(configManager.getInitDir() + "fxs.ind");
+
+        try (RandomAccessFile file = new RandomAccessFile(archivo, "r")) {
+            handleFixedHeader(file, 8);
+            short numFXs = byteMigration.bigToLittle_Short(file.readShort());
+
+            for (int i = 0; i < numFXs; i++) {
+                int fx = byteMigration.bigToLittle_Int(file.readInt());
+                short offsetX = byteMigration.bigToLittle_Short(file.readShort());
+                short offsetY = byteMigration.bigToLittle_Short(file.readShort());
+                fxList.add(new FXData(fx, offsetX, offsetY));
+            }
+        } catch (FileNotFoundException e) {
+            logger.error("Archivo no encontrado: " + archivo.getAbsolutePath(), e);
+            throw e;
+        } catch (EOFException e) {
+            logger.info("Fin de fichero alcanzado");
+        }
+        return fxList;
+    }
+
+    @Override
+    public ObservableList<GrhData> loadGrhs() throws IOException {
+        logger.info("Cargando datos de gráficos (Grh)...");
+        ObservableList<GrhData> grhList = FXCollections.observableArrayList();
+        File archivo = new File(configManager.getInitDir() + "graficos.ind");
+
+        try (RandomAccessFile file = new RandomAccessFile(archivo, "r")) {
+            handleGrhHeader(file);
+            byteMigration.bigToLittle_Int(file.readInt()); // Version (discarded here)
+            byteMigration.bigToLittle_Int(file.readInt()); // Count (discarded here)
+
+            while (file.getFilePointer() < file.length()) {
+                int grh = byteMigration.bigToLittle_Int(file.readInt());
+                short numFrames = byteMigration.bigToLittle_Short(file.readShort());
+
+                if (numFrames > 1) {
+                    int[] frames = new int[numFrames + 1];
+                    for (int i = 1; i <= numFrames; i++) {
+                        frames[i] = byteMigration.bigToLittle_Int(file.readInt());
+                    }
+                    int speed = (int) byteMigration.bigToLittle_Float(file.readFloat());
+                    grhList.add(new GrhData(grh, numFrames, frames, speed));
+                } else {
+                    int fileNum = byteMigration.bigToLittle_Int(file.readInt());
+                    short x = byteMigration.bigToLittle_Short(file.readShort());
+                    short y = byteMigration.bigToLittle_Short(file.readShort());
+                    short width = byteMigration.bigToLittle_Short(file.readShort());
+                    short height = byteMigration.bigToLittle_Short(file.readShort());
+                    grhList.add(new GrhData(grh, numFrames, fileNum, x, y, width, height));
+                }
+            }
+        } catch (FileNotFoundException e) {
+            logger.error("Archivo no encontrado: " + archivo.getAbsolutePath(), e);
+            throw e;
+        } catch (EOFException e) {
+            logger.info("Fin de fichero alcanzado");
+        }
+        return grhList;
+    }
+
+    private void handleGrhHeader(RandomAccessFile file) throws IOException {
+        if (file.length() < 263 + 8) {
+            file.seek(0);
+            return;
+        }
+        file.seek(0);
+        int vNoHeader = byteMigration.bigToLittle_Int(file.readInt());
+        file.seek(263);
+        int vHeader = byteMigration.bigToLittle_Int(file.readInt());
+
+        if (vNoHeader < 0 || vNoHeader > 1000) {
+            if (vHeader >= 0 && vHeader < 1000) {
+                file.seek(263);
+                logger.info("Cabecera detectada en Graficos.ind");
+                return;
+            }
+        }
+        file.seek(0);
+    }
+
+    private void handleFixedHeader(RandomAccessFile file, int recordSize) throws IOException {
+        long fileSize = file.length();
+        file.seek(0);
+        short numNoHeader = byteMigration.bigToLittle_Short(file.readShort());
+        if (fileSize == 2 + (long) numNoHeader * recordSize) {
+            file.seek(0);
+            return;
+        }
+        if (fileSize >= 263 + 2) {
+            file.seek(263);
+            short numHeader = byteMigration.bigToLittle_Short(file.readShort());
+            if (fileSize == 263 + 2 + (long) numHeader * recordSize) {
+                file.seek(263);
+                logger.info("Cabecera detectada en archivo de registros fijos.");
+                return;
+            }
+        }
+        file.seek(0);
     }
 
     @Override

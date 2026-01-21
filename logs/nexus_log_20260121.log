@@ -7637,3 +7637,100 @@ java.lang.NullPointerException: Cannot invoke "org.nexus.indexador.gamedata.mode
 2026-01-21 23:37:40 [DEBUG] Imagen obtenida del caché: F:\Repositorio Argentum\Argentum-Online\client\Graficos\20008.bmp
 2026-01-21 23:37:40 [DEBUG] Imagen obtenida del caché: F:\Repositorio Argentum\Argentum-Online\client\Graficos\20008.bmp
 2026-01-21 23:37:40 [DEBUG] Recortando imagen: F:\Repositorio Argentum\Argentum-Online\client\Graficos\20008.bmp en coordenadas [25,90] con tamaño 25x45
+2026-01-21 23:45:15 [INFO] Logger iniciado. Ruta de archivos de log: f:\IdeaProjects\Indexador-Nexus\logs
+2026-01-21 23:45:15 [INFO] Iniciando aplicación Indexador Nexus
+2026-01-21 23:45:15 [INFO] DataManager inicializado
+2026-01-21 23:45:15 [INFO] Sistema de indexado: Tradicional
+2026-01-21 23:45:15 [INFO] Cargando datos de gráficos (Grh)...
+2026-01-21 23:45:15 [INFO] Pantalla de carga iniciada correctamente
+2026-01-21 23:45:15 [INFO] Cargando datos de cabezas (Sistema Tradicional)...F:\Repositorio Argentum\Argentum-Online\client\INIT\
+2026-01-21 23:45:15 [INFO] Comenzando a leer desde F:\Repositorio Argentum\Argentum-Online\client\INIT\cabezas.ind
+2026-01-21 23:45:15 [INFO] Detectado formato: Con Cabecera + Integers (Antiguo)
+2026-01-21 23:45:15 [INFO] Cargadas 514 cabezas exitosamente (Sistema Tradicional)
+2026-01-21 23:45:15 [INFO] Cargando datos de cascos (Sistema Tradicional)...
+2026-01-21 23:45:15 [INFO] Comenzando a leer desde F:\Repositorio Argentum\Argentum-Online\client\INIT\cascos.ind
+2026-01-21 23:45:15 [INFO] Detectado formato: Con Cabecera + Integers (Antiguo)
+2026-01-21 23:45:15 [INFO] Cargados 16 cascos exitosamente (Sistema Tradicional)
+2026-01-21 23:45:15 [INFO] Cargando datos de cuerpos (Sistema Tradicional)...
+2026-01-21 23:45:15 [INFO] Comenzando a leer desde F:\Repositorio Argentum\Argentum-Online\client\INIT\personajes.ind
+2026-01-21 23:45:15 [INFO] Fin de fichero alcanzado
+2026-01-21 23:45:15 [INFO] Cargando datos de escudos (Binario)...
+2026-01-21 23:45:15 [WARNING] escudos.ind no encontrado o incompleto. Intentando con Escudos.dat...
+2026-01-21 23:45:15 [INFO] Cargando datos de escudos (Texto)...
+2026-01-21 23:45:15 [INFO] Cargando datos de FXs...
+2026-01-21 23:45:15 [INFO] Fin de fichero alcanzado
+2026-01-21 23:45:15 [INFO] ImageCache inicializado
+2026-01-21 23:45:15 [INFO] WindowManager inicializado
+2026-01-21 23:45:15 [INFO] Inicializando controlador frmMain
+2026-01-21 23:45:15 [INFO] Cargando datos de gráficos (Grh)...
+2026-01-21 23:45:16 [INFO] Gráficos cargados correctamente: 23555 índices
+2026-01-21 23:45:16 [INFO] Controlador frmMain inicializado correctamente
+2026-01-21 23:45:21 [INFO] Ventana 'frmCuerpos' abierta: Cuerpos
+2026-01-21 23:45:22 [ERROR] Excepción no capturada en el hilo: JavaFX Application Thread - Excepción: Cannot invoke "org.nexus.indexador.gamedata.models.GrhData.getNumFrames()" because "selectedGrh" is null
+2026-01-21 23:45:22 [EXCEPTION STACK TRACE]:
+java.lang.NullPointerException: Cannot invoke "org.nexus.indexador.gamedata.models.GrhData.getNumFrames()" because "selectedGrh" is null
+	at org.nexus.indexador/org.nexus.indexador.controllers.frmCuerpos.drawBodys(frmCuerpos.java:187)
+	at org.nexus.indexador/org.nexus.indexador.controllers.frmCuerpos.lambda$0(frmCuerpos.java:148)
+	at javafx.base/com.sun.javafx.binding.ExpressionHelper$SingleChange.fireValueChangedEvent(ExpressionHelper.java:181)
+	at javafx.base/com.sun.javafx.binding.ExpressionHelper.fireValueChangedEvent(ExpressionHelper.java:80)
+	at javafx.base/javafx.beans.property.ReadOnlyObjectPropertyBase.fireValueChangedEvent(ReadOnlyObjectPropertyBase.java:80)
+	at javafx.base/javafx.beans.property.ReadOnlyObjectWrapper.fireValueChangedEvent(ReadOnlyObjectWrapper.java:102)
+	at javafx.base/javafx.beans.property.ObjectPropertyBase.markInvalid(ObjectPropertyBase.java:113)
+	at javafx.base/javafx.beans.property.ObjectPropertyBase.set(ObjectPropertyBase.java:147)
+	at javafx.controls/javafx.scene.control.SelectionModel.setSelectedItem(SelectionModel.java:105)
+	at javafx.controls/javafx.scene.control.MultipleSelectionModelBase.lambda$new$0(MultipleSelectionModelBase.java:67)
+	at javafx.base/com.sun.javafx.binding.ExpressionHelper$SingleInvalidation.fireValueChangedEvent(ExpressionHelper.java:136)
+	at javafx.base/com.sun.javafx.binding.ExpressionHelper.fireValueChangedEvent(ExpressionHelper.java:80)
+	at javafx.base/javafx.beans.property.ReadOnlyIntegerPropertyBase.fireValueChangedEvent(ReadOnlyIntegerPropertyBase.java:78)
+	at javafx.base/javafx.beans.property.ReadOnlyIntegerWrapper.fireValueChangedEvent(ReadOnlyIntegerWrapper.java:102)
+	at javafx.base/javafx.beans.property.IntegerPropertyBase.markInvalid(IntegerPropertyBase.java:114)
+	at javafx.base/javafx.beans.property.IntegerPropertyBase.set(IntegerPropertyBase.java:148)
+	at javafx.controls/javafx.scene.control.SelectionModel.setSelectedIndex(SelectionModel.java:69)
+	at javafx.controls/javafx.scene.control.MultipleSelectionModelBase.select(MultipleSelectionModelBase.java:414)
+	at javafx.controls/javafx.scene.control.MultipleSelectionModelBase.clearAndSelect(MultipleSelectionModelBase.java:361)
+	at javafx.controls/javafx.scene.control.ListView$ListViewBitSetSelectionModel.clearAndSelect(ListView.java:1451)
+	at javafx.controls/com.sun.javafx.scene.control.behavior.CellBehaviorBase.simpleSelect(CellBehaviorBase.java:287)
+	at javafx.controls/com.sun.javafx.scene.control.behavior.CellBehaviorBase.doSelect(CellBehaviorBase.java:246)
+	at javafx.controls/com.sun.javafx.scene.control.behavior.CellBehaviorBase.mousePressed(CellBehaviorBase.java:176)
+	at javafx.controls/com.sun.javafx.scene.control.inputmap.InputMap.handle(InputMap.java:274)
+	at javafx.base/com.sun.javafx.event.CompositeEventHandler$NormalEventHandlerRecord.handleBubblingEvent(CompositeEventHandler.java:247)
+	at javafx.base/com.sun.javafx.event.CompositeEventHandler.dispatchBubblingEvent(CompositeEventHandler.java:80)
+	at javafx.base/com.sun.javafx.event.EventHandlerManager.dispatchBubblingEvent(EventHandlerManager.java:234)
+	at javafx.base/com.sun.javafx.event.EventHandlerManager.dispatchBubblingEvent(EventHandlerManager.java:191)
+	at javafx.base/com.sun.javafx.event.CompositeEventDispatcher.dispatchBubblingEvent(CompositeEventDispatcher.java:59)
+	at javafx.base/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:58)
+	at javafx.base/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:56)
+	at javafx.base/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:56)
+	at javafx.base/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:56)
+	at javafx.base/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base/com.sun.javafx.event.BasicEventDispatcher.dispatchEvent(BasicEventDispatcher.java:56)
+	at javafx.base/com.sun.javafx.event.EventDispatchChainImpl.dispatchEvent(EventDispatchChainImpl.java:114)
+	at javafx.base/com.sun.javafx.event.EventUtil.fireEventImpl(EventUtil.java:74)
+	at javafx.base/com.sun.javafx.event.EventUtil.fireEvent(EventUtil.java:54)
+	at javafx.base/javafx.event.Event.fireEvent(Event.java:198)
+	at javafx.graphics/javafx.scene.Scene$MouseHandler.process(Scene.java:3897)
+	at javafx.graphics/javafx.scene.Scene.processMouseEvent(Scene.java:1878)
+	at javafx.graphics/javafx.scene.Scene$ScenePeerListener.mouseEvent(Scene.java:2623)
+	at javafx.graphics/com.sun.javafx.tk.quantum.GlassViewEventHandler$MouseEventNotification.run(GlassViewEventHandler.java:411)
+	at javafx.graphics/com.sun.javafx.tk.quantum.GlassViewEventHandler$MouseEventNotification.run(GlassViewEventHandler.java:301)
+	at java.base/java.security.AccessController.doPrivileged(Unknown Source)
+	at javafx.graphics/com.sun.javafx.tk.quantum.GlassViewEventHandler.lambda$handleMouseEvent$2(GlassViewEventHandler.java:450)
+	at javafx.graphics/com.sun.javafx.tk.quantum.QuantumToolkit.runWithoutRenderLock(QuantumToolkit.java:423)
+	at javafx.graphics/com.sun.javafx.tk.quantum.GlassViewEventHandler.handleMouseEvent(GlassViewEventHandler.java:449)
+	at javafx.graphics/com.sun.glass.ui.View.handleMouseEvent(View.java:551)
+	at javafx.graphics/com.sun.glass.ui.View.notifyMouse(View.java:937)
+	at javafx.graphics/com.sun.glass.ui.win.WinApplication._runLoop(Native Method)
+	at javafx.graphics/com.sun.glass.ui.win.WinApplication.lambda$runLoop$3(WinApplication.java:184)
+	at java.base/java.lang.Thread.run(Unknown Source)
+2026-01-21 23:45:23 [DEBUG] Ventana 'frmCuerpos' cerrada
+2026-01-21 23:45:25 [DEBUG] Cargando imagen nueva: F:\Repositorio Argentum\Argentum-Online\client\Graficos\12050.bmp
+2026-01-21 23:45:25 [INFO] Rectángulo: layout=[5.0,6.0], orig=[64.0x64.0], view=[64.0x64.0], scale=1.0, offset=[0.0,0.0], rect=[5.0,6.0]
+2026-01-21 23:45:25 [DEBUG] Imagen obtenida del caché: F:\Repositorio Argentum\Argentum-Online\client\Graficos\12050.bmp
+2026-01-21 23:45:25 [DEBUG] Recortando imagen: F:\Repositorio Argentum\Argentum-Online\client\Graficos\12050.bmp en coordenadas [0,0] con tamaño 32x32
+2026-01-21 23:45:25 [DEBUG] Cargando imagen nueva: F:\Repositorio Argentum\Argentum-Online\client\Graficos\15158.bmp
+2026-01-21 23:45:25 [INFO] Rectángulo: layout=[5.0,6.0], orig=[110.0x30.0], view=[110.0x30.0], scale=1.0, offset=[0.0,0.0], rect=[38.0,6.0]
+2026-01-21 23:45:25 [DEBUG] Imagen obtenida del caché: F:\Repositorio Argentum\Argentum-Online\client\Graficos\15158.bmp
+2026-01-21 23:45:25 [DEBUG] Recortando imagen: F:\Repositorio Argentum\Argentum-Online\client\Graficos\15158.bmp en coordenadas [33,0] con tamaño 11x30

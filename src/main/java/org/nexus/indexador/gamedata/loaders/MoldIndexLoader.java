@@ -3,8 +3,7 @@ package org.nexus.indexador.gamedata.loaders;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.nexus.indexador.gamedata.enums.IndexingSystem;
-import org.nexus.indexador.gamedata.models.HeadData;
-import org.nexus.indexador.gamedata.models.HelmetData;
+import org.nexus.indexador.gamedata.models.*;
 import org.nexus.indexador.utils.ConfigManager;
 import org.nexus.indexador.utils.Logger;
 import org.nexus.indexador.utils.byteMigration;
@@ -101,6 +100,30 @@ public class MoldIndexLoader implements IndexLoader {
 
         logger.info("Cargados " + helmetList.size() + " cascos exitosamente (Sistema de Moldes)");
         return helmetList;
+    }
+
+    @Override
+    public ObservableList<BodyData> loadBodies() throws IOException {
+        logger.info("Cargando datos de cuerpos (Moldes - Placeholder)...");
+        return FXCollections.observableArrayList();
+    }
+
+    @Override
+    public ObservableList<ShieldData> loadShields() throws IOException {
+        logger.info("Cargando datos de escudos (Moldes - Placeholder)...");
+        return FXCollections.observableArrayList();
+    }
+
+    @Override
+    public ObservableList<FXData> loadFXs() throws IOException {
+        logger.info("Cargando datos de FXs (Moldes - Placeholder)...");
+        return FXCollections.observableArrayList();
+    }
+
+    @Override
+    public ObservableList<GrhData> loadGrhs() throws IOException {
+        logger.info("Cargando datos de gráficos (Moldes - Placeholder)...");
+        return FXCollections.observableArrayList();
     }
 
     @Override

@@ -4,6 +4,10 @@ import javafx.collections.ObservableList;
 import org.nexus.indexador.gamedata.enums.IndexingSystem;
 import org.nexus.indexador.gamedata.models.HeadData;
 import org.nexus.indexador.gamedata.models.HelmetData;
+import org.nexus.indexador.gamedata.models.BodyData;
+import org.nexus.indexador.gamedata.models.ShieldData;
+import org.nexus.indexador.gamedata.models.FXData;
+import org.nexus.indexador.gamedata.models.GrhData;
 
 import java.io.IOException;
 
@@ -18,24 +22,36 @@ public interface IndexLoader {
 
     /**
      * Carga los datos de cabezas desde el archivo correspondiente.
-     * 
-     * @return Lista observable con los datos de cabezas cargados
-     * @throws IOException si ocurre un error al leer el archivo
      */
     ObservableList<HeadData> loadHeads() throws IOException;
 
     /**
      * Carga los datos de cascos desde el archivo correspondiente.
-     * 
-     * @return Lista observable con los datos de cascos cargados
-     * @throws IOException si ocurre un error al leer el archivo
      */
     ObservableList<HelmetData> loadHelmets() throws IOException;
 
     /**
+     * Carga los datos de cuerpos desde el archivo correspondiente.
+     */
+    ObservableList<BodyData> loadBodies() throws IOException;
+
+    /**
+     * Carga los datos de escudos (binario o texto).
+     */
+    ObservableList<ShieldData> loadShields() throws IOException;
+
+    /**
+     * Carga los datos de FXs.
+     */
+    ObservableList<FXData> loadFXs() throws IOException;
+
+    /**
+     * Carga los datos de gráficos (grh).
+     */
+    ObservableList<GrhData> loadGrhs() throws IOException;
+
+    /**
      * Obtiene el tipo de sistema de indexado que implementa este loader.
-     * 
-     * @return El tipo de sistema de indexado
      */
     IndexingSystem getSystemType();
 }

@@ -12,11 +12,11 @@ public class ConfigManager {
     private String datDir;
     private String exportDir;
     private String backgroundColor = "#EA3FF7"; // Default magenta
+    private String indexingSystem = "MOLD"; // Default: Sistema de Moldes
 
     private static final String CONFIG_FILE_NAME = "config.ini";
-    // Usar directorio del usuario en lugar de resources
-    private static final String CONFIG_FILE_PATH = System.getProperty("user.home") +
-            File.separator + ".indexador-nexus" + File.separator + CONFIG_FILE_NAME;
+    // Guardar en el directorio de la aplicación
+    private static final String CONFIG_FILE_PATH = CONFIG_FILE_NAME;
 
     private ConfigManager() {
     }
@@ -63,6 +63,10 @@ public class ConfigManager {
         return backgroundColor;
     }
 
+    public String getIndexingSystem() {
+        return indexingSystem;
+    }
+
     /**
      * Normaliza una ruta asegurando que termine con separador.
      */
@@ -97,6 +101,10 @@ public class ConfigManager {
         this.backgroundColor = backgroundColor;
     }
 
+    public void setIndexingSystem(String indexingSystem) {
+        this.indexingSystem = indexingSystem;
+    }
+
     public void readConfig() throws IOException {
         File configFile = new File(CONFIG_FILE_PATH);
         if (configFile.exists()) {
@@ -118,6 +126,8 @@ public class ConfigManager {
                             exportDir = value;
                         } else if (key.equals("BackgroundColor")) {
                             backgroundColor = value;
+                        } else if (key.equals("IndexingSystem")) {
+                            indexingSystem = value;
                         }
                     }
                 }
@@ -129,7 +139,7 @@ public class ConfigManager {
         // Crear directorio si no existe
         File configFile = new File(CONFIG_FILE_PATH);
         File configDir = configFile.getParentFile();
-        if (!configDir.exists()) {
+        if (configDir != null && !configDir.exists()) {
             configDir.mkdirs();
         }
 
@@ -143,6 +153,8 @@ public class ConfigManager {
             writer.write("Exportados=" + exportDir);
             writer.newLine();
             writer.write("BackgroundColor=" + backgroundColor);
+            writer.newLine();
+            writer.write("IndexingSystem=" + indexingSystem);
         }
     }
 

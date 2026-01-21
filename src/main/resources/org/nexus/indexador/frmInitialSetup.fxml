@@ -2,8 +2,11 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
@@ -51,6 +54,45 @@
         <Button fx:id="btnBrowseExport" text="Examinar..." onAction="#onBrowseExport" 
                 GridPane.rowIndex="3" GridPane.columnIndex="2" prefWidth="100"/>
     </GridPane>
+    
+    <!-- Indexing System Selection -->
+    <VBox spacing="10">
+        <Label text="Sistema de Indexado:" style="-fx-text-fill: #e0e0e0; -fx-font-size: 14px; -fx-font-weight: bold;"/>
+        <Label text="Seleccione el sistema de indexado para cabezas y cascos:" 
+               style="-fx-text-fill: #b0b0b0; -fx-font-size: 11px;"/>
+        
+        <HBox spacing="20" alignment="CENTER">
+            <!-- Sistema de Moldes -->
+            <VBox fx:id="cardMoldSystem" alignment="CENTER" spacing="8" 
+                  style="-fx-background-color: #3c3c3c; -fx-padding: 20; -fx-background-radius: 8; -fx-cursor: hand; -fx-border-color: #4a90d9; -fx-border-width: 2; -fx-border-radius: 8;"
+                  onMouseClicked="#onMoldSystemClick" prefWidth="200" prefHeight="180">
+                <ImageView fitWidth="80" fitHeight="80" preserveRatio="true">
+                    <image>
+                        <Image url="@images/indexing_mold.png"/>
+                    </image>
+                </ImageView>
+                <Label text="Sistema de Moldes" style="-fx-text-fill: #e0e0e0; -fx-font-size: 13px; -fx-font-weight: bold;"/>
+                <Label text="Usa texturas y coordenadas" wrapText="true" textAlignment="CENTER"
+                       style="-fx-text-fill: #909090; -fx-font-size: 10px;"/>
+                <Label text="(Nuevo)" style="-fx-text-fill: #4a90d9; -fx-font-size: 9px; -fx-font-style: italic;"/>
+            </VBox>
+            
+            <!-- Sistema Tradicional -->
+            <VBox fx:id="cardTraditionalSystem" alignment="CENTER" spacing="8" 
+                  style="-fx-background-color: #3c3c3c; -fx-padding: 20; -fx-background-radius: 8; -fx-cursor: hand; -fx-border-color: #50c878; -fx-border-width: 2; -fx-border-radius: 8;"
+                  onMouseClicked="#onTraditionalSystemClick" prefWidth="200" prefHeight="180">
+                <ImageView fitWidth="80" fitHeight="80" preserveRatio="true">
+                    <image>
+                        <Image url="@images/indexing_traditional.png"/>
+                    </image>
+                </ImageView>
+                <Label text="Sistema Tradicional" style="-fx-text-fill: #e0e0e0; -fx-font-size: 13px; -fx-font-weight: bold;"/>
+                <Label text="Índices directos a gráficos" wrapText="true" textAlignment="CENTER"
+                       style="-fx-text-fill: #909090; -fx-font-size: 10px;"/>
+                <Label text="(Actual)" style="-fx-text-fill: #50c878; -fx-font-size: 9px; -fx-font-style: italic;"/>
+            </VBox>
+        </HBox>
+    </VBox>
     
     <!-- Info Box -->
     <VBox spacing="5" style="-fx-background-color: #3c3c3c; -fx-padding: 15; -fx-background-radius: 5;">

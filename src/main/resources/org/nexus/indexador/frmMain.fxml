@@ -21,13 +21,15 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.input.KeyCodeCombination?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.shape.Rectangle?>
 
-<AnchorPane fx:id="paneMain" maxHeight="649.0" maxWidth="1516.0" minHeight="768.0" minWidth="1366.0" prefHeight="649.0" prefWidth="1065.0" style="-fx-background-color: #424242;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nexus.indexador.controllers.frmMain">
+<AnchorPane fx:id="paneMain" minHeight="768.0" minWidth="1366.0" prefHeight="800.0" prefWidth="1366.0" style="-fx-background-color: #424242;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nexus.indexador.controllers.frmMain">
     <children>
         <MenuBar fx:id="MnuBar" prefHeight="25.0" prefWidth="1366.0" style="-fx-background-color: #999999;">
             <menus>
@@ -260,40 +262,56 @@
         <Label fx:id="lblIndices" layoutX="836.0" layoutY="70.0" prefWidth="200.0" style="-fx-background-color: #424242;" text="Indices cargados: 0" textFill="WHITE" />
         
         <!-- Panel de Filtros Colapsable -->
-        <Pane fx:id="paneFilterHeader" layoutX="12.0" layoutY="70.0" prefHeight="25.0" prefWidth="200.0" 
-              style="-fx-background-color: #4a4a4a; -fx-border-color: #555555; -fx-border-width: 1; -fx-cursor: hand;"
-              onMouseClicked="#toggleFilters">
-            <children>
-                <Label fx:id="lblFilterToggle" layoutX="10.0" layoutY="5.0" text="▼ Filtros" textFill="#e0e0e0" 
-                       styleClass="filter-title" style="-fx-cursor: hand;"/>
-            </children>
-        </Pane>
-        
-        <Pane fx:id="paneFilterContent" layoutX="12.0" layoutY="95.0" prefHeight="125.0" prefWidth="200.0" 
-              style="-fx-background-color: #3c3c3c; -fx-border-color: #555555; -fx-border-width: 0 1 1 1;">
-            <children>
-                <!-- Checkboxes Tipo -->
-                <CheckBox fx:id="chkAnimations" layoutX="10.0" layoutY="5.0" text="Animaciones" textFill="#e0e0e0"/>
-                <CheckBox fx:id="chkStatics" layoutX="10.0" layoutY="25.0" text="Estáticos" textFill="#e0e0e0"/>
+        <!-- Left Panel Container (VBox) -->
+        <VBox layoutX="12.0" AnchorPane.topAnchor="70.0" AnchorPane.bottomAnchor="25.0" prefWidth="200.0" spacing="0">
+            <!-- 1. Lista (Grow Always) -->
+            <ListView fx:id="lstIndices" VBox.vgrow="ALWAYS" prefWidth="200.0" style="-fx-background-color: #535353; -fx-border-color: #000000;" />
+            
+            <!-- 2. Header Filtros -->
+            <Pane fx:id="paneFilterHeader" prefHeight="25.0" prefWidth="200.0" 
+                  style="-fx-background-color: #4a4a4a; -fx-border-color: #555555; -fx-border-width: 1 1 0 1; -fx-cursor: hand;"
+                  onMouseClicked="#toggleFilters">
+                  
+                <VBox.margin>
+                    <Insets top="10.0"/>
+                </VBox.margin>
                 
-                <!-- Campos de búsqueda -->
-                <Label layoutX="10.0" layoutY="50.0" text="FileNum:" textFill="#b0b0b0" style="-fx-font-size: 10px;"/>
-                <TextField fx:id="txtFilterFileNum" layoutX="65.0" layoutY="46.0" prefHeight="20.0" prefWidth="60.0" promptText=""/>
+                <children>
+                    <Label fx:id="lblFilterToggle" layoutX="10.0" layoutY="5.0" text="▼ Filtros" textFill="#e0e0e0" 
+                           styleClass="filter-title" style="-fx-cursor: hand;"/>
+                </children>
+            </Pane>
+            
+            <!-- 3. Contenido Filtros (Collapsible) -->
+            <Pane fx:id="paneFilterContent" prefHeight="140.0" prefWidth="200.0" 
+                  style="-fx-background-color: #3c3c3c; -fx-border-color: #555555; -fx-border-width: 0 1 1 1;">
+                  
+                 <VBox.margin>
+                    <Insets bottom="5.0"/>
+                </VBox.margin>
                 
-                <Label layoutX="10.0" layoutY="75.0" text="Anch/Alt:" textFill="#b0b0b0"  style="-fx-font-size: 10px;"/>
-                <TextField fx:id="txtFilterWidth" layoutX="65.0" layoutY="71.0" prefHeight="20.0" prefWidth="30.0" promptText="W"/>
-                <TextField fx:id="txtFilterHeight" layoutX="100.0" layoutY="71.0" prefHeight="20.0" prefWidth="30.0" promptText="H"/>
-                
-                <!-- Botones -->
-                <Button fx:id="btnApplyFilters" layoutX="10.0" layoutY="100.0" text="Aplicar" onAction="#onApplyFilters" prefWidth="80.0" styleClass="button-small"/>
-                <Button fx:id="btnClearFilters" layoutX="95.0" layoutY="100.0" text="Limpiar" onAction="#onClearFilters" prefWidth="80.0" styleClass="button-small"/>
-            </children>
-        </Pane>
-        
-        <ListView fx:id="lstIndices" layoutX="12.0" layoutY="225.0" prefHeight="455.0" prefWidth="200.0" style="-fx-background-color: #535353; -fx-border-color: #000000;" />
+                <children>
+                    <!-- Checkboxes Tipo -->
+                    <CheckBox fx:id="chkAnimations" layoutX="10.0" layoutY="5.0" text="Animaciones" textFill="#e0e0e0"/>
+                    <CheckBox fx:id="chkStatics" layoutX="10.0" layoutY="25.0" text="Estáticos" textFill="#e0e0e0"/>
+                    
+                    <!-- Campos de búsqueda unificados -->
+                    <Label layoutX="10.0" layoutY="50.0" text="Buscar:" textFill="#b0b0b0" style="-fx-font-size: 10px;"/>
+                    
+                    <TextField fx:id="txtFiltro" layoutX="10.0" layoutY="68.0" prefHeight="25.0" prefWidth="180.0" promptText="ID, f:File, w:Ancho, h:Alto...">
+                         <tooltip>
+                            <Tooltip text="Busca GRHs. Enter para siguiente.&#10;Sintaxis:&#10;- 1234 : Por ID&#10;- f:100 : Por FileNum&#10;- w:32 : Por Ancho&#10;- h:32 : Por Alto" />
+                        </tooltip>
+                    </TextField>
+                    
+                    <!-- Botones -->
+                    <Button fx:id="btnApplyFilters" layoutX="10.0" layoutY="100.0" text="Aplicar" onAction="#onApplyFilters" prefWidth="80.0" styleClass="button-small"/>
+                    <Button fx:id="btnClearFilters" layoutX="95.0" layoutY="100.0" text="Limpiar" onAction="#onClearFilters" prefWidth="80.0" styleClass="button-small"/>
+                </children>
+            </Pane>
+        </VBox>
         <Label fx:id="lblVersion" layoutX="1056.0" layoutY="70.0" prefHeight="17.0" prefWidth="156.0" style="-fx-background-color: #424242;" text="Versión: 0" textFill="WHITE" />
-        <Label fx:id="lblIndice" layoutX="843.0" layoutY="688.0" prefWidth="52.0" style="-fx-background-color: #424242;" text="Indice:" textFill="WHITE" />
-        <TextField fx:id="txtIndice" editable="false" layoutX="884.0" layoutY="684.0" prefHeight="25.0" prefWidth="462.0" />
+        <!-- Moved Indice controls to end for Z-Order -->
         
         <ColorPicker fx:id="cpBackground" layoutX="1225.0" layoutY="70.0" prefHeight="25.0" prefWidth="130.0" promptText="Color de Fondo" style="-fx-background-color: #555555; -fx-text-fill: white;">
              <tooltip>
@@ -301,66 +319,62 @@
              </tooltip>
         </ColorPicker>
 
-        <ScrollPane fx:id="PaneGrhView" layoutX="221.0" layoutY="70.0" prefHeight="615.0" prefWidth="604.0" style="-fx-background-color: #000000;">
+        <ScrollPane fx:id="PaneGrhView" layoutX="221.0" AnchorPane.topAnchor="70.0" AnchorPane.bottomAnchor="120.0" prefWidth="604.0" style="-fx-background-color: #000000;">
             <content>
                 <ImageView fx:id="imgIndice" layoutX="5.0" layoutY="5.0" onMouseDragged="#onMouseDragged" onMousePressed="#onMousePressed" pickOnBounds="true" preserveRatio="true" smooth="true" style="-fx-border-color: #EA3FF7" />
             </content>
         </ScrollPane>
 
-        <Pane fx:id="panePreviewBackground" layoutX="836.0" layoutY="96.0" prefHeight="357.0" prefWidth="520.0" style="-fx-background-color: #EA3FF7; -fx-border-color: #CBCBCB;">
+        <Pane fx:id="panePreviewBackground" layoutX="836.0" layoutY="96.0" prefHeight="330.0" prefWidth="520.0" style="-fx-background-color: #EA3FF7; -fx-border-color: #CBCBCB;">
             <children>
-                <ImageView fx:id="imgGrafico" fitHeight="374.0" fitWidth="508.0" layoutX="5.0" layoutY="6.0" pickOnBounds="true" preserveRatio="false" />
+                <ImageView fx:id="imgGrafico" fitHeight="374.0" fitWidth="508.0" layoutX="5.0" layoutY="6.0" pickOnBounds="true" preserveRatio="true" smooth="false" />
                 <Rectangle fx:id="rectanguloIndice" fill="TRANSPARENT" stroke="RED" strokeWidth="1.0" />
             </children>
         </Pane>
 
-        <Button fx:id="btnAplicar" layoutX="910.0" layoutY="721.0" mnemonicParsing="false" onAction="#saveGrhData" prefHeight="25.0" prefWidth="368.0" text="Aplicar cambios" textAlignment="CENTER" styleClass="button-primary">
+        <Button fx:id="btnAplicar" layoutX="910.0" AnchorPane.bottomAnchor="40.0" mnemonicParsing="false" onAction="#saveGrhData" prefHeight="25.0" prefWidth="368.0" text="Aplicar cambios" textAlignment="CENTER" styleClass="button-primary">
             <tooltip>
                 <Tooltip text="Guardar cambios del GRH seleccionado" />
             </tooltip>
         </Button>
-        <TextField fx:id="txtFiltro" layoutX="14.0" layoutY="692.0" prefHeight="25.0" prefWidth="200.0" promptText="Buscar (ID, f:File, w:Ancho...)">
-            <tooltip>
-                <Tooltip text="Busca GRHs. Enter para siguiente.&#10;Sintaxis:&#10;- 1234 : Por ID&#10;- f:100 : Por FileNum&#10;- w:32 : Por Ancho&#10;- h:32 : Por Alto" />
-            </tooltip>
-        </TextField>
-        <Slider fx:id="sldZoom" layoutX="231.0" layoutY="688.0" max="50.0" min="1.0" prefHeight="66.0" prefWidth="586.0" value="1.0">
+        <!-- Eliminado txtFiltro de aqui, movido arriba -->
+        <Slider fx:id="sldZoom" layoutX="231.0" AnchorPane.bottomAnchor="20.0" max="50.0" min="1.0" prefHeight="66.0" prefWidth="586.0" value="1.0">
             <tooltip>
                 <Tooltip text="Ajustar zoom de la vista previa" />
             </tooltip>
         </Slider>
 
-        <TabPane layoutX="837.0" layoutY="463.0" prefHeight="210.0" prefWidth="519.0" tabClosingPolicy="UNAVAILABLE">
+        <TabPane layoutX="837.0" layoutY="440.0" prefHeight="210.0" prefWidth="519.0" tabClosingPolicy="UNAVAILABLE">
             <tabs>
                 <Tab text="Estatico">
                     <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="297.0" prefWidth="368.0">
                             <children>
-                                <Label fx:id="lblImagen" layoutX="14.0" layoutY="24.0" prefWidth="52.0" style="-fx-background-color: #424242;" text="Imagen:" textFill="WHITE" />
+                                <Label fx:id="lblImagen" layoutX="14.0" layoutY="24.0" prefWidth="52.0" text="Imagen:" textFill="WHITE" />
                                 <TextField fx:id="txtImagen" layoutX="78.0" layoutY="20.0" prefHeight="25.0" prefWidth="275.0">
                                     <tooltip>
                                         <Tooltip text="Número de archivo de imagen (FileNum)" />
                                     </tooltip>
                                 </TextField>
-                                <Label fx:id="lblPosX" layoutX="14.0" layoutY="54.0" prefWidth="52.0" style="-fx-background-color: #424242;" text="Pos X:" textFill="WHITE" />
+                                <Label fx:id="lblPosX" layoutX="14.0" layoutY="54.0" prefWidth="52.0" text="Pos X:" textFill="WHITE" />
                                 <TextField fx:id="txtPosX" layoutX="78.0" layoutY="50.0" prefHeight="25.0" prefWidth="275.0">
                                     <tooltip>
                                         <Tooltip text="Posición X en la imagen (sX)" />
                                     </tooltip>
                                 </TextField>
-                                <Label fx:id="lblPosY" layoutX="14.0" layoutY="82.0" prefWidth="52.0" style="-fx-background-color: #424242;" text="Pos Y:" textFill="WHITE" />
+                                <Label fx:id="lblPosY" layoutX="14.0" layoutY="82.0" prefWidth="52.0" text="Pos Y:" textFill="WHITE" />
                                 <TextField fx:id="txtPosY" layoutX="78.0" layoutY="80.0" prefHeight="25.0" prefWidth="275.0">
                                     <tooltip>
                                         <Tooltip text="Posición Y en la imagen (sY)" />
                                     </tooltip>
                                 </TextField>
-                                <Label fx:id="lblAncho" layoutX="15.0" layoutY="114.0" prefWidth="52.0" style="-fx-background-color: #424242;" text="Ancho:" textFill="WHITE" />
+                                <Label fx:id="lblAncho" layoutX="15.0" layoutY="114.0" prefWidth="52.0" text="Ancho:" textFill="WHITE" />
                                 <TextField fx:id="txtAncho" layoutX="78.0" layoutY="110.0" prefHeight="25.0" prefWidth="275.0">
                                     <tooltip>
                                         <Tooltip text="Ancho del tile (TileWidth)" />
                                     </tooltip>
                                 </TextField>
-                                <Label fx:id="lblAlto" layoutX="15.0" layoutY="144.0" prefWidth="52.0" style="-fx-background-color: #424242;" text="Alto:" textFill="WHITE" />
+                                <Label fx:id="lblAlto" layoutX="15.0" layoutY="144.0" prefWidth="52.0" text="Alto:" textFill="WHITE" />
                                 <TextField fx:id="txtAlto" layoutX="78.0" layoutY="140.0" prefHeight="25.0" prefWidth="275.0">
                                     <tooltip>
                                         <Tooltip text="Alto del tile (TileHeight)" />
@@ -374,7 +388,7 @@
                     <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                             <children>
-                                <Label fx:id="lblNumFrames1" layoutX="14.0" layoutY="154.0" prefWidth="64.0" style="-fx-background-color: #424242;" text="Speed:" textFill="WHITE" />
+                                <Label fx:id="lblNumFrames1" layoutX="14.0" layoutY="154.0" prefWidth="64.0" text="Speed:" textFill="WHITE" />
                                 <TextField fx:id="txtSpeed" layoutX="56.0" layoutY="150.0" prefHeight="25.0" prefWidth="86.0">
                                     <tooltip>
                                         <Tooltip text="Velocidad de la animación (ms)" />
@@ -397,9 +411,12 @@
                 </Tab>
             </tabs>
         </TabPane>
+        
+        <Label fx:id="lblIndice" layoutX="843.0" AnchorPane.bottomAnchor="94.0" prefWidth="52.0" text="Indice:" textFill="WHITE" />
+        <TextField fx:id="txtIndice" editable="false" layoutX="884.0" AnchorPane.bottomAnchor="90.0" prefHeight="25.0" prefWidth="462.0" />
 
         <!-- Status Bar -->
-        <HBox fx:id="statusBar" layoutX="0.0" layoutY="755.0" prefHeight="25.0" prefWidth="1366.0" spacing="20.0" style="-fx-background-color: #333333; -fx-padding: 5;">
+        <HBox fx:id="statusBar" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" prefHeight="25.0" spacing="20.0" style="-fx-background-color: #333333; -fx-padding: 5;">
             <children>
                 <Label fx:id="lblStatus" text="Listo" textFill="#00FF00" />
                 <Label fx:id="lblGrhCount" text="GRHs: 0" textFill="WHITE" />

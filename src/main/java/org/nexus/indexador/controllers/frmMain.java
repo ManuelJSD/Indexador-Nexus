@@ -18,6 +18,9 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.TransferMode;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.control.*;
@@ -272,6 +275,9 @@ public class frmMain {
                 }
             }
 
+            // Compartir el mapa de datos globalmente para otras ventanas (Cabezas/Cascos)
+            org.nexus.indexador.Main.sharedGrhData = grhDataMap;
+
             // Actualizar el texto de los labels con la información obtenida
             lblIndices.setText("Indices cargados: " + dataManager.getGrhCount());
             lblVersion.setText("Versión de Indices: " + dataManager.getGrhVersion());
@@ -431,11 +437,13 @@ public class frmMain {
             if (croppedImage != null) {
                 // Establecer el tamaño preferido del ImageView para que coincida con el tamaño
                 // de la imagen
-                imgIndice.setFitWidth(selectedGrh.getTileWidth()); // Ancho de la imagen
-                imgIndice.setFitHeight(selectedGrh.getTileHeight()); // Alto de la imagen
+                // imgIndice.setFitWidth(selectedGrh.getTileWidth()); // Ancho de la imagen -
+                // Comentado para evitar estiramiento
+                // imgIndice.setFitHeight(selectedGrh.getTileHeight()); // Alto de la imagen -
+                // Comentado para evitar estiramiento
 
-                // Desactivar la preservación de la relación de aspecto
-                imgIndice.setPreserveRatio(false);
+                // Preservar la relación de aspecto para evitar estiramientos
+                imgIndice.setPreserveRatio(true);
 
                 // Mostrar la región recortada en el ImageView
                 imgIndice.setImage(croppedImage);
@@ -549,13 +557,15 @@ public class frmMain {
             }
 
             // Obtener las dimensiones del ImageView imgGrafico
-            double imgViewWidth = imgGrafico.getFitWidth();
-            double imgViewHeight = imgGrafico.getFitHeight();
+            // Obtener las dimensiones reales del ImageView (visuales)
+            double imgViewWidth = imgGrafico.getBoundsInLocal().getWidth();
+            double imgViewHeight = imgGrafico.getBoundsInLocal().getHeight();
 
-            if (imgViewWidth == 0)
-                imgViewWidth = imgGrafico.getBoundsInLocal().getWidth();
-            if (imgViewHeight == 0)
-                imgViewHeight = imgGrafico.getBoundsInLocal().getHeight();
+            // Si los bounds aún no están listos (ej. 0), usar fit dimensions como fallback
+            if (imgViewWidth <= 0)
+                imgViewWidth = imgGrafico.getFitWidth();
+            if (imgViewHeight <= 0)
+                imgViewHeight = imgGrafico.getFitHeight();
 
             // Obtener las dimensiones de la imagen original
             double originalWidth = imgGrafico.getImage().getWidth();
@@ -575,8 +585,12 @@ public class frmMain {
 
             // Obtener las coordenadas del rectángulo en relación con las coordenadas del
             // ImageView
-            double rectX = selectedGrh.getsX() * scaleX + 5;
-            double rectY = selectedGrh.getsY() * scaleY + 5;
+            // Usar layout fijo para evitar problemas
+            double layoutX = 5.0;
+            double layoutY = 6.0;
+
+            double rectX = selectedGrh.getsX() * scaleX + layoutX;
+            double rectY = selectedGrh.getsY() * scaleY + layoutY;
             double rectWidth = selectedGrh.getTileWidth() * scaleX;
             double rectHeight = selectedGrh.getTileHeight() * scaleY;
 
@@ -589,16 +603,19 @@ public class frmMain {
             if (yOffset > 0)
                 rectY += yOffset;
 
-            // Configurar las propiedades del rectángulo
+            // Configurar las propiedades del rectángulo (RESTAURADO)
             rectanguloIndice.setX(rectX);
             rectanguloIndice.setY(rectY);
             rectanguloIndice.setWidth(rectWidth);
             rectanguloIndice.setHeight(rectHeight);
             rectanguloIndice.setVisible(true);
 
-            logger.debug("Rectángulo dibujado en: x=" + rectX + ", y=" + rectY +
-                    ", ancho=" + rectWidth + ", alto=" + rectHeight +
-                    ", escala: " + scaleX + "x" + scaleY);
+            // Debugging detallado
+            logger.info("Rectángulo: layout=[" + layoutX + "," + layoutY + "], " +
+                    "orig=[" + originalWidth + "x" + originalHeight + "], " +
+                    "view=[" + imgViewWidth + "x" + imgViewHeight + "], " +
+                    "scale=" + scaleX + ", offset=[" + xOffset + "," + yOffset + "], " +
+                    "rect=[" + rectX + "," + rectY + "]");
         } catch (Exception e) {
             logger.error("Error al dibujar el rectángulo", e);
         }
@@ -616,6 +633,18 @@ public class frmMain {
         try {
             // Establecer la imagen completa en el ImageView
             imgGrafico.setImage(image);
+
+            // Ajustar tamaño del ImageView para evitar upscaling borroso
+            double MAX_WIDTH = 508.0;
+            double MAX_HEIGHT = 374.0;
+
+            if (image.getWidth() <= MAX_WIDTH && image.getHeight() <= MAX_HEIGHT) {
+                imgGrafico.setFitWidth(image.getWidth());
+                imgGrafico.setFitHeight(image.getHeight());
+            } else {
+                imgGrafico.setFitWidth(MAX_WIDTH);
+                imgGrafico.setFitHeight(MAX_HEIGHT);
+            }
 
             // Dibujar el rectángulo que marca la región del gráfico
             drawRectangle(grh);
@@ -2390,8 +2419,10 @@ public class frmMain {
             lblFilterToggle.setText("▼ Filtros");
 
             // Ajustar posición de la lista (con toolbar: +29px del ajuste)
-            lstIndices.setLayoutY(225);
-            lstIndices.setPrefHeight(455);
+            // lstIndices.setLayoutY(240); // Eliminado: VBox maneja el layout
+            // IMPORTANTE: Asegurar que el anchor se mantenga para estirar la lista
+            // AnchorPane.setBottomAnchor(lstIndices, 25.0); // Eliminado
+            // No establecemos prefHeight fijo, dejamos que el anchor lo calcule
         } else {
             // Colapsar
             paneFilterContent.setVisible(false);
@@ -2399,8 +2430,8 @@ public class frmMain {
             lblFilterToggle.setText("▶ Filtros");
 
             // Ajustar posición de la lista (más espacio, con toolbar)
-            lstIndices.setLayoutY(100);
-            lstIndices.setPrefHeight(580);
+            // lstIndices.setLayoutY(100); // Eliminado
+            // AnchorPane.setBottomAnchor(lstIndices, 25.0); // Eliminado
         }
     }
 
@@ -2432,9 +2463,9 @@ public class frmMain {
     private void onClearFilters() {
         chkAnimations.setSelected(false);
         chkStatics.setSelected(false);
-        txtFilterFileNum.clear();
-        txtFilterWidth.clear();
-        txtFilterHeight.clear();
+        // txtFilterFileNum.clear(); // Removed
+        // txtFilterWidth.clear(); // Removed
+        // txtFilterHeight.clear(); // Removed
 
         // Recargar lista completa
         lstIndices.getItems().clear();
@@ -2460,43 +2491,36 @@ public class frmMain {
             return false;
         }
 
-        // Filtro de FileNum
-        if (!txtFilterFileNum.getText().isEmpty()) {
-            try {
-                int filterFileNum = Integer.parseInt(txtFilterFileNum.getText());
-                if (grh.getFileNum() != filterFileNum) {
-                    return false;
-                }
-            } catch (NumberFormatException e) {
-                // Ignorar si no es número válido
-            }
+        // Lógica de filtrado basada en el Buscador Unificado
+        String query = txtFiltro.getText().toLowerCase().trim();
+
+        if (query.isEmpty()) {
+            return true;
         }
 
-        // Filtro de Ancho
-        if (!txtFilterWidth.getText().isEmpty()) {
-            try {
-                int filterWidth = Integer.parseInt(txtFilterWidth.getText());
-                if (grh.getTileWidth() != filterWidth) {
-                    return false;
-                }
-            } catch (NumberFormatException e) {
-                // Ignorar
+        try {
+            if (query.startsWith("f:")) {
+                // Filtro por FileNum
+                int filterFileNum = Integer.parseInt(query.substring(2).trim());
+                return grh.getFileNum() == filterFileNum;
+            } else if (query.startsWith("w:")) {
+                // Filtro por Ancho
+                int filterWidth = Integer.parseInt(query.substring(2).trim());
+                return grh.getTileWidth() == filterWidth;
+            } else if (query.startsWith("h:")) {
+                // Filtro por Alto
+                int filterHeight = Integer.parseInt(query.substring(2).trim());
+                return grh.getTileHeight() == filterHeight;
+            } else {
+                // Filtro por ID (Grh Index)
+                int filterId = Integer.parseInt(query);
+                return grh.getGrh() == filterId;
             }
+        } catch (NumberFormatException e) {
+            // Si el texto no es válido, no filtramos (mostramos todo o nada? mejor
+            // mostramos todo para no romper UX)
+            return true;
         }
-
-        // Filtro de Alto
-        if (!txtFilterHeight.getText().isEmpty()) {
-            try {
-                int filterHeight = Integer.parseInt(txtFilterHeight.getText());
-                if (grh.getTileHeight() != filterHeight) {
-                    return false;
-                }
-            } catch (NumberFormatException e) {
-                // Ignorar
-            }
-        }
-
-        return true;
     }
 
     private void setupColorPicker() {

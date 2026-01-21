@@ -14,12 +14,16 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
 import org.nexus.indexador.gamedata.DataManager;
+import org.nexus.indexador.gamedata.enums.IndexingSystem;
 import org.nexus.indexador.gamedata.models.HelmetData;
 import org.nexus.indexador.utils.ConfigManager;
 
 import java.io.File;
 
 import java.util.Optional;
+
+import org.nexus.indexador.Main;
+import org.nexus.indexador.gamedata.models.GrhData;
 
 public class frmCascos {
 
@@ -34,11 +38,36 @@ public class frmCascos {
     @FXML
     public ImageView imgSur;
     @FXML
+    public Label lblNGrafico;
+    @FXML
+    public Label lblStartX;
+    @FXML
+    public Label lblStartY;
+
+    @FXML
     public TextField txtNGrafico;
     @FXML
     public TextField txtStartX;
     @FXML
     public TextField txtStartY;
+
+    // Tradicional
+    @FXML
+    public Label lblHelmUp;
+    @FXML
+    public TextField txtHelmUp;
+    @FXML
+    public Label lblHelmRight;
+    @FXML
+    public TextField txtHelmRight;
+    @FXML
+    public Label lblHelmDown;
+    @FXML
+    public TextField txtHelmDown;
+    @FXML
+    public Label lblHelmLeft;
+    @FXML
+    public TextField txtHelmLeft;
     @FXML
     public Label lblNCascos;
     @FXML
@@ -65,7 +94,7 @@ public class frmCascos {
         configManager = ConfigManager.getInstance();
         try {
             dataManager = DataManager.getInstance();
-            helmetDataManager = new HelmetData(); // Crear una instancia de helmetData
+            // helmetDataManager = new HelmetData(); // No se usa, comentado
             loadHelmetData();
             setupHelmetListListener();
         } catch (Exception e) {
@@ -123,15 +152,59 @@ public class frmCascos {
      *
      * @param selectedHelmet el objeto helmetData seleccionado.
      */
+    /**
+     * Actualiza el editor de la interfaz con los datos del casco seleccionado.
+     *
+     * @param selectedHelmet el objeto helmetData seleccionado.
+     */
     private void updateEditor(HelmetData selectedHelmet) {
-        // Obtenemos todos los datos
-        short Texture = selectedHelmet.getTexture();
-        short StartX = selectedHelmet.getStartX();
-        short StartY = selectedHelmet.getStartY();
+        // Verificar el tipo de sistema
+        if (selectedHelmet.getSystemType() == IndexingSystem.MOLD) {
+            // Sistema de Moldes - mostrar campos normalmente
+            setVisibleMold(true);
+            setVisibleTraditional(false);
 
-        txtNGrafico.setText(String.valueOf(Texture));
-        txtStartX.setText(String.valueOf(StartX));
-        txtStartY.setText(String.valueOf(StartY));
+            short Texture = selectedHelmet.getTexture();
+            short StartX = selectedHelmet.getStartX();
+            short StartY = selectedHelmet.getStartY();
+
+            txtNGrafico.setText(String.valueOf(Texture));
+            txtStartX.setText(String.valueOf(StartX));
+            txtStartY.setText(String.valueOf(StartY));
+        } else {
+            // Sistema Tradicional
+            setVisibleMold(false);
+            setVisibleTraditional(true);
+
+            int[] grhs = selectedHelmet.getGrhs();
+            // [Norte, Sur, Este, Oeste]
+            if (grhs != null && grhs.length >= 4) {
+                txtHelmUp.setText(String.valueOf(grhs[0])); // Norte
+                txtHelmDown.setText(String.valueOf(grhs[2])); // Sur (Standard AO: Index 2)
+                txtHelmRight.setText(String.valueOf(grhs[1])); // Este (Standard AO: Index 1)
+                txtHelmLeft.setText(String.valueOf(grhs[3])); // Oeste
+            }
+        }
+    }
+
+    private void setVisibleMold(boolean visible) {
+        txtNGrafico.setVisible(visible);
+        txtStartX.setVisible(visible);
+        txtStartY.setVisible(visible);
+        lblNGrafico.setVisible(visible);
+        lblStartX.setVisible(visible);
+        lblStartY.setVisible(visible);
+    }
+
+    private void setVisibleTraditional(boolean visible) {
+        txtHelmUp.setVisible(visible);
+        txtHelmDown.setVisible(visible);
+        txtHelmRight.setVisible(visible);
+        txtHelmLeft.setVisible(visible);
+        lblHelmUp.setVisible(visible);
+        lblHelmDown.setVisible(visible);
+        lblHelmRight.setVisible(visible);
+        lblHelmLeft.setVisible(visible);
     }
 
     /**
@@ -143,6 +216,14 @@ public class frmCascos {
      *                       Sur, 1: Norte, 2: Oeste, 3: Este).
      */
     private void drawHelmets(HelmetData selectedHelmet, int helmeting) {
+        // Verificar el tipo de sistema
+        if (selectedHelmet.getSystemType() == IndexingSystem.TRADITIONAL) {
+            // Sistema Tradicional - usar grhs directamente
+            drawTraditionalHelmet(selectedHelmet, helmeting);
+            return;
+        }
+
+        // Sistema de Moldes - código original
         // Construir la ruta completa de la imagen para imagePath
         String imagePath = configManager.getGraphicsDir() + selectedHelmet.getTexture() + ".png";
 
@@ -211,6 +292,93 @@ public class frmCascos {
     }
 
     /**
+     * Dibuja cascos usando el sistema tradicional (grhs directos).
+     */
+    private void drawTraditionalHelmet(HelmetData selectedHelmet, int helmeting) {
+        int[] grhs = selectedHelmet.getGrhs();
+
+        int grhIndex = -1;
+        switch (helmeting) {
+            case 0:
+                grhIndex = 2; // Sur -> Index 2
+                break;
+            case 1:
+                grhIndex = 0; // Norte -> Index 0
+                break;
+            case 2:
+                grhIndex = 3; // Oeste -> Index 3
+                break;
+            case 3:
+                grhIndex = 1; // Este -> Index 1
+                break;
+        }
+
+        if (grhIndex >= 0 && grhIndex < grhs.length) {
+            int grhId = grhs[grhIndex];
+            if (grhId > 0 && Main.sharedGrhData != null) {
+                GrhData grhData = Main.sharedGrhData.get(grhId);
+                if (grhData != null) {
+                    Image img = loadImageFromGrh(grhData);
+                    ImageView targetView = null;
+                    switch (helmeting) {
+                        case 0:
+                            targetView = imgSur;
+                            break;
+                        case 1:
+                            targetView = imgNorte;
+                            break;
+                        case 2:
+                            targetView = imgOeste;
+                            break;
+                        case 3:
+                            targetView = imgEste;
+                            break;
+                    }
+                    if (targetView != null) {
+                        targetView.setImage(img);
+                        targetView.setSmooth(false);
+                    }
+                }
+            }
+        }
+    }
+
+    private Image loadImageFromGrh(GrhData grh) {
+        if (grh == null)
+            return null;
+        try {
+            String fileName = String.valueOf(grh.getFileNum());
+            String imagePath = configManager.getGraphicsDir() + fileName + ".png";
+            if (!new File(imagePath).exists()) {
+                imagePath = configManager.getGraphicsDir() + fileName + ".bmp";
+            }
+            File file = new File(imagePath);
+            if (!file.exists())
+                return null;
+
+            Image fullImage = new Image(file.toURI().toString());
+            PixelReader reader = fullImage.getPixelReader();
+
+            // Usar getsX/getsY
+            int x = grh.getsX();
+            int y = grh.getsY();
+            int w = grh.getTileWidth();
+            int h = grh.getTileHeight();
+
+            if (x + w > fullImage.getWidth())
+                w = (int) fullImage.getWidth() - x;
+            if (y + h > fullImage.getHeight())
+                h = (int) fullImage.getHeight() - y;
+            if (w <= 0 || h <= 0)
+                return null;
+
+            return new WritableImage(reader, x, y, w, h);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
      * Maneja el evento de acción del botón "Guardar". Aplica los cambios al objeto
      * helmetData seleccionado.
      *
@@ -226,11 +394,31 @@ public class frmCascos {
             HelmetData selectedHelmet = helmetList.get(selectedHelmetIndex);
 
             // Comenzamos aplicar los cambios:
-            selectedHelmet.setTexture(Short.parseShort(txtNGrafico.getText()));
-            selectedHelmet.setStartX(Short.parseShort(txtStartX.getText()));
-            selectedHelmet.setStartY(Short.parseShort(txtStartY.getText()));
+            try {
+                if (selectedHelmet.getSystemType() == IndexingSystem.MOLD) {
+                    selectedHelmet.setTexture(Short.parseShort(txtNGrafico.getText()));
+                    selectedHelmet.setStartX(Short.parseShort(txtStartX.getText()));
+                    selectedHelmet.setStartY(Short.parseShort(txtStartY.getText()));
+                } else {
+                    // Tradicional
+                    int[] grhs = new int[4];
+                    grhs[0] = Integer.parseInt(txtHelmUp.getText());
+                    grhs[1] = Integer.parseInt(txtHelmDown.getText());
+                    grhs[2] = Integer.parseInt(txtHelmRight.getText());
+                    grhs[3] = Integer.parseInt(txtHelmLeft.getText());
+                    selectedHelmet.setGrhs(grhs);
+                }
 
-            System.out.println(("¡Cambios aplicados!"));
+                // Recargar visualizacion
+                drawHelmets(selectedHelmet, 0);
+                drawHelmets(selectedHelmet, 1);
+                drawHelmets(selectedHelmet, 2);
+                drawHelmets(selectedHelmet, 3);
+
+                System.out.println(("¡Cambios aplicados!"));
+            } catch (NumberFormatException e) {
+                System.out.println("Error de formato numérico: " + e.getMessage());
+            }
         }
     }
 

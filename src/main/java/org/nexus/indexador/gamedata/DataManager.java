@@ -2,6 +2,7 @@ package org.nexus.indexador.gamedata;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import org.nexus.indexador.gamedata.loaders.IndexLoader;
 import org.nexus.indexador.gamedata.models.*;
 import org.nexus.indexador.utils.DatEditor;
 import org.nexus.indexador.utils.byteMigration;
@@ -35,6 +36,8 @@ public class DataManager {
     private final DatEditor datEditor;
     private final Logger logger;
 
+    private IndexLoader indexLoader;
+
     private static volatile DataManager instance;
 
     private DataManager() throws IOException {
@@ -46,6 +49,23 @@ public class DataManager {
         logger = Logger.getInstance();
 
         logger.info("DataManager inicializado");
+        initializeIndexLoader();
+    }
+
+    /**
+     * Inicializa el loader de índices según la configuración.
+     */
+    private void initializeIndexLoader() throws IOException {
+        String systemConfig = configManager.getIndexingSystem();
+
+        if ("TRADITIONAL".equals(systemConfig)) {
+            indexLoader = new org.nexus.indexador.gamedata.loaders.TraditionalIndexLoader();
+            logger.info("Sistema de indexado: Tradicional");
+        } else {
+            // Por defecto, usar sistema de moldes
+            indexLoader = new org.nexus.indexador.gamedata.loaders.MoldIndexLoader();
+            logger.info("Sistema de indexado: Moldes");
+        }
     }
 
     public static DataManager getInstance() throws IOException {
@@ -175,7 +195,8 @@ public class DataManager {
             logger.info("Comenzando a leer desde " + archivo.getAbsolutePath());
 
             // Nos posicionamos al inicio del fichero
-            file.seek(0);
+            // Verificar cabecera con heurística
+            handleGrhHeader(file);
 
             // Leemos la versión del archivo
             GrhVersion = byteMigration.bigToLittle_Int(file.readInt());
@@ -245,53 +266,8 @@ public class DataManager {
      * @throws IOException si ocurre un error de entrada/salida.
      */
     public ObservableList<HeadData> readHeadFile() throws IOException {
-
-        logger.info("Cargando datos de cabezas...");
-
-        // Creamos una lista observable para almacenar los gráficos leídos del archivo
-        headList = FXCollections.observableArrayList();
-
-        // Creamos un objeto File para el archivo que contiene los datos de los gráficos
-        File archivo = new File(configManager.getInitDir() + "cabezas.ind");
-
-        try (RandomAccessFile file = new RandomAccessFile(archivo, "r")) {
-            logger.info("Comenzando a leer desde " + archivo.getAbsolutePath());
-
-            // Nos posicionamos al inicio del fichero
-            file.seek(0);
-
-            NumHeads = byteMigration.bigToLittle_Short(file.readShort());
-
-            for (int i = 0; i < NumHeads; i++) {
-
-                int std;
-                short texture;
-                short startx;
-                short starty;
-
-                std = byteMigration.bigToLittle_Byte(file.readByte());
-                texture = byteMigration.bigToLittle_Short(file.readShort());
-                startx = byteMigration.bigToLittle_Short(file.readShort());
-                starty = byteMigration.bigToLittle_Short(file.readShort());
-
-                // Creamos un objeto de headData
-                HeadData headData = new HeadData(std, texture, startx, starty);
-                headList.add(headData);
-            }
-
-        } catch (FileNotFoundException e) {
-            logger.error("Archivo no encontrado: " + archivo.getAbsolutePath(), e);
-            throw e; // Relanzar la excepción para manejarla fuera del método
-
-        } catch (EOFException e) {
-            logger.info("Fin de fichero alcanzado");
-
-        } catch (IOException e) {
-            logger.error("Error de E/S al leer el archivo: " + archivo.getAbsolutePath(), e);
-            throw e; // Relanzar la excepción para manejarla fuera del método
-        }
-
-        logger.info("Cargadas " + headList.size() + " cabezas exitosamente");
+        headList = indexLoader.loadHeads();
+        NumHeads = (short) headList.size();
         return headList;
     }
 
@@ -304,53 +280,8 @@ public class DataManager {
      * @throws IOException si ocurre un error al leer el archivo.
      */
     public ObservableList<HelmetData> readHelmetFile() throws IOException {
-
-        logger.info("Cargando datos de cascos...");
-
-        // Creamos una lista observable para almacenar los gráficos leídos del archivo
-        helmetList = FXCollections.observableArrayList();
-
-        // Creamos un objeto File para el archivo que contiene los datos de los gráficos
-        File archivo = new File(configManager.getInitDir() + "cascos.ind");
-
-        try (RandomAccessFile file = new RandomAccessFile(archivo, "r")) {
-            logger.info("Comenzando a leer desde " + archivo.getAbsolutePath());
-
-            // Nos posicionamos al inicio del fichero
-            file.seek(0);
-
-            NumHelmets = byteMigration.bigToLittle_Short(file.readShort());
-
-            for (int i = 0; i < NumHelmets; i++) {
-
-                int std;
-                short texture;
-                short startx;
-                short starty;
-
-                std = byteMigration.bigToLittle_Byte(file.readByte());
-                texture = byteMigration.bigToLittle_Short(file.readShort());
-                startx = byteMigration.bigToLittle_Short(file.readShort());
-                starty = byteMigration.bigToLittle_Short(file.readShort());
-
-                // Creamos un objeto de helmetData
-                HelmetData helmetData = new HelmetData(std, texture, startx, starty);
-                helmetList.add(helmetData);
-            }
-
-        } catch (FileNotFoundException e) {
-            logger.error("Archivo no encontrado: " + archivo.getAbsolutePath(), e);
-            throw e; // Relanzar la excepción para manejarla fuera del método
-
-        } catch (EOFException e) {
-            logger.info("Fin de fichero alcanzado");
-
-        } catch (IOException e) {
-            logger.error("Error de E/S al leer el archivo: " + archivo.getAbsolutePath(), e);
-            throw e; // Relanzar la excepción para manejarla fuera del método
-        }
-
-        logger.info("Cargados " + helmetList.size() + " cascos exitosamente");
+        helmetList = indexLoader.loadHelmets();
+        NumHelmets = (short) helmetList.size();
         return helmetList;
     }
 
@@ -363,7 +294,7 @@ public class DataManager {
 
         try (RandomAccessFile file = new RandomAccessFile(archivo, "r")) {
             logger.info("Comenzando a leer desde " + archivo.getAbsolutePath());
-            file.seek(0);
+            handleFixedHeader(file, 20);
             NumBodys = byteMigration.bigToLittle_Short(file.readShort());
 
             for (int i = 0; i < NumBodys; i++) {
@@ -400,7 +331,8 @@ public class DataManager {
 
         try (RandomAccessFile file = new RandomAccessFile(archivo, "r")) {
             logger.info("Comenzando a leer desde " + archivo.getAbsolutePath());
-            file.seek(0);
+            logger.info("Comenzando a leer desde " + archivo.getAbsolutePath());
+            handleFixedHeader(file, 16);
             NumShields = byteMigration.bigToLittle_Short(file.readShort());
 
             for (int i = 0; i < NumShields; i++) {
@@ -435,7 +367,8 @@ public class DataManager {
 
         try (RandomAccessFile file = new RandomAccessFile(archivo, "r")) {
             logger.info("Comenzando a leer desde " + archivo.getAbsolutePath());
-            file.seek(0);
+            logger.info("Comenzando a leer desde " + archivo.getAbsolutePath());
+            handleFixedHeader(file, 8);
             NumFXs = byteMigration.bigToLittle_Short(file.readShort());
 
             for (int i = 0; i < NumFXs; i++) {
@@ -463,4 +396,83 @@ public class DataManager {
         return fxList;
     }
 
+    /**
+     * Intenta detectar y saltar el encabezado de 263 bytes en Graficos.ind usando
+     * heurísticas de valores de versión.
+     * Se basa en que el numero de version (primer entero) debe ser un valor bajo (<
+     * 1000).
+     * Si hay cabecera (texto), el primer entero interpretado será basura (valor muy
+     * alto).
+     */
+    private void handleGrhHeader(RandomAccessFile file) throws IOException {
+        long fileSize = file.length();
+        if (fileSize < 263 + 8) { // Mínimo para cabecera + versión + cantidad
+            file.seek(0);
+            return;
+        }
+
+        // Leer posible version en 0
+        file.seek(0);
+        int vNoHeader = byteMigration.bigToLittle_Int(file.readInt());
+
+        // Leer posible version en 263
+        file.seek(263);
+        int vHeader = byteMigration.bigToLittle_Int(file.readInt());
+
+        // Validar rangos (Versiones de AO suelen ser 0, 1, 2... raramente > 1000)
+        boolean validNoHeader = (vNoHeader >= 0 && vNoHeader < 1000);
+        boolean validHeader = (vHeader >= 0 && vHeader < 1000);
+
+        if (!validNoHeader && validHeader) {
+            file.seek(263); // Detectado Header
+            logger.info("Cabecera detectada en Graficos.ind por heurística.");
+        } else {
+            file.seek(0); // Default
+            if (validNoHeader && validHeader) {
+                logger.warning("Ambigüedad en detección de cabecera Graficos.ind. Asumiendo SIN cabecera.");
+            }
+        }
+    }
+
+    /**
+     * Verifica si el archivo tiene una cabecera de 263 bytes y posiciona el puntero
+     * después de ella si es necesario.
+     * Utiliza el tamaño del archivo para validar la presencia de la cabecera en
+     * archivos de registros fijos.
+     *
+     * @param file       El archivo abierto.
+     * @param recordSize El tamaño en bytes de cada registro individual.
+     * @throws IOException Si ocurre un error de lectura.
+     */
+    private void handleFixedHeader(RandomAccessFile file, int recordSize) throws IOException {
+        long fileSize = file.length();
+
+        // 1. Probar teoría: SIN CABECERA
+        file.seek(0);
+        short numRecordsNoHeader = byteMigration.bigToLittle_Short(file.readShort());
+        long expectedSizeNoHeader = 2 + (long) numRecordsNoHeader * recordSize;
+
+        if (fileSize == expectedSizeNoHeader) {
+            file.seek(0); // Confirmado sin cabecera
+            return;
+        }
+
+        // 2. Probar teoría: CON CABECERA
+        if (fileSize >= 263 + 2) {
+            file.seek(263);
+            short numRecordsWithHeader = byteMigration.bigToLittle_Short(file.readShort());
+            long expectedSizeWithHeader = 263 + 2 + (long) numRecordsWithHeader * recordSize;
+
+            if (fileSize == expectedSizeWithHeader) {
+                file.seek(263); // Confirmado con cabecera
+                logger.info("Cabecera .ind (Fixed) detectada y saltada.");
+                return;
+            }
+        }
+
+        // 3. Fallback
+        file.seek(0);
+        logger.warning("No se pudo determinar cabecera fija por tamaño (Size: " + fileSize + " bytes, Record: "
+                + recordSize + "). Asumiendo sin cabecera.");
+    }
 }

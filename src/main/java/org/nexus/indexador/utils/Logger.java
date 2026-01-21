@@ -9,7 +9,8 @@ import java.util.Date;
 
 /**
  * Clase de utilidad para el registro de mensajes (logging) de la aplicación.
- * Permite registrar mensajes de información, advertencia y error, con la posibilidad
+ * Permite registrar mensajes de información, advertencia y error, con la
+ * posibilidad
  * de guardarlos en un archivo de registro y/o mostrarlos en la consola.
  */
 public class Logger {
@@ -32,21 +33,21 @@ public class Logger {
 
     private Logger() {
         // Constructor privado para singleton
-        String userHome = System.getProperty("user.home");
-        this.logFilePath = userHome + File.separator + "IndexadorNexus_logs";
-        
+        // Usar directorio actual de la aplicación
+        this.logFilePath = "logs";
+
         // Crear directorio de logs si no existe
         File logDir = new File(logFilePath);
         if (!logDir.exists()) {
             logDir.mkdirs();
         }
-        
+
         // Crear un archivo de log con la fecha actual
         String date = new SimpleDateFormat("yyyyMMdd").format(new Date());
         this.logFile = new File(logFilePath + File.separator + "nexus_log_" + date + ".log");
-        
+
         // Mostrar mensaje de inicio
-        log(Level.INFO, "Logger iniciado. Ruta de archivos de log: " + logFilePath);
+        log(Level.INFO, "Logger iniciado. Ruta de archivos de log: " + new File(logFilePath).getAbsolutePath());
     }
 
     /**
@@ -91,12 +92,12 @@ public class Logger {
     /**
      * Registra un mensaje con el nivel especificado.
      *
-     * @param level Nivel del mensaje (INFO, WARNING, ERROR, DEBUG).
+     * @param level   Nivel del mensaje (INFO, WARNING, ERROR, DEBUG).
      * @param message El mensaje a registrar.
      */
     public void log(Level level, String message) {
         String formattedMessage = formatLogMessage(level, message);
-        
+
         // Salida por consola si está activada
         if (consoleOutput) {
             if (level == Level.ERROR) {
@@ -105,7 +106,7 @@ public class Logger {
                 System.out.println(formattedMessage);
             }
         }
-        
+
         // Salida a archivo si está activada
         if (fileOutput) {
             writeToFile(formattedMessage);
@@ -115,7 +116,7 @@ public class Logger {
     /**
      * Registra un mensaje de error con su excepción asociada.
      *
-     * @param message El mensaje de error.
+     * @param message   El mensaje de error.
      * @param throwable La excepción asociada al error.
      */
     public void error(String message, Throwable throwable) {
@@ -164,7 +165,7 @@ public class Logger {
     /**
      * Formatea un mensaje de log con la fecha, hora y nivel.
      *
-     * @param level Nivel del mensaje.
+     * @param level   Nivel del mensaje.
      * @param message El mensaje a formatear.
      * @return El mensaje formateado.
      */
@@ -179,10 +180,11 @@ public class Logger {
      */
     private void writeToFile(String message) {
         try (FileWriter fw = new FileWriter(logFile, true);
-             PrintWriter pw = new PrintWriter(fw)) {
+                PrintWriter pw = new PrintWriter(fw)) {
             pw.println(message);
         } catch (IOException e) {
-            // Si no podemos escribir en el archivo de log, al menos mostramos el error en consola
+            // Si no podemos escribir en el archivo de log, al menos mostramos el error en
+            // consola
             System.err.println("Error al escribir en el archivo de log: " + e.getMessage());
         }
     }
@@ -194,7 +196,7 @@ public class Logger {
      */
     private void writeExceptionToFile(Throwable throwable) {
         try (FileWriter fw = new FileWriter(logFile, true);
-             PrintWriter pw = new PrintWriter(fw)) {
+                PrintWriter pw = new PrintWriter(fw)) {
             pw.println(dateFormat.format(new Date()) + " [EXCEPTION STACK TRACE]:");
             throwable.printStackTrace(pw);
         } catch (IOException e) {

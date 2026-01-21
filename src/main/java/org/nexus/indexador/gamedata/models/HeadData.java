@@ -11,23 +11,31 @@ import org.nexus.indexador.utils.byteMigration;
 import org.nexus.indexador.utils.ConfigManager;
 
 import java.io.*;
+import org.nexus.indexador.gamedata.enums.IndexingSystem;
 
 public class HeadData {
 
+    private IndexingSystem systemType;
+
+    // Sistema de Moldes
     private int Std;
     private short Texture;
     private short StartX;
     private short StartY;
 
+    // Sistema Tradicional
+    private int[] grhs;
+
     /**
-     * Construye un nuevo objeto {@code headData} con los parámetros especificados.
+     * Constructor para Moldes
      *
-     * @param std el valor estándar.
+     * @param std     el valor estándar.
      * @param texture el valor de la textura.
-     * @param startX la coordenada X de inicio.
-     * @param startY la coordenada Y de inicio.
+     * @param startX  la coordenada X de inicio.
+     * @param startY  la coordenada Y de inicio.
      */
     public HeadData(int std, short texture, short startX, short startY) {
+        this.systemType = IndexingSystem.MOLD;
         Std = std;
         Texture = texture;
         StartX = startX;
@@ -35,9 +43,14 @@ public class HeadData {
     }
 
     /**
-     * Construye un nuevo objeto {@code headData} con parámetros por defecto.
+     * Constructor para Tradicional
+     *
+     * @param grhs el array de datos de la cabeza.
      */
-    public HeadData() {}
+    public HeadData(int[] grhs) {
+        this.systemType = IndexingSystem.TRADITIONAL;
+        this.grhs = grhs;
+    }
 
     // Métodos GET
 
@@ -46,28 +59,59 @@ public class HeadData {
      *
      * @return el valor estándar.
      */
-    public int getStd() { return Std; }
+    public int getStd() {
+        if (systemType != IndexingSystem.MOLD) {
+            throw new IllegalStateException("Std solo disponible en sistema de moldes");
+        }
+        return Std;
+    }
 
     /**
      * Retorna el valor de la textura.
      *
      * @return el valor de la textura.
      */
-    public short getTexture() { return Texture; }
+    public short getTexture() {
+        if (systemType != IndexingSystem.MOLD) {
+            throw new IllegalStateException("Texture solo disponible en sistema de moldes");
+        }
+        return Texture;
+    }
 
     /**
      * Retorna la coordenada X de inicio.
      *
      * @return la coordenada X de inicio.
      */
-    public short getStartX() { return StartX; }
+    public short getStartX() {
+        if (systemType != IndexingSystem.MOLD) {
+            throw new IllegalStateException("StartX solo disponible en sistema de moldes");
+        }
+        return StartX;
+    }
 
     /**
      * Retorna la coordenada Y de inicio.
      *
      * @return la coordenada Y de inicio.
      */
-    public short getStartY() { return StartY; }
+    public short getStartY() {
+        if (systemType != IndexingSystem.MOLD) {
+            throw new IllegalStateException("StartY solo disponible en sistema de moldes");
+        }
+        return StartY;
+    }
+
+    public int[] getGrhs() {
+        if (systemType != IndexingSystem.TRADITIONAL) {
+            throw new IllegalStateException("Grhs solo disponible en sistema tradicional");
+        }
+        return grhs;
+    }
+
+    public IndexingSystem getSystemType() {
+        return systemType;
+    }
 
     // Métodos SET
 
@@ -76,27 +120,54 @@ public class HeadData {
      *
      * @param std el valor estándar.
      */
-    public void setStd(int std) { Std = std; }
+    public void setStd(int std) {
+        if (systemType != IndexingSystem.MOLD) {
+            throw new IllegalStateException("Std solo disponible en sistema de moldes");
+        }
+        Std = std;
+    }
 
     /**
      * Establece el valor de la textura.
      *
      * @param texture el valor de la textura.
      */
-    public void setTexture(short texture) { Texture = texture; }
+    public void setTexture(short texture) {
+        if (systemType != IndexingSystem.MOLD) {
+            throw new IllegalStateException("Texture solo disponible en sistema de moldes");
+        }
+        Texture = texture;
+    }
 
     /**
      * Establece la coordenada X de inicio.
      *
      * @param startX la coordenada X de inicio.
      */
-    public void setStartX(short startX) { StartX = startX; }
+    public void setStartX(short startX) {
+        if (systemType != IndexingSystem.MOLD) {
+            throw new IllegalStateException("StartX solo disponible en sistema de moldes");
+        }
+        StartX = startX;
+    }
 
     /**
      * Establece la coordenada Y de inicio.
      *
      * @param startY la coordenada Y de inicio.
      */
-    public void setStartY(short startY) { StartY = startY; }
+    public void setStartY(short startY) {
+        if (systemType != IndexingSystem.MOLD) {
+            throw new IllegalStateException("StartY solo disponible en sistema de moldes");
+        }
+        StartY = startY;
+    }
+
+    public void setGrhs(int[] grhs) {
+        if (systemType != IndexingSystem.TRADITIONAL) {
+            throw new IllegalStateException("Grhs solo disponible en sistema tradicional");
+        }
+        this.grhs = grhs;
+    }
 
 }

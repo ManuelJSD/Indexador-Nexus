@@ -18,11 +18,13 @@
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.control.ColorPicker?>
 <?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.shape.Rectangle?>
 
 <AnchorPane fx:id="paneMain" maxHeight="649.0" maxWidth="1516.0" minHeight="768.0" minWidth="1366.0" prefHeight="649.0" prefWidth="1065.0" style="-fx-background-color: #424242;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nexus.indexador.controllers.frmMain">
@@ -181,55 +183,75 @@
                  styleClass="main-toolbar">
             <items>
                 <Button fx:id="tbtnSave" onAction="#mnuIndexbyMemory" styleClass="toolbar-button">
-                    <text>💾</text>
+                    <graphic>
+                        <StackPane styleClass="icon, icon-save" />
+                    </graphic>
                     <tooltip><Tooltip text="Guardar en memoria (Ctrl+S)" /></tooltip>
                 </Button>
                 
                 <Separator orientation="VERTICAL" />
                 
                 <Button fx:id="tbtnUndo" onAction="#mnuUndo_OnAction" styleClass="toolbar-button">
-                    <text>↩️</text>
+                    <graphic>
+                        <StackPane styleClass="icon, icon-undo" />
+                    </graphic>
                     <tooltip><Tooltip text="Deshacer (Ctrl+Z)" /></tooltip>
                 </Button>
                 <Button fx:id="tbtnRedo" onAction="#mnuRedo_OnAction" styleClass="toolbar-button">
-                    <text>↪️</text>
+                    <graphic>
+                        <StackPane styleClass="icon, icon-redo" />
+                    </graphic>
                     <tooltip><Tooltip text="Rehacer (Ctrl+Y)" /></tooltip>
                 </Button>
                 
                 <Separator orientation="VERTICAL" />
                 
                 <Button fx:id="tbtnCopy" onAction="#mnuCopy_OnAction" styleClass="toolbar-button">
-                    <text>📋</text>
+                    <graphic>
+                        <StackPane styleClass="icon, icon-copy" />
+                    </graphic>
                     <tooltip><Tooltip text="Copiar GRH (Ctrl+C)" /></tooltip>
                 </Button>
                 <Button fx:id="tbtnPaste" onAction="#mnuPaste_OnAction" styleClass="toolbar-button">
-                    <text>📄</text>
+                    <graphic>
+                        <StackPane styleClass="icon, icon-paste" />
+                    </graphic>
                     <tooltip><Tooltip text="Pegar GRH (Ctrl+V)" /></tooltip>
                 </Button>
                 <Button fx:id="tbtnDuplicate" onAction="#mnuDuplicate_OnAction" styleClass="toolbar-button">
-                    <text>📑</text>
+                    <graphic>
+                        <StackPane styleClass="icon, icon-duplicate" />
+                    </graphic>
                     <tooltip><Tooltip text="Duplicar GRH (Ctrl+D)" /></tooltip>
                 </Button>
                 
                 <Separator orientation="VERTICAL" />
                 
                 <Button fx:id="tbtnNew" onAction="#btnAdd_OnAction" styleClass="toolbar-button">
-                    <text>➕</text>
+                    <graphic>
+                        <StackPane styleClass="icon, icon-add" />
+                    </graphic>
                     <tooltip><Tooltip text="Nuevo GRH" /></tooltip>
                 </Button>
                 <Button fx:id="tbtnDelete" onAction="#btnDelete_OnAction" styleClass="toolbar-button">
-                    <text>🗑️</text>
+                    <graphic>
+                        <StackPane styleClass="icon, icon-delete" />
+                    </graphic>
                     <tooltip><Tooltip text="Eliminar GRH seleccionado" /></tooltip>
                 </Button>
                 
                 <Separator orientation="VERTICAL" />
                 
                 <Button fx:id="tbtnValidate" onAction="#mnuValidate_OnAction" styleClass="toolbar-button">
-                    <text>✅</text>
+                    <graphic>
+                        <StackPane styleClass="icon, icon-check" />
+                    </graphic>
                     <tooltip><Tooltip text="Validar integridad (Ctrl+Shift+V)" /></tooltip>
                 </Button>
                 <Button fx:id="tbtnAutoIndex" onAction="#mnuAutoIndexWizard_OnAction" styleClass="toolbar-button">
-                    <text>🔮</text>
+                    <graphic>
+                        <StackPane styleClass="icon, icon-auto" />
+                    </graphic>
                     <tooltip><Tooltip text="Asistente de Auto-Indexación" /></tooltip>
                 </Button>
             </items>

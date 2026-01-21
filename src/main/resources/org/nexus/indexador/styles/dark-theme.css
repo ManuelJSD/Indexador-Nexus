@@ -432,6 +432,19 @@
     -fx-border-radius: 4;
 }
 
+/* Icon visual effects */
+.toolbar-button .image-view {
+    -fx-opacity: 0.85;
+}
+
+.toolbar-button:hover .image-view {
+    -fx-opacity: 1.0;
+}
+
+.toolbar-button:pressed .image-view {
+    -fx-opacity: 0.7;
+}
+
 .main-toolbar .separator {
     -fx-background-color: transparent;
 }
@@ -439,4 +452,62 @@
 .main-toolbar .separator .line {
     -fx-border-color: #555555;
     -fx-border-width: 0 1 0 0;
+}
+
+/* Base Icon Style */
+.icon {
+    -fx-background-color: -fx-text-fill;
+    -fx-min-width: 18px;
+    -fx-min-height: 18px;
+    -fx-max-width: 18px;
+    -fx-max-height: 18px;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+/* Specific Icons using SVG Paths (Material Outlined) */
+.icon-save {
+    -fx-shape: "M17 3H5C3.89 3 3 3.89 3 5V19C3 20.1 3.89 21 5 21H19C20.1 21 21 20.1 21 19V7L17 3M17 19H5V5H16.17L19 7.83V19Z";
+}
+
+.icon-undo {
+    /* Generic Undo - simpler shape for outline feel */
+    -fx-shape: "M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v8h8l-3.61-3.61c1.47-1.48 3.53-2.39 5.61-2.39 4.07 0 7.42 3.12 7.94 7.15l2.05-.23c-.57-4.59-4.51-8.15-9.99-8.15z";
+}
+
+.icon-redo {
+    /* Generic Redo */
+    -fx-shape: "M18.4 10.6C16.55 9 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16c1.05-3.19 4.05-5.5 7.6-5.5 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z";
+}
+
+.icon-copy {
+    -fx-shape: "M16 1H4C2.9 1 2 1.9 2 3V17H4V3H17V1H16ZM19 5H8C6.9 5 6 5.9 6 7V21C6 22.1 6.9 23 8 23H19C20.1 23 21 22.1 21 21V7C21 5.9 20.1 5 19 5ZM19 21H8V7H19V21Z";
+}
+
+.icon-paste {
+    -fx-shape: "M19 2h-4.18C14.4.84 13.3 0 12 0c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm7 18H5V4h2v3h10V4h2v16z";
+}
+
+.icon-duplicate {
+    /* Using Content Copy path for duplicate as well */
+    -fx-shape: "M16 1H4C2.9 1 2 1.9 2 3V17H4V3H17V1H16ZM19 5H8C6.9 5 6 5.9 6 7V21C6 22.1 6.9 23 8 23H19C20.1 23 21 22.1 21 21V7C21 5.9 20.1 5 19 5ZM19 21H8V7H19V21Z";
+}
+
+.icon-add {
+    /* Add Circle Outline */
+    -fx-shape: "M13 7h-2v4H7v2h4v4h2v-4h4v-2h-4V7zm-1-5C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z";
+}
+
+.icon-delete {
+    -fx-shape: "M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM8 9h8v10H8V9zm7.5-5l-1-1h-5l-1 1H5v2h14V4h-3.5z";
+}
+
+.icon-check {
+    /* Check Circle Outline */
+    -fx-shape: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4 8-8-1.41-1.42z";
+}
+
+.icon-auto {
+    /* Auto Awesome ( Stars ) */
+    -fx-shape: "M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z";
 }

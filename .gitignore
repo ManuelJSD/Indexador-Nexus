@@ -29,3 +29,6 @@ src/main/resources/config.ini
 src/main/resources/exportados/*.ini
 logs/
 *.log
+
+# Release
+release/

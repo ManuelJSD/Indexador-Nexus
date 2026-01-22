@@ -46,34 +46,4 @@ jobs:
         path: target/*.jar
         retention-days: 30
 
-  # Build native image on tagged releases
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/v')
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Set up JDK 17
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: maven
-    
-    - name: Build jlink image
-      run: mvn -B clean javafx:jlink
-    
-    - name: Create ZIP of jlink image
-      run: |
-        cd target
-        zip -r indexador-nexus-jlink.zip indexador-nexus/
-    
-    - name: Upload jlink artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: indexador-nexus-jlink
-        path: target/indexador-nexus-jlink.zip
-        retention-days: 90
+

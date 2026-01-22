@@ -15,9 +15,6 @@ Fully **Cross-Platform** (Windows, Linux, macOS) Indexer for Argentum Online dev
 - Animation management
 - Cache system to optimize performance
 - Visualization of shields, helmets, and other game features
-- **Smart Auto-Indexing**: Automatic detection of objects and animations in sprite sheets.
-    - Support for intelligent **Auto-Tiling**.
-    - Precise movement and direction detection.
 - **Background Color Configuration**: Integrated color picker to customize the viewer background.
 - **Path Management**: Flexible configuration for resource paths (Graphics, Init, Dat).
 - **Granular Resource Reloading**: Option to reload specific resources (Indices, Heads, etc.) or all at once without restarting.

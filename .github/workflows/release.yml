@@ -1,0 +1,44 @@
+name: Release Windows
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+
+    - name: Build and Package
+      shell: cmd
+      env:
+        CI: true
+      run: package.bat
+
+    - name: Archive Release
+      run: |
+        Compress-Archive -Path "release\Indexador Nexus" -DestinationPath "indexador-nexus-windows.zip"
+        
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
+      with:
+        files: |
+          indexador-nexus-windows.zip
+          target/*.jar
+        draft: false
+        prerelease: false

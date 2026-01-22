@@ -6,7 +6,7 @@
 
   <groupId>org.nexus</groupId>
   <artifactId>indexador</artifactId>
-  <version>1.0.0</version>
+  <version>0.9.0</version>
   <packaging>jar</packaging>
   <name>Indexador Nexus</name>
   <description>Editor de índices para Argentum Online</description>
@@ -133,6 +133,24 @@
             </manifest>
           </archive>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.6.0</version>
+        <executions>
+          <execution>
+            <id>copy-dependencies</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/libs</outputDirectory>
+              <includeScope>runtime</includeScope>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

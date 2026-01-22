@@ -736,6 +736,20 @@ public class frmMain {
         windowManager.showWindow("frmConsola", "Consola", false);
     }
 
+    @FXML
+    private void mnuOptions_OnAction() {
+        // Pasar la instancia del controlador principal a la ventana de opciones si es
+        // necesario
+        // Pero WindowManager se encarga de abrirla.
+
+        // WindowManager abre y retorna true si es nueva
+        boolean isNew = windowManager.showWindow("frmOptions", "Opciones", false);
+
+        if (isNew) {
+            // Lógica de inicialización adicional si fuera necesaria
+        }
+    }
+
     /**
      * Método para manejar la acción cuando se hace clic en el elemento del menú
      * "Color de Fondo..."
@@ -784,6 +798,16 @@ public class frmMain {
             String color = configManager.getBackgroundColor();
             // Mantener el borde gris
             panePreviewBackground.setStyle("-fx-background-color: " + color + "; -fx-border-color: #CBCBCB;");
+        }
+    }
+
+    @FXML
+    private void mnuCode_OnAction() {
+        try {
+            java.awt.Desktop.getDesktop().browse(new java.net.URI("https://github.com/ManuelJSD/Indexador-Nexus"));
+        } catch (Exception e) {
+            logger.error("Error al abrir el enlace del repositorio", e);
+            showWarningAlert("Error", "No se pudo abrir el navegador: " + e.getMessage());
         }
     }
 
@@ -1200,26 +1224,6 @@ public class frmMain {
         } catch (IOException e) {
             logger.error("Error al abrir configuración de rutas", e);
         }
-    }
-
-    @FXML
-    private void mnuCode_OnAction() {
-        /**
-         * if (Desktop.isDesktopSupported()) {
-         * Desktop desktop = Desktop.getDesktop();
-         * if (desktop.isSupported(Desktop.Action.BROWSE)) {
-         * try {
-         * desktop.browse(new URI("https://github.com/Lorwik/Indexador-Nexus"));
-         * } catch (IOException | URISyntaxException e) {
-         * logger.error("Error al abrir el enlace", e);
-         * }
-         * } else {
-         * logger.warning("El navegador web no es compatible.");
-         * }
-         * } else {
-         * logger.warning("La funcionalidad de escritorio no es compatible.");
-         * }
-         **/
     }
 
     /**

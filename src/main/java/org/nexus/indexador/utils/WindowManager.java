@@ -76,8 +76,9 @@ public class WindowManager {
             Scene scene = new Scene(root);
 
             // Aplicar tema oscuro
-            String darkTheme = Main.class.getResource("styles/dark-theme.css").toExternalForm();
-            scene.getStylesheets().add(darkTheme);
+            // Aplicar tema configurado
+            String themeName = ConfigManager.getInstance().getAppTheme();
+            applyTheme(scene, themeName);
 
             newStage.setScene(scene);
             newStage.setResizable(resizable);
@@ -138,9 +139,25 @@ public class WindowManager {
      * @param fxmlName Nombre del archivo FXML.
      * @return true si la ventana está abierta.
      */
+    /**
+     * Verifica si una ventana está abierta.
+     *
+     * @param fxmlName Nombre del archivo FXML.
+     * @return true si la ventana está abierta.
+     */
     public boolean isWindowOpen(String fxmlName) {
         Stage stage = openWindows.get(fxmlName);
         return stage != null && stage.isShowing();
+    }
+
+    /**
+     * Obtiene el Stage de una ventana gestionada.
+     *
+     * @param fxmlName Nombre del archivo FXML.
+     * @return El Stage asociado o null si no existe.
+     */
+    public Stage getWindow(String fxmlName) {
+        return openWindows.get(fxmlName);
     }
 
     /**
@@ -150,5 +167,38 @@ public class WindowManager {
      */
     public int getOpenWindowCount() {
         return openWindows.size();
+    }
+
+    /**
+     * Aplica el tema seleccionado a una escena.
+     */
+    public void applyTheme(Scene scene, String themeName) {
+        if (scene == null)
+            return;
+
+        scene.getStylesheets().clear();
+
+        String cssFile = "styles/dark-theme.css"; // Default
+        if ("LIGHT".equalsIgnoreCase(themeName)) {
+            cssFile = "styles/light-theme.css";
+        }
+
+        try {
+            String themeUrl = Main.class.getResource(cssFile).toExternalForm();
+            scene.getStylesheets().add(themeUrl);
+        } catch (Exception e) {
+            logger.error("Error al cargar tema: " + cssFile, e);
+        }
+    }
+
+    /**
+     * Actualiza el tema en todas las ventanas abiertas.
+     */
+    public void updateThemeForAll(String themeName) {
+        for (Stage stage : openWindows.values()) {
+            if (stage.getScene() != null) {
+                applyTheme(stage.getScene(), themeName);
+            }
+        }
     }
 }

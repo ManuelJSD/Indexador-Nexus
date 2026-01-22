@@ -13,6 +13,7 @@ public class ConfigManager {
     private String exportDir;
     private String backgroundColor = "#EA3FF7"; // Default magenta
     private String indexingSystem = "MOLD"; // Default: Sistema de Moldes
+    private String appTheme = "DARK"; // Default: Tema Oscuro
 
     private static final String CONFIG_FILE_NAME = "config.ini";
     // Guardar en el directorio de la aplicación
@@ -128,6 +129,8 @@ public class ConfigManager {
                             backgroundColor = value;
                         } else if (key.equals("IndexingSystem")) {
                             indexingSystem = value;
+                        } else if (key.equals("AppTheme")) {
+                            appTheme = value;
                         }
                     }
                 }
@@ -155,7 +158,17 @@ public class ConfigManager {
             writer.write("BackgroundColor=" + backgroundColor);
             writer.newLine();
             writer.write("IndexingSystem=" + indexingSystem);
+            writer.newLine();
+            writer.write("AppTheme=" + appTheme);
         }
+    }
+
+    public String getAppTheme() {
+        return appTheme;
+    }
+
+    public void setAppTheme(String appTheme) {
+        this.appTheme = appTheme;
     }
 
 }

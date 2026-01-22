@@ -2,12 +2,8 @@ package org.nexus.indexador.controllers;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
-import org.nexus.indexador.Main;
 import org.nexus.indexador.gamedata.DataManager;
 import org.nexus.indexador.utils.ConfigManager;
 
@@ -97,38 +93,28 @@ public class frmCargando {
             }
 
             Platform.runLater(() -> {
-                // Crea la nueva ventana
-                Stage newStage = new Stage();
-                Main.setAppIcon(newStage);
-                newStage.setTitle("Indexador Nexus");
+                // Usar WindowManager para abrir frmMain y registrarlo
+                org.nexus.indexador.utils.WindowManager winMgr = org.nexus.indexador.utils.WindowManager.getInstance();
+                boolean success = winMgr.showWindow("frmMain", "Indexador Nexus", false);
 
-                // Lee el archivo FXML para la nueva ventana
-                try {
-                    Parent consoleRoot = FXMLLoader.load(Main.class.getResource("frmMain.fxml"));
-                    Scene mainScene = new Scene(consoleRoot);
+                if (success) {
+                    Stage mainStage = winMgr.getWindow("frmMain");
+                    if (mainStage != null) {
+                        mainStage.centerOnScreen();
 
-                    // Aplicar tema oscuro
-                    String darkTheme = Main.class.getResource("styles/dark-theme.css").toExternalForm();
-                    mainScene.getStylesheets().add(darkTheme);
-
-                    newStage.setScene(mainScene);
-                    newStage.setResizable(false);
+                        // Configurar cierre de aplicación
+                        mainStage.setOnCloseRequest(event -> {
+                            Platform.exit();
+                            System.exit(0);
+                        });
+                    }
 
                     // Cerrar la ventana actual (frmCargando)
                     if (currentStage != null) {
                         currentStage.close();
                     }
-
-                    newStage.setOnCloseRequest(event -> {
-                        Platform.exit();
-                        System.exit(0);
-                    });
-
-                    newStage.centerOnScreen();
-                    newStage.show();
-
-                } catch (IOException e) {
-                    e.printStackTrace();
+                } else {
+                    System.err.println("Error critico: No se pudo abrir la ventana principal.");
                 }
             });
         }).start();

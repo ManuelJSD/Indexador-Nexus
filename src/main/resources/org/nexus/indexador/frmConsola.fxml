@@ -9,9 +9,9 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="500.0" prefWidth="700.0" style="-fx-background-color: #1e1e1e;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nexus.indexador.controllers.frmConsola">
+<BorderPane prefHeight="500.0" prefWidth="700.0" styleClass="root-pane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nexus.indexador.controllers.frmConsola">
     <top>
-        <ToolBar prefHeight="40.0" prefWidth="700.0" styleClass="main-toolbar" stylesheets="@styles/dark-theme.css" BorderPane.alignment="CENTER">
+        <ToolBar prefHeight="40.0" prefWidth="700.0" styleClass="main-toolbar" BorderPane.alignment="CENTER">
             <items>
                 <Button mnemonicParsing="false" onAction="#btnClear_OnAction" styleClass="toolbar-button" text="Limpiar">
                     <graphic>
@@ -29,12 +29,12 @@
                         <Tooltip text="Copiar todo al portapapeles" />
                     </tooltip>
                 </Button>
-            <CheckBox fx:id="chkAutoScroll" mnemonicParsing="false" selected="true" text="Auto-Scroll" textFill="WHITE" />
+            <CheckBox fx:id="chkAutoScroll" mnemonicParsing="false" selected="true" text="Auto-Scroll" styleClass="checkbox-text" />
             </items>
         </ToolBar>
     </top>
     <center>
-        <TextArea fx:id="txtConsole" editable="false" prefHeight="200.0" prefWidth="200.0" style="-fx-font-family: 'Consolas', 'Monospaced'; -fx-font-size: 13px;" stylesheets="@styles/dark-theme.css" wrapText="true" BorderPane.alignment="CENTER">
+        <TextArea fx:id="txtConsole" editable="false" prefHeight="200.0" prefWidth="200.0" styleClass="console-area" wrapText="true" BorderPane.alignment="CENTER">
          <font>
             <Font name="Consolas" size="13.0" />
          </font></TextArea>

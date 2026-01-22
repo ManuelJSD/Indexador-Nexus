@@ -7,14 +7,14 @@
 <?import javafx.scene.effect.InnerShadow?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="520.0" prefWidth="818.0" style="-fx-background-color: #424242;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nexus.indexador.controllers.frmAdaptador">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="520.0" prefWidth="818.0" styleClass="root-pane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nexus.indexador.controllers.frmAdaptador">
    <children>
-      <TextArea fx:id="txtOriginal" layoutX="15.0" layoutY="28.0" prefHeight="200.0" prefWidth="788.0" promptText="Introduce aquí los Grh que quieres convertir" style="-fx-background-color: #424242; -fx-border-color: #424242;">
+      <TextArea fx:id="txtOriginal" layoutX="15.0" layoutY="28.0" prefHeight="200.0" prefWidth="788.0" promptText="Introduce aquí los Grh que quieres convertir" styleClass="text-area-flat">
          <effect>
             <InnerShadow />
          </effect>
       </TextArea>
-      <TextArea fx:id="txtAdaptado" editable="false" layoutX="15.0" layoutY="306.0" prefHeight="200.0" prefWidth="788.0" promptText="Aqui verás los Grh Adaptados" style="-fx-background-color: #424242; -fx-border-color: #424242;">
+      <TextArea fx:id="txtAdaptado" editable="false" layoutX="15.0" layoutY="306.0" prefHeight="200.0" prefWidth="788.0" promptText="Aqui verás los Grh Adaptados" styleClass="text-area-flat">
          <effect>
             <InnerShadow />
          </effect>
@@ -23,11 +23,11 @@
       <TextField fx:id="txtPos" layoutX="112.0" layoutY="246.0" prefHeight="25.0" prefWidth="109.0" promptText="Primera posición" />
       <TextField fx:id="txtGrafico" layoutX="294.0" layoutY="246.0" prefHeight="25.0" prefWidth="99.0" promptText="Grafico" />
       <Button fx:id="btnAdapter" layoutX="704.0" layoutY="246.0" mnemonicParsing="false" onAction="#btnAdapter_OnAction" prefHeight="25.0" prefWidth="99.0" text="Adaptar" />
-      <Label fx:id="lblGrhOriginal" layoutX="15.0" layoutY="6.0" text="Grh de Origen:" textFill="WHITE" />
-      <Label fx:id="lblDestino" layoutX="17.0" layoutY="282.0" text="Destino:" textFill="WHITE" />
-      <Label layoutX="17.0" layoutY="250.0" text="Primera posición:" textFill="WHITE" />
-      <Label layoutX="230.0" layoutY="250.0" text="Nº Grafico:" textFill="WHITE" />
-      <Label fx:id="lblNFrames" layoutX="409.0" layoutY="250.0" text="Nº Frames:" textFill="WHITE" />
+      <Label fx:id="lblGrhOriginal" layoutX="15.0" layoutY="6.0" text="Grh de Origen:" />
+      <Label fx:id="lblDestino" layoutX="17.0" layoutY="282.0" text="Destino:" />
+      <Label layoutX="17.0" layoutY="250.0" text="Primera posición:" />
+      <Label layoutX="230.0" layoutY="250.0" text="Nº Grafico:" />
+      <Label fx:id="lblNFrames" layoutX="409.0" layoutY="250.0" text="Nº Frames:" />
       <TextField fx:id="txtNumAnimaciones" layoutX="474.0" layoutY="246.0" prefHeight="25.0" prefWidth="91.0" />
    </children>
 </AnchorPane>

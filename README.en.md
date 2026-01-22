@@ -27,7 +27,7 @@ Fully **Cross-Platform** (Windows, Linux, macOS) Indexer for Argentum Online dev
 
 ## Screenshots
 
-<img width="1366" height="830" alt="image" src="https://github.com/user-attachments/assets/706213e8-868f-44e7-bc7a-7373d3c74265" />
+<img width="1366" height="830" alt="Captura de pantalla 2026-01-22 202854" src="https://github.com/user-attachments/assets/e327e577-4f03-4d1e-92cd-7941bf17e530" />
 
 ## System Requirements
 

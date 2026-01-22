@@ -22,7 +22,6 @@ import java.io.File;
 
 import java.util.Optional;
 
-import org.nexus.indexador.Main;
 import org.nexus.indexador.gamedata.models.GrhData;
 
 public class HeadsController {
@@ -318,8 +317,8 @@ public class HeadsController {
 
         if (grhIndex >= 0 && grhIndex < grhs.length) {
             int grhId = grhs[grhIndex];
-            if (grhId > 0 && Main.sharedGrhData != null) {
-                GrhData grhData = Main.sharedGrhData.get(grhId);
+            if (grhId > 0) {
+                GrhData grhData = dataManager.getGrh(grhId);
                 if (grhData != null) {
                     Image img = loadImageFromGrh(grhData);
                     ImageView targetView = null;

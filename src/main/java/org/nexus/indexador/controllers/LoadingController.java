@@ -8,6 +8,8 @@ import org.nexus.indexador.gamedata.DataManager;
 import org.nexus.indexador.utils.ConfigManager;
 
 import java.io.IOException;
+import javafx.scene.control.Alert;
+import org.nexus.indexador.utils.Logger;
 
 public class LoadingController {
 
@@ -15,6 +17,7 @@ public class LoadingController {
     public Label lblStatus;
 
     private Stage currentStage;
+    private final Logger logger = Logger.getInstance();
 
     public void setStage(Stage stage) {
         this.currentStage = stage;
@@ -39,57 +42,18 @@ public class LoadingController {
 
                 DataManager dataManager = DataManager.getInstance();
 
-                try {
-                    Platform.runLater(() -> lblStatus.setText("Cargando indice de graficos..."));
-                    dataManager.loadGrhData();
-                } catch (Exception e) {
-                    System.err.println("Error al cargar graficos: " + e.getMessage());
-                }
-
-                try {
-                    Platform.runLater(() -> lblStatus.setText("Cargando indice de cabezas..."));
-                    dataManager.readHeadFile();
-                } catch (Exception e) {
-                    System.err.println("Error al cargar cabezas: " + e.getMessage());
-                }
-
-                try {
-                    Platform.runLater(() -> lblStatus.setText("Cargando indice de cascos..."));
-                    dataManager.readHelmetFile();
-                } catch (Exception e) {
-                    System.err.println("Error al cargar cascos: " + e.getMessage());
-                }
-
-                try {
-                    Platform.runLater(() -> lblStatus.setText("Cargando indice de cuerpos..."));
-                    dataManager.readBodyFile();
-                } catch (Exception e) {
-                    System.err.println("Error al cargar cuerpos: " + e.getMessage());
-                }
-
-                try {
-                    Platform.runLater(() -> lblStatus.setText("Cargando indice de escudos..."));
-                    dataManager.readShieldFile();
-                } catch (Exception e) {
-                    System.err.println("Error al cargar escudos: " + e.getMessage());
-                }
-
-                try {
-                    Platform.runLater(() -> lblStatus.setText("Cargando indice de FXs..."));
-                    dataManager.readFXsdFile();
-                } catch (Exception e) {
-                    System.err.println("Error al cargar FXs: " + e.getMessage());
-                }
-
-                try {
-                    Platform.runLater(() -> lblStatus.setText("Cargando indice de armas..."));
-                    dataManager.readWeaponFile();
-                } catch (Exception e) {
-                    System.err.println("Error al cargar armas: " + e.getMessage());
-                }
+                loadDataSafe(() -> dataManager.loadGrhData(), "cargando índice de gráficos");
+                loadDataSafe(() -> dataManager.readHeadFile(), "cargando índice de cabezas");
+                loadDataSafe(() -> dataManager.readHelmetFile(), "cargando índice de cascos");
+                loadDataSafe(() -> dataManager.readBodyFile(), "cargando índice de cuerpos");
+                loadDataSafe(() -> dataManager.readShieldFile(), "cargando índice de escudos");
+                loadDataSafe(() -> dataManager.readFXsdFile(), "cargando índice de FXs");
+                loadDataSafe(() -> dataManager.readWeaponFile(), "cargando índice de armas");
 
             } catch (IOException e) {
-                System.err.println("Error al leer la configuración: " + e.getMessage());
+                logger.error("Error crítico al leer la configuración", e);
+                showErrorAndExit("Error al leer la configuración: " + e.getMessage());
+                return; // Detener ejecución
             }
 
             Platform.runLater(() -> {
@@ -114,9 +78,52 @@ public class LoadingController {
                         currentStage.close();
                     }
                 } else {
-                    System.err.println("Error critico: No se pudo abrir la ventana principal.");
+                    String msg = "Error crítico: No se pudo abrir la ventana principal.";
+                    logger.error(msg);
+                    showErrorAndExit(msg);
                 }
             });
         }).start();
+    }
+
+    /**
+     * Ejecuta una tarea de carga de datos de forma segura, manejando excepciones y
+     * actualizando el estado.
+     */
+    private void loadDataSafe(DataLoadingTask task, String description) {
+        try {
+            Platform.runLater(() -> lblStatus
+                    .setText(Character.toUpperCase(description.charAt(0)) + description.substring(1) + "..."));
+            task.execute();
+        } catch (Exception e) {
+            String errorMsg = "Error al " + description + ": " + e.getMessage();
+            logger.error(errorMsg, e);
+            // No detenemos la carga por un error en un índice específico, pero lo
+            // notificamos
+            // Podríamos decidir mostrar un alert no bloqueante o simplemente logguear
+        }
+    }
+
+    /**
+     * Interfaz funcional para tareas de carga que pueden lanzar excepciones.
+     */
+    @FunctionalInterface
+    private interface DataLoadingTask {
+        void execute() throws Exception;
+    }
+
+    /**
+     * Muestra un diálogo de error y cierra la aplicación.
+     */
+    private void showErrorAndExit(String message) {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error Crítico");
+            alert.setHeaderText("Ocurrió un error fatal");
+            alert.setContentText(message);
+            alert.showAndWait();
+            Platform.exit();
+            System.exit(1);
+        });
     }
 }

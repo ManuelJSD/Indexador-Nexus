@@ -16,7 +16,6 @@ import java.io.InputStream;
 public class Main extends Application {
 
     private final Logger logger = Logger.getInstance();
-    public static java.util.Map<Integer, org.nexus.indexador.gamedata.models.GrhData> sharedGrhData;
 
     @Override
     public void start(Stage stage) {

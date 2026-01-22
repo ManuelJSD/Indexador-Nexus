@@ -306,7 +306,8 @@ public class MainController {
             }
 
             // Compartir el mapa de datos globalmente para otras ventanas (Cabezas/Cascos)
-            org.nexus.indexador.Main.sharedGrhData = grhDataMap;
+            // org.nexus.indexador.Main.sharedGrhData = grhDataMap; // REMOVED: Now managed
+            // by DataManager
 
             // Actualizar el texto de los labels con la información obtenida
             lblIndices.setText("Indices cargados: " + dataManager.getGrhCount());

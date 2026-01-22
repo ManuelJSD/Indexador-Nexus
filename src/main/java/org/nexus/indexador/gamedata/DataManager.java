@@ -23,6 +23,9 @@ public class DataManager {
     private ObservableList<FXData> fxList = FXCollections.observableArrayList();
     private ObservableList<WeaponData> weaponList = FXCollections.observableArrayList();
 
+    // Map for fast access by ID (Encapsulation of previously global sharedGrhData)
+    private final Map<Integer, GrhData> grhMap = new HashMap<>();
+
     private int GrhCount;
     private int GrhVersion;
     private short NumHeads;
@@ -80,6 +83,13 @@ public class DataManager {
     public ObservableList<GrhData> loadGrhData() throws IOException {
         this.grhList.setAll(indexLoader.loadGrhs());
         this.GrhCount = grhList.size();
+
+        // Populate map for O(1) access
+        grhMap.clear();
+        for (GrhData grh : grhList) {
+            grhMap.put(grh.getGrhIndex(), grh);
+        }
+
         syncFormats();
         return grhList;
     }
@@ -173,6 +183,16 @@ public class DataManager {
 
     public IndexLoader getIndexLoader() {
         return indexLoader;
+    }
+
+    /**
+     * Obtiene un GrhData por su ID.
+     * 
+     * @param id ID del gráfico.
+     * @return Objeto GrhData o null si no existe.
+     */
+    public GrhData getGrh(int id) {
+        return grhMap.get(id);
     }
 
     public int getGrhCount() {

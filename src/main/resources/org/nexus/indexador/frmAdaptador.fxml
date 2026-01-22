@@ -1,33 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.effect.InnerShadow?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="520.0" prefWidth="818.0" styleClass="root-pane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nexus.indexador.controllers.frmAdaptador">
+<VBox prefHeight="580.0" prefWidth="850.0" spacing="15.0" styleClass="root-pane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nexus.indexador.controllers.frmAdaptador">
+   <padding>
+      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+   </padding>
    <children>
-      <TextArea fx:id="txtOriginal" layoutX="15.0" layoutY="28.0" prefHeight="200.0" prefWidth="788.0" promptText="Introduce aquí los Grh que quieres convertir" styleClass="text-area-flat">
-         <effect>
-            <InnerShadow />
-         </effect>
-      </TextArea>
-      <TextArea fx:id="txtAdaptado" editable="false" layoutX="15.0" layoutY="306.0" prefHeight="200.0" prefWidth="788.0" promptText="Aqui verás los Grh Adaptados" styleClass="text-area-flat">
-         <effect>
-            <InnerShadow />
-         </effect>
-      </TextArea>
-      <Button fx:id="btnClear" layoutX="599.0" layoutY="246.0" mnemonicParsing="false" onAction="#btnClear_OnAction" prefHeight="25.0" prefWidth="99.0" text="Limpiar" />
-      <TextField fx:id="txtPos" layoutX="112.0" layoutY="246.0" prefHeight="25.0" prefWidth="109.0" promptText="Primera posición" />
-      <TextField fx:id="txtGrafico" layoutX="294.0" layoutY="246.0" prefHeight="25.0" prefWidth="99.0" promptText="Grafico" />
-      <Button fx:id="btnAdapter" layoutX="704.0" layoutY="246.0" mnemonicParsing="false" onAction="#btnAdapter_OnAction" prefHeight="25.0" prefWidth="99.0" text="Adaptar" />
-      <Label fx:id="lblGrhOriginal" layoutX="15.0" layoutY="6.0" text="Grh de Origen:" />
-      <Label fx:id="lblDestino" layoutX="17.0" layoutY="282.0" text="Destino:" />
-      <Label layoutX="17.0" layoutY="250.0" text="Primera posición:" />
-      <Label layoutX="230.0" layoutY="250.0" text="Nº Grafico:" />
-      <Label fx:id="lblNFrames" layoutX="409.0" layoutY="250.0" text="Nº Frames:" />
-      <TextField fx:id="txtNumAnimaciones" layoutX="474.0" layoutY="246.0" prefHeight="25.0" prefWidth="91.0" />
+      <Label styleClass="label-header" text="Grh de Origen:" />
+      <TextArea fx:id="txtOriginal" prefHeight="200.0" prefWidth="200.0" promptText="Introduce aquí los Grh que quieres convertir..." styleClass="text-area-flat" VBox.vgrow="ALWAYS" />
+      
+      <GridPane hgap="10.0" vgap="10.0">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <Label text="Primera posición:" />
+            <TextField fx:id="txtPos" promptText="Ej: 500" GridPane.rowIndex="1" />
+            
+            <Label text="Nº Gráfico (Destino):" GridPane.columnIndex="1" />
+            <TextField fx:id="txtGrafico" promptText="Ej: 100" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            
+            <Label fx:id="lblNFrames" text="Nº Frames (Animaciones):" GridPane.columnIndex="2" />
+            <TextField fx:id="txtNumAnimaciones" promptText="Opcional" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+            
+             <Button fx:id="btnClear" mnemonicParsing="false" onAction="#btnClear_OnAction" prefHeight="40.0" prefWidth="120.0" text="Limpiar" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
+             <Button fx:id="btnAdapter" defaultButton="true" mnemonicParsing="false" onAction="#btnAdapter_OnAction" prefHeight="40.0" prefWidth="120.0" style="-fx-font-weight: bold; -fx-font-size: 14px;" text="Adaptar" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
+         </children>
+      </GridPane>
+      
+      <Label text="Destino:" styleClass="label-header" />
+      <TextArea fx:id="txtAdaptado" editable="false" prefHeight="200.0" prefWidth="200.0" promptText="Aquí aparecerán los Grh adaptados..." styleClass="text-area-flat" VBox.vgrow="ALWAYS" />
    </children>
-</AnchorPane>
+</VBox>

@@ -6,61 +6,132 @@
 <?import javafx.geometry.Insets?>
 
 <VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="org.nexus.indexador.controllers.frmAutoIndexWizard"
-      spacing="20" alignment="CENTER" prefWidth="500" prefHeight="400"
+      fx:controller="org.nexus.indexador.controllers.AutoIndexWizardController"
+      spacing="0" alignment="TOP_CENTER" prefWidth="800" prefHeight="550"
       styleClass="wizard-container">
     
+    <!-- Header visual -->
+    <StackPane prefHeight="100" styleClass="wizard-header-bg">
+        <VBox alignment="CENTER_LEFT" spacing="5">
+            <padding>
+                <Insets top="20" right="30" bottom="20" left="30"/>
+            </padding>
+            <Label fx:id="lblHeaderTitle" text="Asistente de Auto-Indexación" styleClass="wizard-title"/>
+            <Label fx:id="lblHeaderDesc" text="Selecciona el tipo de recurso que deseas importar." styleClass="wizard-subtitle" wrapText="true"/>
+        </VBox>
+    </StackPane>
+    
     <padding>
-        <Insets top="20" right="20" bottom="20" left="20"/>
+         <Insets top="0" right="0" bottom="0" left="0"/>
     </padding>
+
+    <StackPane VBox.vgrow="ALWAYS">
+        <!-- STEP 1: SELECTION -->
+        <VBox fx:id="step1Selection" spacing="30" alignment="CENTER">
+            <padding>
+                 <Insets top="30" right="40" bottom="30" left="40"/>
+            </padding>
+
+            <HBox spacing="30" alignment="CENTER">
+                <!-- Personaje -->
+                <VBox alignment="CENTER" spacing="15" styleClass="wizard-option" onMouseClicked="#onPersonajeClick">
+                    <ImageView fitWidth="64" fitHeight="64" preserveRatio="true">
+                        <image>
+                            <Image url="@images/wizard_personaje.png"/>
+                        </image>
+                    </ImageView>
+                    <VBox alignment="CENTER" spacing="5">
+                         <Label text="Personaje" styleClass="wizard-option-title"/>
+                         <Label text="Cuerpos y armaduras" styleClass="wizard-option-desc"/>
+                    </VBox>
+                </VBox>
+                
+                <!-- Objetos -->
+                <VBox alignment="CENTER" spacing="15" styleClass="wizard-option" onMouseClicked="#onObjetosClick">
+                    <ImageView fitWidth="64" fitHeight="64" preserveRatio="true">
+                        <image>
+                            <Image url="@images/wizard_objetos.png"/>
+                        </image>
+                    </ImageView>
+                    <VBox alignment="CENTER" spacing="5">
+                        <Label text="Objetos" styleClass="wizard-option-title"/>
+                        <Label text="Items de inventario" styleClass="wizard-option-desc"/>
+                    </VBox>
+                </VBox>
+                
+                <!-- Superficies -->
+                <VBox alignment="CENTER" spacing="15" styleClass="wizard-option" onMouseClicked="#onSuperficiesClick">
+                   <ImageView fitWidth="64" fitHeight="64" preserveRatio="true">
+                        <image>
+                            <Image url="@images/wizard_superficies.png"/>
+                        </image>
+                    </ImageView>
+                    <VBox alignment="CENTER" spacing="5">
+                        <Label text="Superficies" styleClass="wizard-option-title"/>
+                        <Label text="Pisos, Paredes, Tiles" styleClass="wizard-option-desc"/>
+                    </VBox>
+                </VBox>
+                
+            <!-- Animación -->
+            <VBox alignment="CENTER" spacing="15" styleClass="wizard-option" onMouseClicked="#onAnimacionClick">
+                <ImageView fitWidth="64" fitHeight="64" preserveRatio="true">
+                    <image>
+                        <Image url="@images/wizard_animacion.png"/>
+                    </image>
+                </ImageView>
+                <VBox alignment="CENTER" spacing="5">
+                    <Label text="Animación" styleClass="wizard-option-title"/>
+                    <Label text="Efectos, hechizos y cuerpos 1-Dir" styleClass="wizard-option-desc"/>
+                </VBox>
+            </VBox>
+        </HBox>
+    </VBox>
+
+    <!-- STEP 2: CONFIGURATION -->
+    <VBox fx:id="step2Config" spacing="20" alignment="CENTER" visible="false">
+        <padding>
+             <Insets top="20" right="60" bottom="20" left="60"/>
+        </padding>
+        
+        <HBox spacing="30" alignment="CENTER">
+            <!-- Left: Form -->
+            <VBox spacing="20" alignment="CENTER_LEFT" maxWidth="350">
+                <VBox spacing="10" alignment="CENTER_LEFT">
+                     <Label text="Archivo de Inicio:" styleClass="setup-label"/>
+                     <HBox spacing="10" alignment="CENTER_LEFT">
+                         <TextField fx:id="txtFileNum" promptText="Número o Archivo" styleClass="text-field" prefWidth="200"/>
+                         <Button text="..." onAction="#onSelectFileClick" styleClass="button" prefWidth="40">
+                             <tooltip>
+                                 <Tooltip text="Seleccionar archivo"/>
+                             </tooltip>
+                         </Button>
+                     </HBox>
+                     <Label text="Escribe el número o selecciona el archivo .png" style="-fx-text-fill: #808080; -fx-font-size: 11px;"/>
+                </VBox>
+
+                 <Button text="Abrir Carpeta de Gráficos" onAction="#onOpenGraphicsFolder" styleClass="button-outlined" maxWidth="Infinity"/>
+            </VBox>
+            
+            <!-- Right: Preview -->
+            <VBox spacing="10" alignment="CENTER">
+                <Label text="Vista Previa" styleClass="setup-label"/>
+                <StackPane style="-fx-background-color: #1e1e1e; -fx-border-color: #333; -fx-border-radius: 5; -fx-background-radius: 5;" prefWidth="150" prefHeight="150" minWidth="150" minHeight="150">
+                    <ImageView fx:id="imgPreview" fitWidth="128" fitHeight="128" preserveRatio="true"/>
+                    <Label fx:id="lblNoImage" text="Sin imagen" textFill="#666"/>
+                </StackPane>
+            </VBox>
+        </HBox>
+    </VBox>
+    </StackPane>
     
-    <Label text="¿Qué tipo de gráfico deseas indexar?" styleClass="wizard-title"/>
-    
-    <HBox spacing="15" alignment="CENTER">
-        <!-- Personaje -->
-        <VBox alignment="CENTER" spacing="5" styleClass="wizard-option" onMouseClicked="#onPersonajeClick">
-            <ImageView fitWidth="100" fitHeight="100" preserveRatio="true">
-                <image>
-                    <Image url="@images/wizard_personaje.png"/>
-                </image>
-            </ImageView>
-            <Label text="Personaje" styleClass="wizard-option-title"/>
-            <Label text="Cuerpos, armaduras" styleClass="wizard-option-desc"/>
-        </VBox>
-        
-        <!-- Objetos -->
-        <VBox alignment="CENTER" spacing="5" styleClass="wizard-option" onMouseClicked="#onObjetosClick">
-            <ImageView fitWidth="100" fitHeight="100" preserveRatio="true">
-                <image>
-                    <Image url="@images/wizard_objetos.png"/>
-                </image>
-            </ImageView>
-            <Label text="Objetos" styleClass="wizard-option-title"/>
-            <Label text="Items de inventario" styleClass="wizard-option-desc"/>
-        </VBox>
-        
-        <!-- Superficies -->
-        <VBox alignment="CENTER" spacing="5" styleClass="wizard-option" onMouseClicked="#onSuperficiesClick">
-            <ImageView fitWidth="100" fitHeight="100" preserveRatio="true">
-                <image>
-                    <Image url="@images/wizard_superficies.png"/>
-                </image>
-            </ImageView>
-            <Label text="Superficies" styleClass="wizard-option-title"/>
-            <Label text="Pisos, paredes, tiles" styleClass="wizard-option-desc"/>
-        </VBox>
-        
-        <!-- Animación -->
-        <VBox alignment="CENTER" spacing="5" styleClass="wizard-option" onMouseClicked="#onAnimacionClick">
-            <ImageView fitWidth="100" fitHeight="100" preserveRatio="true">
-                <image>
-                    <Image url="@images/wizard_animacion.png"/>
-                </image>
-            </ImageView>
-            <Label text="Animación" styleClass="wizard-option-title"/>
-            <Label text="FX, efectos" styleClass="wizard-option-desc"/>
-        </VBox>
+    <!-- Footer -->
+    <HBox alignment="CENTER_RIGHT" styleClass="wizard-footer" spacing="10">
+        <padding>
+            <Insets top="15" right="30" bottom="15" left="30"/>
+        </padding>
+        <Button fx:id="btnBack" text="Atrás" onAction="#onBackClick" styleClass="wizard-cancel-btn" visible="false"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="btnStart" text="Comenzar" onAction="#onStartClick" styleClass="button-primary" visible="false"/>
+        <Button fx:id="btnCancel" text="Cancelar" onAction="#onCancelarClick" styleClass="wizard-cancel-btn"/>
     </HBox>
-    
-    <Button text="Cancelar" onAction="#onCancelarClick" styleClass="wizard-cancel-btn"/>
 </VBox>

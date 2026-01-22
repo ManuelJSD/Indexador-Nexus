@@ -6,7 +6,7 @@
 <?import javafx.geometry.Insets?>
 
 <VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="org.nexus.indexador.controllers.frmDetectionPreview"
+      fx:controller="org.nexus.indexador.controllers.DetectionPreviewController"
       spacing="10" prefWidth="800" prefHeight="600"
       styleClass="preview-container">
     

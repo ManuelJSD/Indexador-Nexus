@@ -256,8 +256,13 @@ public class MainController {
   // Valores de traducción originales del ImageView al arrastrar el mouse.
   private double orgTranslateX, orgTranslateY;
 
+  public ConfigManager getConfigManager() {
+    return this.configManager;
+  }
+
   /**
-   * Método de inicialización del controlador. Carga los datos de gráficos y configura el ListView.
+   * Método de inicialización del controlador. Carga los datos de gráficos y
+   * configura el ListView.
    */
   @FXML
   protected void initialize() throws IOException {
@@ -285,11 +290,14 @@ public class MainController {
   }
 
   /**
-   * Carga los datos de gráficos desde archivos binarios y actualiza la interfaz de usuario con la
-   * información obtenida. Muestra los índices de gráficos en el ListView y actualiza los textos de
+   * Carga los datos de gráficos desde archivos binarios y actualiza la interfaz
+   * de usuario con la
+   * información obtenida. Muestra los índices de gráficos en el ListView y
+   * actualiza los textos de
    * los labels con información relevante.
    *
-   * @throws IOException Sí ocurre un error durante la lectura de los archivos binarios.
+   * @throws IOException Sí ocurre un error durante la lectura de los archivos
+   *                     binarios.
    */
   private void loadGrh() {
 
@@ -340,8 +348,10 @@ public class MainController {
   }
 
   /**
-   * Configura un listener para el ListView para capturar los eventos de selección. Cuando se
-   * selecciona un índice de gráfico, actualiza el editor y el visor con la información
+   * Configura un listener para el ListView para capturar los eventos de
+   * selección. Cuando se
+   * selecciona un índice de gráfico, actualiza el editor y el visor con la
+   * información
    * correspondiente.
    */
   private void setupGrhListListener() {
@@ -390,7 +400,8 @@ public class MainController {
   }
 
   /**
-   * Actualiza el editor con la información del gráfico seleccionado. Muestra los detalles del
+   * Actualiza el editor con la información del gráfico seleccionado. Muestra los
+   * detalles del
    * gráfico seleccionado en los campos de texto correspondientes.
    *
    * @param selectedGrh El gráfico seleccionado.
@@ -442,7 +453,8 @@ public class MainController {
   }
 
   /**
-   * Actualiza el visor con el gráfico seleccionado. Si el gráfico es estático, muestra la imagen
+   * Actualiza el visor con el gráfico seleccionado. Si el gráfico es estático,
+   * muestra la imagen
    * estática correspondiente. Si es una animación, muestra la animación.
    *
    * @param selectedGrh El gráfico seleccionado.
@@ -458,9 +470,12 @@ public class MainController {
   }
 
   /**
-   * Muestra una imagen estática en el ImageView correspondiente al gráfico seleccionado. Si el
-   * archivo de imagen existe, carga la imagen y la muestra en el ImageView. Además, recorta la
-   * región adecuada de la imagen completa para mostrar solo la parte relevante del gráfico. Si el
+   * Muestra una imagen estática en el ImageView correspondiente al gráfico
+   * seleccionado. Si el
+   * archivo de imagen existe, carga la imagen y la muestra en el ImageView.
+   * Además, recorta la
+   * región adecuada de la imagen completa para mostrar solo la parte relevante
+   * del gráfico. Si el
    * archivo de imagen no existe, imprime un mensaje de advertencia.
    *
    * @param selectedGrh El gráfico seleccionado.
@@ -504,12 +519,14 @@ public class MainController {
   }
 
   /**
-   * Muestra una animación en el ImageView correspondiente al gráfico seleccionado. Configura y
-   * ejecuta una animación de fotogramas clave para mostrar la animación. La animación se ejecuta en
+   * Muestra una animación en el ImageView correspondiente al gráfico
+   * seleccionado. Configura y
+   * ejecuta una animación de fotogramas clave para mostrar la animación. La
+   * animación se ejecuta en
    * un bucle infinito hasta que se detenga explícitamente.
    *
    * @param selectedGrh El gráfico seleccionado.
-   * @param nFrames El número total de fotogramas en la animación.
+   * @param nFrames     El número total de fotogramas en la animación.
    */
   private void displayAnimation(GrhData selectedGrh, int nFrames) {
     // Configurar la animación
@@ -534,8 +551,10 @@ public class MainController {
   }
 
   /**
-   * Actualiza el fotograma actual en el ImageView durante la reproducción de una animación. Obtiene
-   * el siguiente fotograma de la animación y actualiza el ImageView con la imagen correspondiente.
+   * Actualiza el fotograma actual en el ImageView durante la reproducción de una
+   * animación. Obtiene
+   * el siguiente fotograma de la animación y actualiza el ImageView con la imagen
+   * correspondiente.
    *
    * @param selectedGrh El gráfico seleccionado.
    */
@@ -584,10 +603,12 @@ public class MainController {
   }
 
   /**
-   * Dibuja un rectángulo alrededor de la región del índice seleccionado en la imagen completa del
+   * Dibuja un rectángulo alrededor de la región del índice seleccionado en la
+   * imagen completa del
    * gráfico.
    *
-   * @param selectedGrh El gráfico seleccionado que contiene la información de la región del índice.
+   * @param selectedGrh El gráfico seleccionado que contiene la información de la
+   *                    región del índice.
    */
   private void drawRectangle(GrhData selectedGrh) {
     try {
@@ -661,11 +682,12 @@ public class MainController {
   }
 
   /**
-   * Dibuja la imagen completa en un ImageView para visualización y coloca un rectángulo alrededor
+   * Dibuja la imagen completa en un ImageView para visualización y coloca un
+   * rectángulo alrededor
    * de la región específica que representa el gráfico.
    *
    * @param image La imagen a dibujar.
-   * @param grh El objeto GrhData que contiene la información sobre la imagen.
+   * @param grh   El objeto GrhData que contiene la información sobre la imagen.
    */
   private void drawFullImage(Image image, GrhData grh) {
     try {
@@ -692,9 +714,12 @@ public class MainController {
   }
 
   /**
-   * Maneja el evento de presionar el mouse. Este método se invoca cuando el usuario presiona el
-   * botón del mouse. Si se presiona el botón secundario del mouse (generalmente el botón derecho),
-   * registra las coordenadas de la escena iniciales y los valores de traducción del ImageView.
+   * Maneja el evento de presionar el mouse. Este método se invoca cuando el
+   * usuario presiona el
+   * botón del mouse. Si se presiona el botón secundario del mouse (generalmente
+   * el botón derecho),
+   * registra las coordenadas de la escena iniciales y los valores de traducción
+   * del ImageView.
    *
    * @param event El MouseEvent que representa el evento de presionar el mouse.
    */
@@ -709,9 +734,12 @@ public class MainController {
   }
 
   /**
-   * Maneja el evento de arrastrar el mouse. Este método se invoca cuando el usuario arrastra el
-   * mouse después de presionarlo. Si se presiona el botón secundario del mouse (generalmente el
-   * botón derecho), calcula el desplazamiento desde la posición inicial y actualiza los valores de
+   * Maneja el evento de arrastrar el mouse. Este método se invoca cuando el
+   * usuario arrastra el
+   * mouse después de presionarlo. Si se presiona el botón secundario del mouse
+   * (generalmente el
+   * botón derecho), calcula el desplazamiento desde la posición inicial y
+   * actualiza los valores de
    * traducción del ImageView en consecuencia.
    *
    * @param event El MouseEvent que representa el evento de arrastrar el mouse.
@@ -730,7 +758,8 @@ public class MainController {
   }
 
   /**
-   * Método para manejar la acción cuando se hace clic en el elemento del menú "Consola"
+   * Método para manejar la acción cuando se hace clic en el elemento del menú
+   * "Consola"
    */
   @FXML
   private void mnuConsola_OnAction() {
@@ -772,7 +801,8 @@ public class MainController {
   }
 
   /**
-   * Método para manejar la acción cuando se hace clic en el elemento del menú "Color de Fondo..."
+   * Método para manejar la acción cuando se hace clic en el elemento del menú
+   * "Color de Fondo..."
    */
   @FXML
   private void mnuConfigColor_OnAction() {
@@ -945,7 +975,8 @@ public class MainController {
 
       UndoManager.getInstance().executeAction(new UndoManager.UndoableAction() {
         @Override
-        public void execute() {}
+        public void execute() {
+        }
 
         @Override
         public void undo() {
@@ -1004,9 +1035,12 @@ public class MainController {
   }
 
   /**
-   * Exporta los datos de gráficos al archivo "graficos.ini" en el directorio de exportación
-   * configurado. Los datos exportados incluyen el número total de gráficos, la versión de los
-   * índices y la información detallada de cada gráfico. Si se produce algún error durante el
+   * Exporta los datos de gráficos al archivo "graficos.ini" en el directorio de
+   * exportación
+   * configurado. Los datos exportados incluyen el número total de gráficos, la
+   * versión de los
+   * índices y la información detallada de cada gráfico. Si se produce algún error
+   * durante el
    * proceso de exportación, se imprime un mensaje de error.
    */
   @FXML
@@ -1093,46 +1127,55 @@ public class MainController {
   @FXML
   public void mnuValidate_OnAction(ActionEvent actionEvent) {
     ValidationService validationService = ValidationService.getInstance();
-    ValidationService.ValidationResult result =
-        validationService.validate(grhList, configManager.getGraphicsDir());
+    ValidationService.ValidationResult result = validationService.validate(grhList, configManager.getGraphicsDir());
 
-    StringBuilder message = new StringBuilder();
-    message.append("Resultado de la validación:\n\n");
+    try {
+      FXMLLoader loader = new FXMLLoader(
+          getClass().getResource("/org/nexus/indexador/ValidationResultController.fxml"));
+      javafx.scene.Parent root = loader.load();
 
-    if (result.hasErrors()) {
-      message.append("❌ ERRORES (").append(result.getErrors().size()).append("):\n");
-      for (int i = 0; i < Math.min(5, result.getErrors().size()); i++) {
-        message.append("  • ").append(result.getErrors().get(i)).append("\n");
+      ValidationResultController controller = loader.getController();
+      controller.setResults(result);
+      controller.setMainController(this);
+
+      Stage stage = new Stage();
+      stage.setTitle("Reporte de Integridad - " + result.getTotalIssues() + " incidencias");
+      stage.setScene(new Scene(root));
+      stage.initModality(Modality.NONE);
+      // Theme support for the new window
+      if ("DARK".equalsIgnoreCase(configManager.getAppTheme())) {
+        root.getStylesheets()
+            .add(getClass().getResource("/org/nexus/indexador/styles/dark-theme.css").toExternalForm());
+      } else {
+        root.getStylesheets()
+            .add(getClass().getResource("/org/nexus/indexador/styles/light-theme.css").toExternalForm());
       }
-      if (result.getErrors().size() > 5) {
-        message.append("  ... y ").append(result.getErrors().size() - 5).append(" más\n");
-      }
-      message.append("\n");
+      stage.show();
+
+    } catch (IOException e) {
+      logger.error("Error al abrir ventana de validación", e);
+      showErrorAlert("Error", "No se pudo abrir el reporte de validación: " + e.getMessage());
     }
+  }
 
-    if (result.hasWarnings()) {
-      message.append("⚠️ ADVERTENCIAS (").append(result.getWarnings().size()).append("):\n");
-      for (int i = 0; i < Math.min(5, result.getWarnings().size()); i++) {
-        message.append("  • ").append(result.getWarnings().get(i)).append("\n");
+  /**
+   * Navega hasta el GRH especificado en la lista.
+   * 
+   * @param grhId ID del gráfico a seleccionar.
+   */
+  public void jumpToGrh(int grhId) {
+    if (grhDataMap.containsKey(grhId)) {
+      // Buscar el índice en la lista (puede ser lento para listas gigantes, pero ok
+      // para esto)
+      for (int i = 0; i < grhList.size(); i++) {
+        if (grhList.get(i).getGrh() == grhId) {
+          lstIndices.getSelectionModel().select(i);
+          lstIndices.scrollTo(i);
+          break;
+        }
       }
-      if (result.getWarnings().size() > 5) {
-        message.append("  ... y ").append(result.getWarnings().size() - 5).append(" más\n");
-      }
-      message.append("\n");
-    }
-
-    // Estadísticas
-    message.append("📊 ESTADÍSTICAS:\n");
-    for (ValidationService.ValidationIssue info : result.getInfos()) {
-      message.append("  • ").append(info.getMessage()).append("\n");
-    }
-
-    if (result.hasErrors()) {
-      showErrorAlert("Validación con Errores", message.toString());
-    } else if (result.hasWarnings()) {
-      showWarningAlert("Validación con Advertencias", message.toString());
     } else {
-      showInfoAlert("Validación Exitosa", "✅ No se encontraron problemas.\n\n" + message);
+      logger.warning("Intento de saltar a GRH inexistente: " + grhId);
     }
   }
 
@@ -1223,8 +1266,7 @@ public class MainController {
   @FXML
   private void mnuConfigPaths_OnAction() {
     try {
-      FXMLLoader loader =
-          new FXMLLoader(getClass().getResource("/org/nexus/indexador/PathsController.fxml"));
+      FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/nexus/indexador/PathsController.fxml"));
       VBox root = loader.load();
 
       PathsController controller = loader.getController();
@@ -1264,10 +1306,14 @@ public class MainController {
   }
 
   /**
-   * Guarda los cambios realizados en los datos del gráfico seleccionado en la lista. Obtiene el
-   * índice seleccionado de la lista y actualiza los atributos del objeto grhData correspondiente
-   * con los valores ingresados en los campos de texto. Si no hay ningún índice seleccionado, no se
-   * realizan cambios. Se imprime un mensaje indicando que los cambios se han aplicado con éxito.
+   * Guarda los cambios realizados en los datos del gráfico seleccionado en la
+   * lista. Obtiene el
+   * índice seleccionado de la lista y actualiza los atributos del objeto grhData
+   * correspondiente
+   * con los valores ingresados en los campos de texto. Si no hay ningún índice
+   * seleccionado, no se
+   * realizan cambios. Se imprime un mensaje indicando que los cambios se han
+   * aplicado con éxito.
    */
   @FXML
   private void saveGrhData() {
@@ -1315,10 +1361,12 @@ public class MainController {
   }
 
   /**
-   * Configura un listener para el TextField de filtro para detectar cambios en su contenido.
+   * Configura un listener para el TextField de filtro para detectar cambios en su
+   * contenido.
    */
   /**
-   * Configura un listener para el TextField de filtro para detectar cambios en su contenido.
+   * Configura un listener para el TextField de filtro para detectar cambios en su
+   * contenido.
    */
   private void setupFilterTextFieldListener() {
     // Listener de texto (LIVE SEARCH - busca desde el principio)
@@ -1333,12 +1381,15 @@ public class MainController {
   }
 
   /**
-   * Filtra o busca índices en el ListView según el texto proporcionado. Soporta sintaxis avanzada:
-   * - f:123 -> Buscar FileNum 123 - w:32 -> Buscar ancho 32 - h:32 -> Buscar alto 32 - 123 ->
+   * Filtra o busca índices en el ListView según el texto proporcionado. Soporta
+   * sintaxis avanzada:
+   * - f:123 -> Buscar FileNum 123 - w:32 -> Buscar ancho 32 - h:32 -> Buscar alto
+   * 32 - 123 ->
    * Buscar GRH ID 123
    *
    * @param filterText El texto utilizado para filtrar.
-   * @param findNext Si es true, busca la siguiente coincidencia desde la posición actual.
+   * @param findNext   Si es true, busca la siguiente coincidencia desde la
+   *                   posición actual.
    */
   private void filterIndices(String filterText, boolean findNext) {
     if (filterText.isEmpty()) {
@@ -1445,7 +1496,8 @@ public class MainController {
   }
 
   /**
-   * Configura el deslizador de zoom. Este método configura un listener para el deslizador de zoom,
+   * Configura el deslizador de zoom. Este método configura un listener para el
+   * deslizador de zoom,
    * que ajusta la escala del ImageView según el valor del deslizador.
    */
   private void setupSliderZoom() {
@@ -1477,7 +1529,8 @@ public class MainController {
   }
 
   /**
-   * Elimina el elemento seleccionado de la lista de índices. Muestra un mensaje de confirmación
+   * Elimina el elemento seleccionado de la lista de índices. Muestra un mensaje
+   * de confirmación
    * antes de eliminar el elemento.
    */
   @FXML
@@ -1502,12 +1555,15 @@ public class MainController {
   }
 
   /**
-   * Método que se activa al hacer clic en el botón "Añadir". Incrementa el contador de gráficos
-   * (grhCount) en el grhDataManager, crea un nuevo objeto grhData con valores predeterminados y lo
+   * Método que se activa al hacer clic en el botón "Añadir". Incrementa el
+   * contador de gráficos
+   * (grhCount) en el grhDataManager, crea un nuevo objeto grhData con valores
+   * predeterminados y lo
    * agrega tanto al ListView como al grhList.
    *
-   * @throws IllegalArgumentException Si ocurre algún error al obtener el contador de gráficos del
-   *         grhDataManager.
+   * @throws IllegalArgumentException Si ocurre algún error al obtener el contador
+   *                                  de gráficos del
+   *                                  grhDataManager.
    */
   @FXML
   private void btnAdd_OnAction() {
@@ -1517,8 +1573,7 @@ public class MainController {
     dataManager.setGrhCount(grhCount);
 
     // Crear un nuevo objeto grhData con los valores adecuados
-    GrhData newGrhData =
-        new GrhData(grhCount, (short) 1, 0, (short) 0, (short) 0, (short) 0, (short) 0);
+    GrhData newGrhData = new GrhData(grhCount, (short) 1, 0, (short) 0, (short) 0, (short) 0, (short) 0);
 
     // Agregar el nuevo elemento al ListView
     lstIndices.getItems().add(String.valueOf(grhCount));
@@ -2205,9 +2260,8 @@ public class MainController {
           alert.setContentText("No se encontraron secuencias de " + grhLibres + " Grh libres.");
           alert.showAndWait();
         } else {
-          StringBuilder mensaje =
-              new StringBuilder("Se encontraron secuencias de Grh libres desde Grh"
-                  + (grhLibres - (numGrhLibres - 1)) + " hasta Grh" + grhLibres);
+          StringBuilder mensaje = new StringBuilder("Se encontraron secuencias de Grh libres desde Grh"
+              + (grhLibres - (numGrhLibres - 1)) + " hasta Grh" + grhLibres);
           Alert alert = new Alert(Alert.AlertType.INFORMATION);
           alert.setTitle("Grh libres encontrados");
           alert.setHeaderText(null);
@@ -2249,7 +2303,8 @@ public class MainController {
   }
 
   /**
-   * Maneja el evento de clic en el menú "Adaptador de Grh". Abre una nueva ventana que permite
+   * Maneja el evento de clic en el menú "Adaptador de Grh". Abre una nueva
+   * ventana que permite
    * adaptar gráficos.
    */
   @FXML
@@ -2278,9 +2333,14 @@ public class MainController {
 
       wizardController.setStage(wizardStage);
 
-      // Aplicar estilos
-      wizardStage.getScene().getStylesheets().add(
-          getClass().getResource("/org/nexus/indexador/styles/dark-theme.css").toExternalForm());
+      // Aplicar estilos según tema
+      if ("DARK".equalsIgnoreCase(configManager.getAppTheme())) {
+        wizardStage.getScene().getStylesheets().add(
+            getClass().getResource("/org/nexus/indexador/styles/dark-theme.css").toExternalForm());
+      } else {
+        wizardStage.getScene().getStylesheets().add(
+            getClass().getResource("/org/nexus/indexador/styles/light-theme.css").toExternalForm());
+      }
 
       wizardStage.showAndWait();
     } catch (Exception e) {
@@ -2291,8 +2351,121 @@ public class MainController {
 
   // ========== AUTO-INDEXAR: MODOS ==========
 
+  // Public wrapper methods for Wizard
+  public void autoIndexPersonaje(String namePrefix, int startFileNum) {
+    // TODO: Refactor underlying logic to accept parameters.
+    // For now, we will just call the existing method, but we need to pass these
+    // params down.
+    // Since existing methods use TextInputDialog inside 'loadAndDetectSprites', we
+    // need to refactor that first.
+    runAutoIndexLogic("Personaje", namePrefix, startFileNum);
+  }
+
+  public void autoIndexObjetos(String namePrefix, int startFileNum) {
+    runAutoIndexLogic("Objeto", namePrefix, startFileNum);
+  }
+
+  public void autoIndexSuperficies(String namePrefix, int startFileNum) {
+    runAutoIndexLogic("Superficie", namePrefix, startFileNum);
+  }
+
+  public void autoIndexAnimacion(String namePrefix, int startFileNum) {
+    runAutoIndexLogic("Animacion", namePrefix, startFileNum);
+  }
+
+  private void runAutoIndexLogic(String type, String namePrefix, int fileNum) {
+    // 1. If fileNum is -1, ask user? Or did wizard handle it?
+    // Wizard handles it being optional (-1).
+
+    if (fileNum <= 0) {
+      // Fallback to dialog if not provided? Or just error?
+      // For UX, wizard should have encouraged input.
+      // Let's assume user wants to pick file via FileChooser or just type a number.
+      TextInputDialog dialog = new TextInputDialog();
+      dialog.setTitle("Número de Archivo");
+      dialog.setContentText("Introduce el número de imagen inicial:");
+      Optional<String> res = dialog.showAndWait();
+      if (res.isPresent()) {
+        try {
+          fileNum = Integer.parseInt(res.get());
+        } catch (Exception e) {
+          return;
+        }
+      }
+    }
+
+    ImageDetectionResult result = loadAndDetectSpritesDirect(fileNum);
+    if (result != null) {
+      boolean confirmed = showDetectionPreview(result, "Auto-Indexar " + type,
+          "Se han detectado " + result.regions.size() + " sprites/cuadros.\n¿Deseas importarlos?");
+
+      if (confirmed) {
+        if ("Personaje".equalsIgnoreCase(type)) {
+          // Lógica para personajes: Agrupar por filas (direcciones) y crear animación por
+          // fila
+          List<List<Rectangle>> rows = groupSpritesByRows(result.regions);
+          List<Rectangle> sortedRegions = new ArrayList<>();
+          for (List<Rectangle> r : rows)
+            sortedRegions.addAll(r);
+
+          List<Integer> staticIds = createStaticGrhs(sortedRegions, fileNum);
+          int animCount = 0;
+          int offset = 0;
+          for (List<Rectangle> row : rows) {
+            if (!row.isEmpty()) {
+              createSingleAnimation(staticIds.subList(offset, offset + row.size()), fileNum);
+              animCount++;
+            }
+            offset += row.size();
+          }
+          org.nexus.indexador.utils.ToastNotification.show(txtIndice.getScene().getWindow(),
+              "¡Éxito! " + staticIds.size() + " frames y " + animCount + " animaciones.");
+
+        } else if (type != null && type.toLowerCase().startsWith("anim")) {
+          // Lógica para animación simple: Todo es una secuencia
+          List<Integer> staticIds = createStaticGrhs(result.regions, fileNum);
+          createSingleAnimation(staticIds, fileNum);
+          org.nexus.indexador.utils.ToastNotification.show(txtIndice.getScene().getWindow(),
+              "¡Éxito! " + staticIds.size() + " frames y 1 animación.");
+
+        } else {
+          // Objetos / Superficies (Solo estáticos)
+          List<Integer> createdIds = createStaticGrhs(result.regions, fileNum);
+          org.nexus.indexador.utils.ToastNotification.show(txtIndice.getScene().getWindow(),
+              "¡Éxito! Se crearon " + createdIds.size() + " índices.");
+        }
+      }
+    }
+  }
+
+  private ImageDetectionResult loadAndDetectSpritesDirect(int fileNum) {
+    String imagePath = configManager.getGraphicsDir() + File.separator + fileNum + ".png";
+
+    File f = new File(imagePath);
+    if (!f.exists()) {
+      imagePath = configManager.getGraphicsDir() + File.separator + fileNum + ".bmp";
+      f = new File(imagePath);
+      if (!f.exists()) {
+        showErrorAlert("Error", "No se encontró la imagen: " + fileNum);
+        return null;
+      }
+    }
+
+    Image image = imageCache.getImage(imagePath);
+    if (image == null) {
+      showErrorAlert("Error", "No se pudo cargar la imagen.");
+      return null;
+    }
+
+    List<Rectangle> regions = AutoTilingService.getInstance().detectSprites(image);
+    // Log for debug but also return
+    logger.info("Se detectaron " + regions.size() + " sprites.");
+    return new ImageDetectionResult(fileNum, image, regions);
+  }
+
   /**
-   * Carga una imagen y detecta sprites usando FloodFill. Devuelve null si hay error.
+   * Carga una imagen y detecta sprites usando FloodFill. Devuelve null si hay
+   * error.
    */
   private ImageDetectionResult loadAndDetectSprites(String title) {
     TextInputDialog dialog = new TextInputDialog();
@@ -2347,7 +2520,8 @@ public class MainController {
   }
 
   /**
-   * Muestra la ventana de previsualización de detección. Retorna true si el usuario confirma, false
+   * Muestra la ventana de previsualización de detección. Retorna true si el
+   * usuario confirma, false
    * si cancela.
    */
   private boolean showDetectionPreview(ImageDetectionResult result, String title,
@@ -2382,7 +2556,8 @@ public class MainController {
   }
 
   /**
-   * Crea GRHs estáticos a partir de rectángulos detectados. Devuelve lista de IDs creados.
+   * Crea GRHs estáticos a partir de rectángulos detectados. Devuelve lista de IDs
+   * creados.
    */
   private List<Integer> createStaticGrhs(List<Rectangle> regions, int fileNum) {
     int startId = dataManager.getGrhCount() + 1;
@@ -2629,10 +2804,8 @@ public class MainController {
       modeChoice.setHeaderText("Imagen: " + imgWidth + "x" + imgHeight);
       modeChoice.setContentText("¿Cómo desea dividir la imagen?");
 
-      ButtonType btnBySize =
-          new ButtonType("Por Tamaño (32x32, 64x64...)", ButtonBar.ButtonData.LEFT);
-      ButtonType btnByCount =
-          new ButtonType("Por Cantidad (cols x filas)", ButtonBar.ButtonData.RIGHT);
+      ButtonType btnBySize = new ButtonType("Por Tamaño (32x32, 64x64...)", ButtonBar.ButtonData.LEFT);
+      ButtonType btnByCount = new ButtonType("Por Cantidad (cols x filas)", ButtonBar.ButtonData.RIGHT);
       ButtonType btnCancel = new ButtonType("Cancelar", ButtonBar.ButtonData.CANCEL_CLOSE);
       modeChoice.getButtonTypes().setAll(btnBySize, btnByCount, btnCancel);
 
@@ -2644,8 +2817,7 @@ public class MainController {
 
       if (modeResult.get() == btnBySize) {
         // Modo por tamaño fijo
-        ChoiceDialog<String> sizeDialog =
-            new ChoiceDialog<>("32x32", "16x16", "32x32", "64x64", "128x128");
+        ChoiceDialog<String> sizeDialog = new ChoiceDialog<>("32x32", "16x16", "32x32", "64x64", "128x128");
         sizeDialog.setTitle("Tamaño de Tile");
         sizeDialog.setHeaderText("Imagen: " + imgWidth + "x" + imgHeight);
         sizeDialog.setContentText("Tamaño de cada tile:");
@@ -2714,7 +2886,8 @@ public class MainController {
   }
 
   /**
-   * MODO: Superficies (múltiples superficies en una imagen, cada una dividida en tiles)
+   * MODO: Superficies (múltiples superficies en una imagen, cada una dividida en
+   * tiles)
    */
   @FXML
   public void mnuAutoSurfaces_OnAction() {
@@ -2881,9 +3054,9 @@ public class MainController {
   /**
    * Actualiza la barra de estado con información relevante.
    *
-   * @param status Mensaje de estado a mostrar.
-   * @param grhCount Número total de GRHs.
-   * @param animCount Número de animaciones.
+   * @param status     Mensaje de estado a mostrar.
+   * @param grhCount   Número total de GRHs.
+   * @param animCount  Número de animaciones.
    * @param isModified Indica si hay cambios sin guardar.
    */
   private void updateStatusBar(String status, int grhCount, int animCount, boolean isModified) {

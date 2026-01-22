@@ -6,7 +6,7 @@
 
 ## Description
 
-Indexer for Argentum Online programmed in Java. This tool allows you to view, edit, and manage the graphic resources used in the Argentum Online game. Currently works with resource types from version 0.13 or AOLibre.
+Fully **Cross-Platform** (Windows, Linux, macOS) Indexer for Argentum Online developed in Java. This tool allows you to view, edit, and manage game graphic resources, being **compatible with all versions** of Argentum Online thanks to its dynamic format detection system.
 
 ## Features
 
@@ -15,8 +15,13 @@ Indexer for Argentum Online programmed in Java. This tool allows you to view, ed
 - Animation management
 - Cache system to optimize performance
 - Visualization of shields, helmets, and other game features
+- **Smart Auto-Indexing**: Automatic detection of objects and animations in sprite sheets.
+    - Support for intelligent **Auto-Tiling**.
+    - Precise movement and direction detection.
 - **Background Color Configuration**: Integrated color picker to customize the viewer background.
 - **Path Management**: Flexible configuration for resource paths (Graphics, Init, Dat).
+- **Granular Resource Reloading**: Option to reload specific resources (Indices, Heads, etc.) or all at once without restarting.
+- **Standardized Export**: Generation of `.ini` files with optimized and readable format.
 - Centralized logging system
 - Intuitive graphical interface with JavaFX
 
@@ -96,7 +101,7 @@ This project is in active development. Some planned features include:
 The project is structured following the Model-View-Controller (MVC) pattern:
 
 - **Model**: Data classes in `org.nexus.indexador.gamedata.models`
-- **View**: FXML interfaces in `resources/fxml`
+- **View**: FXML interfaces in `resources/org/nexus/indexador`
 - **Controller**: Controller logic in `org.nexus.indexador.controllers`
 
 Additionally, it contains utilities to improve performance:

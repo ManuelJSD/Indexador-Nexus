@@ -6,7 +6,7 @@
 
 ## Descripción
 
-Indexador para Argentum Online programado en Java. Esta herramienta permite visualizar, editar y gestionar los recursos gráficos utilizados en el juego Argentum Online. Actualmente funciona con tipos de recursos de la versión 0.13 o AOLibre.
+Indexador para Argentum Online totalmente **Multiplataforma** (Windows, Linux, macOS) desarrollado en Java. Esta herramienta permite visualizar, editar y gestionar los recursos gráficos del juego, siendo **compatible con todas las versiones** de Argentum Online gracias a su sistema de detección dinámica de formatos.
 
 ## Características
 
@@ -15,8 +15,13 @@ Indexador para Argentum Online programado en Java. Esta herramienta permite visu
 - Gestión de animaciones
 - Sistema de caché para optimizar el rendimiento
 - Visualización de escudos, cascos y otras características del juego
+- **Auto-Indexado Inteligente**: Detección automática de objetos y animaciones en hojas de sprites.
+    - Soporte para **Auto-Tiling** inteligente.
+    - Detección precisa de movimientos y direcciones.
 - **Configuración de Color de Fondo**: Selector de color integrado para personalizar el fondo del visor.
 - **Gestión de Rutas**: Configuración flexible de rutas para recursos (Gráficos, Init, Dat).
+- **Recarga Granular de Recursos**: Opción para recargar recursos específicos (Índices, Cabezas, etc.) o todos a la vez sin reiniciar.
+- **Exportación Estandarizada**: Generación de archivos `.ini` con formato optimizado y legible.
 - Sistema de registro (logging) centralizado
 - Interfaz gráfica intuitiva con JavaFX
 
@@ -96,7 +101,7 @@ Este proyecto está en desarrollo activo. Algunas características planeadas inc
 El proyecto está estructurado siguiendo el patrón Modelo-Vista-Controlador (MVC):
 
 - **Modelo**: Clases de datos en `org.nexus.indexador.gamedata.models`
-- **Vista**: Interfaces FXML en `resources/fxml`
+- **Vista**: Interfaces FXML en `resources/org/nexus/indexador`
 - **Controlador**: Lógica de controladores en `org.nexus.indexador.controllers`
 
 Además, contiene utilidades para mejorar el rendimiento:

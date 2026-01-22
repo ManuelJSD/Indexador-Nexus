@@ -1,6 +1,6 @@
 # Nexus Indexer
 
-![Java](https://img.shields.io/badge/Java-17-orange) ![JavaFX](https://img.shields.io/badge/JavaFX-17-blue) ![Maven](https://img.shields.io/badge/Maven-3.8.6-red)
+![Java](https://img.shields.io/badge/Java-21-orange) ![JavaFX](https://img.shields.io/badge/JavaFX-21-blue) ![Maven](https://img.shields.io/badge/Maven-3.9.6-red)
 
 *[Spanish Version](Readme.md)*
 
@@ -10,17 +10,20 @@ Fully **Cross-Platform** (Windows, Linux, macOS) Indexer for Argentum Online dev
 
 ## Features
 
-- Graphics (GRHs) visualization
-- Graphic properties editing
-- Animation management
-- Cache system to optimize performance
-- Visualization of shields, helmets, and other game features
-- **Background Color Configuration**: Integrated color picker to customize the viewer background.
-- **Path Management**: Flexible configuration for resource paths (Graphics, Init, Dat).
-- **Granular Resource Reloading**: Option to reload specific resources (Indices, Heads, etc.) or all at once without restarting.
-- **Standardized Export**: Generation of `.ini` files with optimized and readable format.
-- Centralized logging system
-- Intuitive graphical interface with JavaFX
+- **Visualization & Editing**: Complete management of graphics (GRHs), animations, shields, helmets, and bodies.
+- **Smart Auto-Indexing**: Automatic detection of objects and animations in sprite sheets with Auto-Tiling support.
+- **Modern Interface**:
+    - **Theme Support**: Switch between **Light** and **Dark** modes dynamically.
+    - **Responsive Design**: Adjustable panels and flexible layouts.
+    - **Visual Feedback**: Non-intrusive "toast" notifications and real loading bars.
+- **Enhanced Performance**:
+    - Optimized for Java 21 (ZGC).
+    - Smart image caching.
+    - Granular resource reloading (hot-reload).
+- **Developer Tools**:
+    - Native installer generation (.exe, .msi, .deb).
+    - Flexible path configuration.
+    - Standardized `.ini` export.
 
 ## Screenshots
 
@@ -28,102 +31,56 @@ Fully **Cross-Platform** (Windows, Linux, macOS) Indexer for Argentum Online dev
 
 ## System Requirements
 
-- Java Development Kit (JDK) 17 or higher
-- Maven 3.6.0 or higher
-- Argentum Online graphic resources version 0.13 or AOLibre
+- **Java Development Kit (JDK) 21 LTS** or higher.
+- Maven 3.8.0 or higher.
+- Argentum Online graphic resources (version 0.13, AOLibre, or compatible).
 
 ## Installation
 
-### Installation Options
+### Option 1: Direct Download (Recommended for Users)
 
-#### 1. Clone Repository (Development)
+1. Download the installer (`.exe` or `.msi`) for the latest version from the [Releases section](https://github.com/Lorwik/Indexador-Nexus/releases).
+2. Run the installer and follow the instructions.
+
+### Option 2: Build from Source (Development)
 
 1. Clone the repository:
    ```bash
    git clone https://github.com/ManuelJSD/Indexador-Nexus.git
-   ```
-
-2. Navigate to the project directory:
-   ```bash
    cd Indexador-Nexus
    ```
 
-3. Compile the project using Maven:
+2. Compile the project (this will download dependencies and validate code):
    ```bash
-   mvn clean package
+   mvn clean compile
    ```
 
-#### 2. Direct Download (Users)
-
-1. Download the latest version from the [Releases section](https://github.com/Lorwik/Indexador-Nexus/releases)
-2. Unzip the downloaded file to your desired location
-
-## Running the Application
-
-### From Command Line
-
-1. Navigate to the project folder
-2. Run the following command:
+3. Run the application:
    ```bash
    mvn clean javafx:run
    ```
 
-### Using the JAR File
-
-1. Navigate to the folder where the compiled JAR file is located (usually in `/target`)
-2. Run the following command:
+4. (Optional) Create a native installer:
    ```bash
-   java -jar indexador-1.0-SNAPSHOT.jar
+   mvn package
    ```
+   *The installer will be generated in the `target/dist` folder.*
 
-### Initial Configuration
+## Initial Configuration
 
 When starting the application for the first time:
-
-1. Select the path where the Argentum Online resources are located.
-2. The application will automatically load the available graphics.
-3. Use the interface to navigate between the different resources.
-4. You can change the viewer background color using the color picker located above the preview panel.
-
-## Project Status
-
-This project is in active development. Some planned features include:
-
-- Import from plain text files
-- Performance optimization for large amounts of graphics
-- Support for new resource formats
-
-## Architecture
-
-The project is structured following the Model-View-Controller (MVC) pattern:
-
-- **Model**: Data classes in `org.nexus.indexador.gamedata.models`
-- **View**: FXML interfaces in `resources/org/nexus/indexador`
-- **Controller**: Controller logic in `org.nexus.indexador.controllers`
-
-Additionally, it contains utilities to improve performance:
-- Centralized logging system
-- Image cache system with soft references for memory management
+1. Select the path where the Argentum Online resources are located (`Graficos`, `Init` folders, etc.).
+2. The application will scan and load available indexes automatically.
+3. You can switch between Light and Dark themes from the **Options > Themes** menu.
 
 ## Contributing
 
-If you wish to contribute to the project, follow these steps:
-
-1. Fork the project
-2. Create a new branch (`git checkout -b feature/new-feature`)
-3. Make the necessary changes and commit (`git commit -am 'Add new feature'`)
-4. Push to the branch (`git push origin feature/new-feature`)
-5. Submit a Pull Request
-
-## Reporting Issues
-
-If you find any issues or have suggestions, please [create an issue](https://github.com/Lorwik/Indexador-Nexus/issues/new) with the following details:
-
-- Description of the problem
-- Steps to reproduce it
-- Expected behavior
-- Screenshots (if applicable)
-- Java version and operating system
+Contributions are welcome!
+1. Fork the project.
+2. Create a branch (`git checkout -b feature/new-thing`).
+3. Ensure you follow code style (run `mvn spotless:apply` to format).
+4. Commit and Push.
+5. Open a Pull Request.
 
 ## License
 

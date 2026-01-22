@@ -13,8 +13,8 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.release>17</maven.compiler.release>
-    <javafx.version>17.0.13</javafx.version>
+    <maven.compiler.release>21</maven.compiler.release>
+    <javafx.version>21.0.6</javafx.version>
     <junit.version>5.11.0</junit.version>
   </properties>
 
@@ -53,7 +53,7 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.13.0</version>
         <configuration>
-          <release>17</release>
+          <release>21</release>
         </configuration>
       </plugin>
 
@@ -80,6 +80,9 @@
               <noManPages>true</noManPages>
               <stripDebug>true</stripDebug>
               <noHeaderFiles>true</noHeaderFiles>
+              <!-- JPackage Config -->
+              <appName>IndexadorNexus</appName>
+              <vendor>Nexus Community</vendor>
             </configuration>
           </execution>
         </executions>
@@ -92,9 +95,10 @@
         <version>2.43.0</version>
         <configuration>
           <java>
-            <googleJavaFormat>
-              <version>1.19.2</version>
-            </googleJavaFormat>
+            <eclipse>
+              <version>4.30</version>
+              <file>${project.basedir}/eclipse-java-google-style.xml</file>
+            </eclipse>
             <removeUnusedImports />
           </java>
         </configuration>
@@ -121,15 +125,39 @@
         </executions>
       </plugin>
 
+      <!-- Checkstyle -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>3.3.1</version>
+        <configuration>
+          <configLocation>${project.basedir}/checkstyle.xml</configLocation>
+          <consoleOutput>true</consoleOutput>
+          <failsOnError>true</failsOnError>
+          <linkXRef>false</linkXRef>
+        </configuration>
+        <executions>
+          <execution>
+            <id>validate</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
       <!-- JAR with dependencies -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
         <version>3.4.2</version>
         <configuration>
+          <outputDirectory>${project.build.directory}/libs</outputDirectory>
           <archive>
             <manifest>
               <mainClass>org.nexus.indexador.Main</mainClass>
+              <addClasspath>true</addClasspath>
             </manifest>
           </archive>
         </configuration>
@@ -148,6 +176,43 @@
             <configuration>
               <outputDirectory>${project.build.directory}/libs</outputDirectory>
               <includeScope>runtime</includeScope>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+          <execution>
+            <id>create-installer</id>
+            <phase>package</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>jpackage</executable>
+              <arguments>
+                <argument>--type</argument>
+                <argument>app-image</argument> 
+                <argument>--input</argument>
+                <argument>${project.build.directory}/libs</argument>
+                <argument>--name</argument>
+                <argument>IndexadorNexus</argument>
+                <argument>--main-jar</argument>
+                <argument>${project.build.finalName}.jar</argument>
+                <argument>--main-class</argument>
+                <argument>org.nexus.indexador.Main</argument>
+                <argument>--icon</argument>
+                <argument>${project.basedir}/src/main/resources/img/icon.ico</argument>
+                <argument>--dest</argument>
+                <argument>${project.build.directory}/dist</argument>
+                <argument>--java-options</argument>
+                <argument>-Xmx512m</argument>
+                <argument>--vendor</argument>
+                <argument>NexusCommunity</argument>
+              </arguments>
             </configuration>
           </execution>
         </executions>

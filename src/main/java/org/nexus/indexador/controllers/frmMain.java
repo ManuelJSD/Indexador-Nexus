@@ -78,6 +78,36 @@ public class frmMain {
     public MenuItem mnuCode;
 
     @FXML
+    public Menu mnuReload;
+
+    @FXML
+    public MenuItem mnuReloadGrhs;
+
+    @FXML
+    public MenuItem mnuReloadHeads;
+
+    @FXML
+    public MenuItem mnuReloadHelmets;
+
+    @FXML
+    public MenuItem mnuReloadBodies;
+
+    @FXML
+    public MenuItem mnuReloadShields;
+
+    @FXML
+    public MenuItem mnuReloadWeapons;
+
+    @FXML
+    public MenuItem mnuReloadFXs;
+
+    @FXML
+    public MenuItem mnuReloadAll;
+
+    @FXML
+    public MenuItem mnuIndexExpFXs;
+
+    @FXML
     public Label lblIndice;
 
     @FXML
@@ -1561,6 +1591,7 @@ public class frmMain {
         runAsyncTask(() -> {
             try {
                 dataManager.indexFromExported("GRHS");
+                Platform.runLater(this::loadGrh);
             } catch (IOException e) {
                 logger.error("Error al indexar desde exportados", e);
             }
@@ -1623,14 +1654,116 @@ public class frmMain {
     }
 
     @FXML
+    public void mnuIndexExpFXs_OnAction(ActionEvent actionEvent) {
+        runAsyncTask(() -> {
+            try {
+                dataManager.indexFromExported("FXS");
+            } catch (IOException e) {
+                logger.error("Error al indexar FXs desde exportados", e);
+            }
+        }, "Indexando FXs...", "FXs indexados correctamente");
+    }
+
+    @FXML
     public void mnuIndexExpAll_OnAction(ActionEvent actionEvent) {
         runAsyncTask(() -> {
             try {
                 dataManager.indexAllFromExported();
+                Platform.runLater(this::loadGrh);
             } catch (Exception e) {
                 logger.error("Error al indexar todo desde exportados", e);
             }
         }, "Indexando TODO desde Exportados...", "Todo indexado correctamente");
+    }
+
+    @FXML
+    public void mnuReloadGrhs_OnAction(ActionEvent actionEvent) {
+        runAsyncTask(() -> {
+            try {
+                dataManager.reloadResources("GRHS");
+                Platform.runLater(this::loadGrh);
+            } catch (IOException e) {
+                logger.error("Error al recargar índices", e);
+            }
+        }, "Recargando Índices...", "Índices recargados correctamente");
+    }
+
+    @FXML
+    public void mnuReloadHeads_OnAction(ActionEvent actionEvent) {
+        runAsyncTask(() -> {
+            try {
+                dataManager.reloadResources("HEADS");
+            } catch (IOException e) {
+                logger.error("Error al recargar cabezas", e);
+            }
+        }, "Recargando Cabezas...", "Cabezas recargadas correctamente");
+    }
+
+    @FXML
+    public void mnuReloadHelmets_OnAction(ActionEvent actionEvent) {
+        runAsyncTask(() -> {
+            try {
+                dataManager.reloadResources("HELMETS");
+            } catch (IOException e) {
+                logger.error("Error al recargar cascos", e);
+            }
+        }, "Recargando Cascos...", "Cascos recargados correctamente");
+    }
+
+    @FXML
+    public void mnuReloadBodies_OnAction(ActionEvent actionEvent) {
+        runAsyncTask(() -> {
+            try {
+                dataManager.reloadResources("BODIES");
+            } catch (IOException e) {
+                logger.error("Error al recargar cuerpos", e);
+            }
+        }, "Recargando Cuerpos...", "Cuerpos recargados correctamente");
+    }
+
+    @FXML
+    public void mnuReloadShields_OnAction(ActionEvent actionEvent) {
+        runAsyncTask(() -> {
+            try {
+                dataManager.reloadResources("SHIELDS");
+            } catch (IOException e) {
+                logger.error("Error al recargar escudos", e);
+            }
+        }, "Recargando Escudos...", "Escudos recargados correctamente");
+    }
+
+    @FXML
+    public void mnuReloadWeapons_OnAction(ActionEvent actionEvent) {
+        runAsyncTask(() -> {
+            try {
+                dataManager.reloadResources("WEAPONS");
+            } catch (IOException e) {
+                logger.error("Error al recargar armas", e);
+            }
+        }, "Recargando Armas...", "Armas recargadas correctamente");
+    }
+
+    @FXML
+    public void mnuReloadFXs_OnAction(ActionEvent actionEvent) {
+        runAsyncTask(() -> {
+            try {
+                dataManager.reloadResources("FXS");
+            } catch (IOException e) {
+                logger.error("Error al recargar FXs", e);
+            }
+        }, "Recargando FXs...", "FXs recargados correctamente");
+    }
+
+    @FXML
+    public void mnuReloadAll_OnAction(ActionEvent actionEvent) {
+        runAsyncTask(() -> {
+            try {
+                dataManager.reloadResources("ALL");
+                Platform.runLater(this::loadGrh);
+            } catch (Exception e) {
+                logger.error("Error al recargar todo", e);
+            }
+        }, "Recargando TODO...", "Todos los recursos recargados correctamente");
     }
 
     @FXML

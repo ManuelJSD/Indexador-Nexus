@@ -79,6 +79,7 @@
                                         <MenuItem fx:id="mnuIndexExpBodies" mnemonicParsing="false" onAction="#mnuIndexExpBodies_OnAction" text="Cuerpos" />
                                         <MenuItem fx:id="mnuIndexExpShields" mnemonicParsing="false" onAction="#mnuIndexExpShields_OnAction" text="Escudos (.dat)" />
                                         <MenuItem fx:id="mnuIndexExpWeapons" mnemonicParsing="false" onAction="#mnuIndexExpWeapons_OnAction" text="Armas (.dat)" />
+                                        <MenuItem fx:id="mnuIndexExpFXs" mnemonicParsing="false" onAction="#mnuIndexExpFXs_OnAction" text="FXs" />
                                         <SeparatorMenuItem />
                                         <MenuItem fx:id="mnuIndexExpAll" mnemonicParsing="false" onAction="#mnuIndexExpAll_OnAction" text="TODO (Indexar todo)" />
                                     </items>
@@ -88,6 +89,20 @@
                         <Menu mnemonicParsing="true" text="_Configuración">
                             <items>
                                 <MenuItem fx:id="mnuConfigPaths" mnemonicParsing="false" onAction="#mnuConfigPaths_OnAction" text="Rutas..." />
+                            </items>
+                        </Menu>
+                        <SeparatorMenuItem />
+                        <Menu fx:id="mnuReload" mnemonicParsing="true" text="Recargar">
+                            <items>
+                                <MenuItem fx:id="mnuReloadGrhs" mnemonicParsing="false" onAction="#mnuReloadGrhs_OnAction" text="Indices" />
+                                <MenuItem fx:id="mnuReloadHeads" mnemonicParsing="false" onAction="#mnuReloadHeads_OnAction" text="Cabezas" />
+                                <MenuItem fx:id="mnuReloadHelmets" mnemonicParsing="false" onAction="#mnuReloadHelmets_OnAction" text="Cascos" />
+                                <MenuItem fx:id="mnuReloadBodies" mnemonicParsing="false" onAction="#mnuReloadBodies_OnAction" text="Cuerpos" />
+                                <MenuItem fx:id="mnuReloadShields" mnemonicParsing="false" onAction="#mnuReloadShields_OnAction" text="Escudos" />
+                                <MenuItem fx:id="mnuReloadWeapons" mnemonicParsing="false" onAction="#mnuReloadWeapons_OnAction" text="Armas" />
+                                <MenuItem fx:id="mnuReloadFXs" mnemonicParsing="false" onAction="#mnuReloadFXs_OnAction" text="FXs" />
+                                <SeparatorMenuItem />
+                                <MenuItem fx:id="mnuReloadAll" mnemonicParsing="false" onAction="#mnuReloadAll_OnAction" text="Todo" />
                             </items>
                         </Menu>
                         <SeparatorMenuItem />

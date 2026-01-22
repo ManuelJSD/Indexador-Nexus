@@ -78,49 +78,49 @@ public class DataManager {
     // --- Loading Methods ---
 
     public ObservableList<GrhData> loadGrhData() throws IOException {
-        this.grhList = indexLoader.loadGrhs();
+        this.grhList.setAll(indexLoader.loadGrhs());
         this.GrhCount = grhList.size();
         syncFormats();
         return grhList;
     }
 
     public ObservableList<HeadData> readHeadFile() throws IOException {
-        this.headList = indexLoader.loadHeads();
+        this.headList.setAll(indexLoader.loadHeads());
         this.NumHeads = (short) headList.size();
         syncFormats();
         return headList;
     }
 
     public ObservableList<HelmetData> readHelmetFile() throws IOException {
-        this.helmetList = indexLoader.loadHelmets();
+        this.helmetList.setAll(indexLoader.loadHelmets());
         this.NumHelmets = (short) helmetList.size();
         syncFormats();
         return helmetList;
     }
 
     public ObservableList<BodyData> readBodyFile() throws IOException {
-        this.bodyList = indexLoader.loadBodies();
+        this.bodyList.setAll(indexLoader.loadBodies());
         this.NumBodys = (short) bodyList.size();
         syncFormats();
         return bodyList;
     }
 
     public ObservableList<ShieldData> readShieldFile() throws IOException {
-        this.shieldList = indexLoader.loadShields();
+        this.shieldList.setAll(indexLoader.loadShields());
         this.NumShields = (short) shieldList.size();
         syncFormats();
         return shieldList;
     }
 
     public ObservableList<FXData> readFXsdFile() throws IOException {
-        this.fxList = indexLoader.loadFXs();
+        this.fxList.setAll(indexLoader.loadFXs());
         this.NumFXs = (short) fxList.size();
         syncFormats();
         return fxList;
     }
 
     public ObservableList<WeaponData> readWeaponFile() throws IOException {
-        this.weaponList = indexLoader.loadWeapons();
+        this.weaponList.setAll(indexLoader.loadWeapons());
         this.NumWeapons = (short) weaponList.size();
         syncFormats();
         return weaponList;
@@ -280,34 +280,74 @@ public class DataManager {
         logger.info("Indexando desde exportados (texto): " + type);
         switch (type.toUpperCase()) {
             case "HEADS":
-                headList = indexLoader.loadHeadsText();
+                headList.setAll(indexLoader.loadHeadsText());
                 indexLoader.saveHeads(headList);
                 break;
             case "HELMETS":
-                helmetList = indexLoader.loadHelmetsText();
+                helmetList.setAll(indexLoader.loadHelmetsText());
                 indexLoader.saveHelmets(helmetList);
                 break;
             case "BODIES":
-                bodyList = indexLoader.loadBodiesText();
+                bodyList.setAll(indexLoader.loadBodiesText());
                 indexLoader.saveBodies(bodyList);
                 break;
             case "SHIELDS":
-                shieldList = indexLoader.loadShieldsText();
+                shieldList.setAll(indexLoader.loadShieldsText());
                 indexLoader.saveShields(shieldList);
                 break;
             case "FXS":
-                fxList = indexLoader.loadFXsText();
+                fxList.setAll(indexLoader.loadFXsText());
                 indexLoader.saveFXs(fxList);
                 break;
             case "GRHS":
-                grhList = indexLoader.loadGrhsText();
+                grhList.setAll(indexLoader.loadGrhsText());
                 indexLoader.saveGrhs(grhList);
                 break;
             case "WEAPONS":
-                weaponList = indexLoader.loadWeaponsText();
+                weaponList.setAll(indexLoader.loadWeaponsText());
                 indexLoader.saveWeapons(weaponList);
                 break;
         }
+        // Después de indexar desde texto a binario, volvemos a cargar desde binario
+        // para asegurar consistencia
+        reloadResources(type);
+    }
+
+    public void reloadResources(String type) throws IOException {
+        logger.info("Recargando recursos: " + type);
+        switch (type.toUpperCase()) {
+            case "HEADS":
+                headList.setAll(indexLoader.loadHeads());
+                break;
+            case "HELMETS":
+                helmetList.setAll(indexLoader.loadHelmets());
+                break;
+            case "BODIES":
+                bodyList.setAll(indexLoader.loadBodies());
+                break;
+            case "SHIELDS":
+                shieldList.setAll(indexLoader.loadShields());
+                break;
+            case "FXS":
+                fxList.setAll(indexLoader.loadFXs());
+                break;
+            case "GRHS":
+                grhList.setAll(indexLoader.loadGrhs());
+                break;
+            case "WEAPONS":
+                weaponList.setAll(indexLoader.loadWeapons());
+                break;
+            case "ALL":
+                reloadResources("GRHS");
+                reloadResources("HEADS");
+                reloadResources("HELMETS");
+                reloadResources("BODIES");
+                reloadResources("SHIELDS");
+                reloadResources("FXS");
+                reloadResources("WEAPONS");
+                break;
+        }
+        syncFormats();
     }
 
     public void exportToText(String type) throws IOException {

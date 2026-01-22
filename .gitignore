@@ -1,43 +1,31 @@
-# Gradle
-.gradle/
+# Build artifacts
+target/
 build/
-!**/src/main/**/build/
-!**/src/test/**/build/
+.gradle/
+bin/
+out/
+.mvn/
+mvnw
+mvnw.cmd
+pom.xml
 
-### IntelliJ IDEA ###
-.idea/modules.xml
-.idea/jarRepositories.xml
-.idea/compiler.xml
-.idea/libraries/
-*.iws
+# IDEs
+.idea/
 *.iml
+*.iws
 *.ipr
-
-### Eclipse ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-
-### VS Code ###
 .vscode/
+.classpath
+.project
+.settings/
+.factorypath
 
-### Mac OS ###
+# OS
 .DS_Store
+Thumbs.db
 
-### Indexador ###
+# App Specific
 src/main/resources/config.ini
 src/main/resources/exportados/*.ini
-out/
-logs/*.log
+logs/
 *.log

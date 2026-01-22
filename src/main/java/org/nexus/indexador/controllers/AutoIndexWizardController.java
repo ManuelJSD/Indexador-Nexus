@@ -7,13 +7,13 @@ import javafx.stage.Stage;
  * Controller para el asistente visual de Auto-Indexación.
  * Permite seleccionar el tipo de gráfico a indexar mediante opciones visuales.
  */
-public class frmAutoIndexWizard {
+public class AutoIndexWizardController {
 
-    private frmMain mainController;
+    private MainController mainController;
     private Stage stage;
 
     /** Inyecta referencia al controlador principal */
-    public void setMainController(frmMain controller) {
+    public void setMainController(MainController controller) {
         this.mainController = controller;
     }
 

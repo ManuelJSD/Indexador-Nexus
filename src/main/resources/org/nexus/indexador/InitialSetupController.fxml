@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 
 <VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" 
-      fx:controller="org.nexus.indexador.controllers.frmInitialSetup"
+      fx:controller="org.nexus.indexador.controllers.InitialSetupController"
       spacing="20" style="-fx-padding: 30; -fx-background-color: #2b2b2b;"
       prefWidth="700" prefHeight="450">
     

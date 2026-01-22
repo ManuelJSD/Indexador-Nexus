@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class frmArmas {
+public class WeaponsController {
 
     @FXML
     public ListView<String> lstWeapons;
@@ -76,7 +76,7 @@ public class frmArmas {
             imageCache = ImageCache.getInstance();
             logger = Logger.getInstance();
 
-            logger.info("Inicializando controlador frmArmas");
+            logger.info("Inicializando controlador WeaponsController");
 
             animationStates.put(0, new AnimationState());
             animationStates.put(1, new AnimationState());
@@ -86,9 +86,9 @@ public class frmArmas {
             loadWeaponData();
             setupWeaponListListener();
 
-            logger.info("Controlador frmArmas inicializado correctamente");
+            logger.info("Controlador WeaponsController inicializado correctamente");
         } catch (Exception e) {
-            System.err.println("Error al inicializar frmArmas:");
+            System.err.println("Error al inicializar WeaponsController:");
             e.printStackTrace();
         }
     }

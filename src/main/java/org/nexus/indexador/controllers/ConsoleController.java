@@ -11,7 +11,7 @@ import javafx.scene.input.ClipboardContent;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
-public class frmConsola {
+public class ConsoleController {
 
     @FXML
     private TextArea txtConsole;
@@ -19,7 +19,7 @@ public class frmConsola {
     @FXML
     private CheckBox chkAutoScroll;
 
-    private static frmConsola instance;
+    private static ConsoleController instance;
 
     // Buffer global de logs para capturar todo desde el inicio
     private static final StringBuilder logBuffer = new StringBuilder();
@@ -29,7 +29,7 @@ public class frmConsola {
     private static final PrintStream originalOut = System.out;
     private static final PrintStream originalErr = System.err;
 
-    public static frmConsola getInstance() {
+    public static ConsoleController getInstance() {
         return instance;
     }
 

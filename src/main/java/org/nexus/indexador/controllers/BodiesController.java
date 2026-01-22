@@ -17,23 +17,20 @@ import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
 import javafx.util.Duration;
 import org.nexus.indexador.gamedata.DataManager;
+import org.nexus.indexador.gamedata.models.BodyData;
 import org.nexus.indexador.gamedata.models.GrhData;
-import org.nexus.indexador.gamedata.models.ShieldData;
-import org.nexus.indexador.utils.AnimationState;
 import org.nexus.indexador.utils.ConfigManager;
-import org.nexus.indexador.utils.ImageCache;
-import org.nexus.indexador.utils.Logger;
+import org.nexus.indexador.utils.AnimationState;
 
 import java.io.File;
-import java.io.IOException;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class frmEscudos {
+public class BodiesController {
 
     @FXML
-    public ListView lstShields;
+    public ListView lstBodys;
     @FXML
     public ImageView imgOeste;
     @FXML
@@ -51,7 +48,11 @@ public class frmEscudos {
     @FXML
     public TextField txtOeste;
     @FXML
-    public Label lblNEscudos;
+    public TextField txtHeadOffsetX;
+    @FXML
+    public TextField txtHeadOffsetY;
+    @FXML
+    public Label lblNCuerpos;
     @FXML
     public Button btnSave;
     @FXML
@@ -59,15 +60,13 @@ public class frmEscudos {
     @FXML
     public Button btnDelete;
 
-    private ShieldData shieldDataManager; // Objeto que gestiona los datos de los escudos, incluyendo la carga y
-                                          // manipulación de los mismos
-    private ObservableList<ShieldData> shieldList;
+    private BodyData bodyDataManager; // Objeto que gestiona los datos de los cuerpos, incluyendo la carga y
+                                      // manipulación de los mismos
+    private ObservableList<BodyData> bodyList;
     private ObservableList<GrhData> grhList;
 
     private ConfigManager configManager;
     private DataManager dataManager;
-    private ImageCache imageCache;
-    private Logger logger;
 
     private Map<Integer, AnimationState> animationStates = new HashMap<>();
 
@@ -83,24 +82,18 @@ public class frmEscudos {
         configManager = ConfigManager.getInstance();
         try {
             dataManager = DataManager.getInstance();
-            imageCache = ImageCache.getInstance();
-            logger = Logger.getInstance();
 
-            logger.info("Inicializando controlador frmEscudos");
-
-            shieldDataManager = new ShieldData(); // Crear una instancia de headData
+            bodyDataManager = new BodyData(); // Crear una instancia de headData
 
             animationStates.put(0, new AnimationState());
             animationStates.put(1, new AnimationState());
             animationStates.put(2, new AnimationState());
             animationStates.put(3, new AnimationState());
 
-            loadShieldData();
+            loadBodyData();
             setupHeadListListener();
-
-            logger.info("Controlador frmEscudos inicializado correctamente");
         } catch (Exception e) {
-            System.err.println("Error al inicializar frmEscudos:");
+            System.err.println("Error al inicializar BodiesController:");
             e.printStackTrace();
         }
     }
@@ -108,36 +101,30 @@ public class frmEscudos {
     /**
      * Carga los datos de los cuerpos desde un archivo y los muestra en la interfaz.
      */
-    private void loadShieldData() {
-        try {
-            // Llamar al método para leer el archivo binario y obtener la lista de headData
-            shieldList = dataManager.readShieldFile();
+    private void loadBodyData() {
+        // Llamar al método para leer el archivo binario y obtener la lista de headData
+        bodyList = dataManager.getBodyList();
 
-            // Inicializar el mapa de grhData
-            grhDataMap = new HashMap<>();
+        // Inicializar el mapa de grhData
+        grhDataMap = new HashMap<>();
 
-            grhList = dataManager.getGrhList();
+        grhList = dataManager.getGrhList();
 
-            // Llenar el mapa con los datos de grhList
-            for (GrhData grh : grhList) {
-                grhDataMap.put(grh.getGrh(), grh);
-            }
-
-            // Actualizar el texto de los labels con la información obtenida
-            lblNEscudos.setText("Escudos cargados: " + dataManager.getNumShields());
-
-            // Agregar los índices de gráficos al ListView
-            ObservableList<String> shieldIndices = FXCollections.observableArrayList();
-            for (int i = 1; i < shieldList.size() + 1; i++) {
-                shieldIndices.add(String.valueOf(i));
-            }
-
-            lstShields.setItems(shieldIndices);
-
-            logger.info("Datos de escudos cargados: " + shieldList.size() + " escudos");
-        } catch (IOException e) {
-            logger.error("Error al cargar datos de escudos", e);
+        // Llenar el mapa con los datos de grhList
+        for (GrhData grh : grhList) {
+            grhDataMap.put(grh.getGrh(), grh);
         }
+
+        // Actualizar el texto de los labels con la información obtenida
+        lblNCuerpos.setText("Cuerpos cargados: " + dataManager.getNumBodys());
+
+        // Agregar los índices de gráficos al ListView
+        ObservableList<String> bodyIndices = FXCollections.observableArrayList();
+        for (int i = 1; i < bodyList.size() + 1; i++) {
+            bodyIndices.add(String.valueOf(i));
+        }
+
+        lstBodys.setItems(bodyIndices);
 
     }
 
@@ -147,21 +134,19 @@ public class frmEscudos {
      */
     private void setupHeadListListener() {
         // Agregar un listener al ListView para capturar los eventos de selección
-        lstShields.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+        lstBodys.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 
             // Obtener el índice seleccionado
-            int selectedIndex = lstShields.getSelectionModel().getSelectedIndex();
+            int selectedIndex = lstBodys.getSelectionModel().getSelectedIndex();
 
             if (selectedIndex >= 0) {
                 // Obtener el objeto headData correspondiente al índice seleccionado
-                ShieldData selectedShield = shieldList.get(selectedIndex);
-                updateEditor(selectedShield);
+                BodyData selectedBody = bodyList.get(selectedIndex);
+                updateEditor(selectedBody);
 
                 for (int i = 0; i <= 3; i++) {
-                    drawShields(selectedShield, i);
+                    drawBodys(selectedBody, i);
                 }
-
-                logger.debug("Escudo seleccionado: índice " + (selectedIndex + 1));
             }
         });
     }
@@ -169,30 +154,34 @@ public class frmEscudos {
     /**
      * Actualiza el editor de la interfaz con los datos de la cabeza seleccionada.
      *
-     * @param selectedShield el objeto headData seleccionado.
+     * @param selectedBody el objeto headData seleccionado.
      */
-    private void updateEditor(ShieldData selectedShield) {
+    private void updateEditor(BodyData selectedBody) {
         // Obtenemos todos los datos
-        int grhShields[] = selectedShield.getShield();
+        int grhBodys[] = selectedBody.getBody();
+        short HeadOffsetX = selectedBody.getHeadOffsetX();
+        short HeadOffsetY = selectedBody.getHeadOffsetY();
 
-        txtNorte.setText(String.valueOf(grhShields[0]));
-        txtEste.setText(String.valueOf(grhShields[1]));
-        txtSur.setText(String.valueOf(grhShields[2]));
-        txtOeste.setText(String.valueOf(grhShields[3]));
+        txtNorte.setText(String.valueOf(grhBodys[0]));
+        txtEste.setText(String.valueOf(grhBodys[1]));
+        txtSur.setText(String.valueOf(grhBodys[2]));
+        txtOeste.setText(String.valueOf(grhBodys[3]));
+        txtHeadOffsetX.setText(String.valueOf(HeadOffsetX));
+        txtHeadOffsetY.setText(String.valueOf(HeadOffsetY));
     }
 
     /**
      * Dibuja las imágenes de los cuerpos en las diferentes vistas (Norte, Sur,
      * Este, Oeste).
      *
-     * @param selectedShield el objeto headData seleccionado.
-     * @param heading        la dirección en la que se debe dibujar la cabeza (0:
-     *                       Sur, 1: Norte, 2: Oeste, 3: Este).
+     * @param selectedBody el objeto headData seleccionado.
+     * @param heading      la dirección en la que se debe dibujar la cabeza (0: Sur,
+     *                     1: Norte, 2: Oeste, 3: Este).
      */
-    private void drawShields(ShieldData selectedShield, int heading) {
-        int[] bodies = selectedShield.getShield();
+    private void drawBodys(BodyData selectedBody, int heading) {
+        int[] bodies = selectedBody.getBody();
 
-        // Obtenemos el Grh de animación desde el indice del shield + el heading
+        // Obtenemos el Grh de animación desde el indice del body + el heading
         GrhData selectedGrh = grhDataMap.get(bodies[heading]);
 
         int nFrames = selectedGrh.getNumFrames();
@@ -224,8 +213,6 @@ public class frmEscudos {
         animationTimeline.getKeyFrames().add(new KeyFrame(Duration.millis(100)));
         animationTimeline.setCycleCount(Animation.INDEFINITE);
         animationTimeline.play();
-
-        logger.debug("Animación iniciada para dirección " + heading);
     }
 
     /**
@@ -255,54 +242,47 @@ public class frmEscudos {
                     imagePath = configManager.getGraphicsDir() + currentGrh.getFileNum() + ".bmp";
                 }
 
-                // Obtener imagen desde el caché
-                Image frameImage = imageCache.getImage(imagePath);
+                File imageFile = new File(imagePath);
 
-                if (frameImage != null) {
-                    // Obtener la imagen recortada del caché
-                    WritableImage croppedImage = imageCache.getCroppedImage(
-                            imagePath,
-                            currentGrh.getsX(),
-                            currentGrh.getsY(),
-                            currentGrh.getTileWidth(),
-                            currentGrh.getTileHeight());
+                // Verificar si el archivo de imagen existe
+                if (imageFile.exists()) {
+                    Image frameImage = new Image(imageFile.toURI().toString());
+                    PixelReader pixelReader = frameImage.getPixelReader();
+                    WritableImage croppedImage = new WritableImage(pixelReader, currentGrh.getsX(), currentGrh.getsY(),
+                            currentGrh.getTileWidth(), currentGrh.getTileHeight());
 
-                    if (croppedImage != null) {
-                        switch (heading) {
-                            case 0:
-                                imgSur.setImage(croppedImage);
-                                break;
-                            case 1:
-                                imgNorte.setImage(croppedImage);
-                                break;
-                            case 2:
-                                imgOeste.setImage(croppedImage);
-                                break;
-                            case 3:
-                                imgEste.setImage(croppedImage);
-                                break;
-                        }
+                    switch (heading) {
+                        case 0:
+                            imgSur.setImage(croppedImage);
+                            break;
+                        case 1:
+                            imgNorte.setImage(croppedImage);
+                            break;
+                        case 2:
+                            imgOeste.setImage(croppedImage);
+                            break;
+                        case 3:
+                            imgEste.setImage(croppedImage);
+                            break;
                     }
                 } else {
-                    logger.warning("Error al cargar la imagen: " + imagePath);
+                    System.out.println("updateFrame: El archivo de imagen no existe: " + imagePath);
                 }
             } else {
-                logger.warning("No se encontró el GrhData correspondiente para frameId: " + frameId);
+                System.out.println("updateFrame: No se encontró el GrhData correspondiente para frameId: "
+                        + frames[currentFrameIndex]);
             }
         } else {
-            logger.warning("El índice actual está fuera del rango adecuado: " + currentFrameIndex);
+            System.out.println("updateFrame: El índice actual está fuera del rango adecuado: " + currentFrameIndex);
         }
     }
 
     public void btnSave_OnAction(ActionEvent actionEvent) {
-        logger.info("Función de guardado aún no implementada");
     }
 
     public void btnAdd_OnAction(ActionEvent actionEvent) {
-        logger.info("Función de añadir aún no implementada");
     }
 
     public void btnDelete_OnAction(ActionEvent actionEvent) {
-        logger.info("Función de eliminar aún no implementada");
     }
 }

@@ -1,18 +1,22 @@
 package org.nexus.indexador.controllers;
 
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import org.nexus.indexador.utils.ConfigManager;
+import org.nexus.indexador.utils.WindowManager;
 
 import java.io.File;
 import java.io.IOException;
 
 /**
- * Controller para la ventana de configuración de rutas.
+ * Controller para la ventana de Opciones (Rutas y Apariencia).
  */
-public class frmPaths {
+public class OptionsController {
 
     @FXML
     private TextField txtGraphicsPath;
@@ -26,26 +30,49 @@ public class frmPaths {
     @FXML
     private TextField txtExportPath;
 
-    private Stage stage;
+    @FXML
+    private ComboBox<String> cmbTheme;
+
     private ConfigManager configManager;
 
     /**
-     * Inicializa el controller con el stage.
+     * Inicializa el controller.
      */
-    public void setStage(Stage stage) {
-        this.stage = stage;
-        loadCurrentPaths();
+    @FXML
+    public void initialize() {
+        loadCurrentSettings();
     }
 
     /**
-     * Carga las rutas actuales desde el ConfigManager.
+     * Obtiene el stage actual.
      */
-    private void loadCurrentPaths() {
+    private Stage getStage() {
+        if (txtGraphicsPath != null && txtGraphicsPath.getScene() != null) {
+            return (Stage) txtGraphicsPath.getScene().getWindow();
+        }
+        return null;
+    }
+
+    /**
+     * Carga la configuración actual.
+     */
+    private void loadCurrentSettings() {
         configManager = ConfigManager.getInstance();
+
+        // Rutas
         txtGraphicsPath.setText(configManager.getGraphicsDir());
         txtInitPath.setText(configManager.getInitDir());
         txtDatPath.setText(configManager.getDatDir());
         txtExportPath.setText(configManager.getExportDir());
+
+        // Tema
+        cmbTheme.setItems(FXCollections.observableArrayList("Oscuro", "Claro"));
+        String currentTheme = configManager.getAppTheme();
+        if ("LIGHT".equalsIgnoreCase(currentTheme)) {
+            cmbTheme.getSelectionModel().select("Claro");
+        } else {
+            cmbTheme.getSelectionModel().select("Oscuro");
+        }
     }
 
     /**
@@ -106,7 +133,7 @@ public class frmPaths {
             }
         }
 
-        File selected = chooser.showDialog(stage);
+        File selected = chooser.showDialog(getStage());
         return selected != null ? selected.getAbsolutePath() : null;
     }
 
@@ -115,16 +142,27 @@ public class frmPaths {
      */
     @FXML
     private void onSave() {
+        // Guardar Rutas
         configManager.setGraphicsDir(txtGraphicsPath.getText());
         configManager.setInitDir(txtInitPath.getText());
         configManager.setDatDir(txtDatPath.getText());
         configManager.setExportDir(txtExportPath.getText());
 
+        // Guardar Tema
+        String selectedTheme = cmbTheme.getSelectionModel().getSelectedItem();
+        String themeCode = "DARK";
+        if ("Claro".equals(selectedTheme)) {
+            themeCode = "LIGHT";
+        }
+        configManager.setAppTheme(themeCode);
+
+        // Aplicar tema inmediatamente a todas las ventanas
+        WindowManager.getInstance().updateThemeForAll(themeCode);
+
         try {
             configManager.writeConfig();
-            stage.close();
+            getStage().close();
         } catch (IOException e) {
-            // TODO: Mostrar error al usuario
             e.printStackTrace();
         }
     }
@@ -134,6 +172,8 @@ public class frmPaths {
      */
     @FXML
     private void onCancel() {
-        stage.close();
+        Stage s = getStage();
+        if (s != null)
+            s.close();
     }
 }

@@ -1,6 +1,6 @@
 /**
- * La clase {@code frmCascos} es un controlador para la interfaz gráfica de usuario (GUI) relacionada con los datos de cascos.
- * Esta clase maneja la interacción del usuario con la interfaz y gestiona la carga, visualización y manipulación de los datos de los cascos.
+ * La clase {@code HeadsController} es un controlador para la interfaz gráfica de usuario (GUI) relacionada con los datos de cabezas.
+ * Esta clase maneja la interacción del usuario con la interfaz y gestiona la carga, visualización y manipulación de los datos de las cabezas.
  */
 package org.nexus.indexador.controllers;
 
@@ -15,7 +15,7 @@ import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
 import org.nexus.indexador.gamedata.DataManager;
 import org.nexus.indexador.gamedata.enums.IndexingSystem;
-import org.nexus.indexador.gamedata.models.HelmetData;
+import org.nexus.indexador.gamedata.models.HeadData;
 import org.nexus.indexador.utils.ConfigManager;
 
 import java.io.File;
@@ -25,10 +25,10 @@ import java.util.Optional;
 import org.nexus.indexador.Main;
 import org.nexus.indexador.gamedata.models.GrhData;
 
-public class frmCascos {
+public class HeadsController {
 
     @FXML
-    public ListView lstHelmets;
+    public ListView lstHeads;
     @FXML
     public ImageView imgOeste;
     @FXML
@@ -53,23 +53,23 @@ public class frmCascos {
 
     // Tradicional
     @FXML
-    public Label lblHelmUp;
+    public Label lblHeadUp;
     @FXML
-    public TextField txtHelmUp;
+    public TextField txtHeadUp;
     @FXML
-    public Label lblHelmRight;
+    public Label lblHeadRight;
     @FXML
-    public TextField txtHelmRight;
+    public TextField txtHeadRight;
     @FXML
-    public Label lblHelmDown;
+    public Label lblHeadDown;
     @FXML
-    public TextField txtHelmDown;
+    public TextField txtHeadDown;
     @FXML
-    public Label lblHelmLeft;
+    public Label lblHeadLeft;
     @FXML
-    public TextField txtHelmLeft;
+    public TextField txtHeadLeft;
     @FXML
-    public Label lblNCascos;
+    public Label lblNCabezas;
     @FXML
     public Button btnSave;
     @FXML
@@ -77,50 +77,50 @@ public class frmCascos {
     @FXML
     public Button btnDelete;
 
-    private HelmetData helmetDataManager; // Objeto que gestiona los datos de los cascos, incluyendo la carga y
-                                          // manipulación de los mismos
-    private ObservableList<HelmetData> helmetList; // Lista observable que contiene los datos de los gráficos indexados.
+    private HeadData headDataManager; // Objeto que gestiona los datos de las cabezas, incluyendo la carga y
+                                      // manipulación de los mismos
+    private ObservableList<HeadData> headList; // Lista observable que contiene los datos de los gráficos indexados.
 
     private ConfigManager configManager; // Objeto encargado de manejar la configuración de la aplicación, incluyendo la
                                          // lectura y escritura de archivos de configuración.
     private DataManager dataManager;
 
     /**
-     * Inicializa el controlador, cargando la configuración y los datos de los
-     * cascos.
+     * Inicializa el controlador, cargando la configuración y los datos de las
+     * cabezas.
      */
     @FXML
     protected void initialize() {
         configManager = ConfigManager.getInstance();
         try {
             dataManager = DataManager.getInstance();
-            // helmetDataManager = new HelmetData(); // No se usa, comentado
-            loadHelmetData();
-            setupHelmetListListener();
+
+            // headDataManager = new HeadData(); // No se usa, comentado
+            loadHeadData();
+            setupHeadListListener();
         } catch (Exception e) {
-            System.err.println("Error al inicializar frmCascos:");
+            System.err.println("Error al inicializar HeadsController:");
             e.printStackTrace();
         }
     }
 
     /**
-     * Carga los datos de los cascos desde un archivo y los muestra en la interfaz.
+     * Carga los datos de las cabezas desde un archivo y los muestra en la interfaz.
      */
-    private void loadHelmetData() {
-        // Llamar al método para leer el archivo binario y obtener la lista de
-        // helmetData
-        helmetList = dataManager.getHelmetList();
+    private void loadHeadData() {
+        // Llamar al método para leer el archivo binario y obtener la lista de headData
+        headList = dataManager.getHeadList();
 
         // Actualizar el texto de los labels con la información obtenida
-        lblNCascos.setText("Cascos cargados: " + dataManager.getNumHelmets());
+        lblNCabezas.setText("Cabezas cargadas: " + dataManager.getNumHeads());
 
         // Agregar los índices de gráficos al ListView
-        ObservableList<String> helmetIndices = FXCollections.observableArrayList();
-        for (int i = 1; i < helmetList.size() + 1; i++) {
-            helmetIndices.add(String.valueOf(i));
+        ObservableList<String> headIndices = FXCollections.observableArrayList();
+        for (int i = 1; i < headList.size() + 1; i++) {
+            headIndices.add(String.valueOf(i));
         }
 
-        lstHelmets.setItems(helmetIndices);
+        lstHeads.setItems(headIndices);
 
     }
 
@@ -128,45 +128,45 @@ public class frmCascos {
      * Configura un listener para el ListView, manejando los eventos de selección de
      * ítems.
      */
-    private void setupHelmetListListener() {
+    private void setupHeadListListener() {
         // Agregar un listener al ListView para capturar los eventos de selección
-        lstHelmets.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+        lstHeads.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 
             // Obtener el índice seleccionado
-            int selectedIndex = lstHelmets.getSelectionModel().getSelectedIndex();
+            int selectedIndex = lstHeads.getSelectionModel().getSelectedIndex();
 
             if (selectedIndex >= 0) {
-                // Obtener el objeto helmetData correspondiente al índice seleccionado
-                HelmetData selectedHelmet = helmetList.get(selectedIndex);
-                updateEditor(selectedHelmet);
+                // Obtener el objeto headData correspondiente al índice seleccionado
+                HeadData selectedHead = headList.get(selectedIndex);
+                updateEditor(selectedHead);
 
                 for (int i = 0; i <= 3; i++) {
-                    drawHelmets(selectedHelmet, i);
+                    drawHeads(selectedHead, i);
                 }
             }
         });
     }
 
     /**
-     * Actualiza el editor de la interfaz con los datos del casco seleccionado.
+     * Actualiza el editor de la interfaz con los datos de la cabeza seleccionada.
      *
-     * @param selectedHelmet el objeto helmetData seleccionado.
+     * @param selectedHead el objeto headData seleccionado.
      */
     /**
-     * Actualiza el editor de la interfaz con los datos del casco seleccionado.
+     * Actualiza el editor de la interfaz con los datos de la cabeza seleccionada.
      *
-     * @param selectedHelmet el objeto helmetData seleccionado.
+     * @param selectedHead el objeto headData seleccionado.
      */
-    private void updateEditor(HelmetData selectedHelmet) {
+    private void updateEditor(HeadData selectedHead) {
         // Verificar el tipo de sistema
-        if (selectedHelmet.getSystemType() == IndexingSystem.MOLD) {
+        if (selectedHead.getSystemType() == IndexingSystem.MOLD) {
             // Sistema de Moldes - mostrar campos normalmente
             setVisibleMold(true);
             setVisibleTraditional(false);
 
-            short Texture = selectedHelmet.getTexture();
-            short StartX = selectedHelmet.getStartX();
-            short StartY = selectedHelmet.getStartY();
+            short Texture = selectedHead.getTexture();
+            short StartX = selectedHead.getStartX();
+            short StartY = selectedHead.getStartY();
 
             txtNGrafico.setText(String.valueOf(Texture));
             txtStartX.setText(String.valueOf(StartX));
@@ -176,13 +176,13 @@ public class frmCascos {
             setVisibleMold(false);
             setVisibleTraditional(true);
 
-            int[] grhs = selectedHelmet.getGrhIndex();
+            int[] grhs = selectedHead.getGrhIndex();
             // [Norte, Sur, Este, Oeste]
             if (grhs != null && grhs.length >= 4) {
-                txtHelmUp.setText(String.valueOf(grhs[0])); // Norte
-                txtHelmDown.setText(String.valueOf(grhs[2])); // Sur (Standard AO: Index 2)
-                txtHelmRight.setText(String.valueOf(grhs[1])); // Este (Standard AO: Index 1)
-                txtHelmLeft.setText(String.valueOf(grhs[3])); // Oeste
+                txtHeadUp.setText(String.valueOf(grhs[0])); // Norte
+                txtHeadDown.setText(String.valueOf(grhs[2])); // Sur (Standard AO: Index 2)
+                txtHeadRight.setText(String.valueOf(grhs[1])); // Este (Standard AO: Index 1)
+                txtHeadLeft.setText(String.valueOf(grhs[3])); // Oeste
             }
         }
     }
@@ -197,38 +197,38 @@ public class frmCascos {
     }
 
     private void setVisibleTraditional(boolean visible) {
-        txtHelmUp.setVisible(visible);
-        txtHelmDown.setVisible(visible);
-        txtHelmRight.setVisible(visible);
-        txtHelmLeft.setVisible(visible);
-        lblHelmUp.setVisible(visible);
-        lblHelmDown.setVisible(visible);
-        lblHelmRight.setVisible(visible);
-        lblHelmLeft.setVisible(visible);
+        txtHeadUp.setVisible(visible);
+        txtHeadDown.setVisible(visible);
+        txtHeadRight.setVisible(visible);
+        txtHeadLeft.setVisible(visible);
+        lblHeadUp.setVisible(visible);
+        lblHeadDown.setVisible(visible);
+        lblHeadRight.setVisible(visible);
+        lblHeadLeft.setVisible(visible);
     }
 
     /**
-     * Dibuja las imágenes de los cascos en las diferentes vistas (Norte, Sur, Este,
-     * Oeste).
+     * Dibuja las imágenes de las cabezas en las diferentes vistas (Norte, Sur,
+     * Este, Oeste).
      *
-     * @param selectedHelmet el objeto helmetData seleccionado.
-     * @param helmeting      la dirección en la que se debe dibujar el casco (0:
-     *                       Sur, 1: Norte, 2: Oeste, 3: Este).
+     * @param selectedHead el objeto headData seleccionado.
+     * @param heading      la dirección en la que se debe dibujar la cabeza (0: Sur,
+     *                     1: Norte, 2: Oeste, 3: Este).
      */
-    private void drawHelmets(HelmetData selectedHelmet, int helmeting) {
+    private void drawHeads(HeadData selectedHead, int heading) {
         // Verificar el tipo de sistema
-        if (selectedHelmet.getSystemType() == IndexingSystem.TRADITIONAL) {
+        if (selectedHead.getSystemType() == IndexingSystem.TRADITIONAL) {
             // Sistema Tradicional - usar grhs directamente
-            drawTraditionalHelmet(selectedHelmet, helmeting);
+            drawTraditionalHead(selectedHead, heading);
             return;
         }
 
         // Sistema de Moldes - código original
         // Construir la ruta completa de la imagen para imagePath
-        String imagePath = configManager.getGraphicsDir() + selectedHelmet.getTexture() + ".png";
+        String imagePath = configManager.getGraphicsDir() + selectedHead.getTexture() + ".png";
 
         if (!new File(imagePath).exists()) {
-            imagePath = configManager.getGraphicsDir() + selectedHelmet.getTexture() + ".bmp";
+            imagePath = configManager.getGraphicsDir() + selectedHead.getTexture() + ".bmp";
         }
 
         File imageFile = new File(imagePath);
@@ -239,8 +239,8 @@ public class frmCascos {
 
             int textureX2 = 27;
             int textureY2 = 32;
-            int textureX1 = selectedHelmet.getStartX();
-            int textureY1 = (helmeting * textureY2) + selectedHelmet.getStartY();
+            int textureX1 = selectedHead.getStartX();
+            int textureY1 = (heading * textureY2) + selectedHead.getStartY();
 
             // Verificar que las coordenadas de recorte estén dentro de los límites de la
             // imagen
@@ -259,7 +259,7 @@ public class frmCascos {
             imgNorte.setPreserveRatio(false);
 
             // Mostrar la región recortada en el ImageView correspondiente
-            switch (helmeting) {
+            switch (heading) {
                 case 0:
                     imgSur.setImage(croppedImage);
                     break;
@@ -274,7 +274,7 @@ public class frmCascos {
                     break;
                 default:
                     // Dirección desconocida
-                    System.out.println("Dirección desconocida: " + helmeting);
+                    System.out.println("Dirección desconocida: " + heading);
                     break;
             }
 
@@ -292,13 +292,16 @@ public class frmCascos {
     }
 
     /**
-     * Dibuja cascos usando el sistema tradicional (grhs directos).
+     * Dibuja cabezas usando el sistema tradicional (grhs directos).
      */
-    private void drawTraditionalHelmet(HelmetData selectedHelmet, int helmeting) {
-        int[] grhs = selectedHelmet.getGrhIndex();
+    private void drawTraditionalHead(HeadData selectedHead, int heading) {
+        int[] grhs = selectedHead.getGrhIndex();
+        // heading: 0: Sur, 1: Norte, 2: Oeste, 3: Este
+        // grhs indices: 0: Norte, 1: Sur, 2: Este, 3: Oeste (según loader)
 
+        // Mapear heading a índice del array grhs
         int grhIndex = -1;
-        switch (helmeting) {
+        switch (heading) {
             case 0:
                 grhIndex = 2; // Sur -> Index 2
                 break;
@@ -320,7 +323,7 @@ public class frmCascos {
                 if (grhData != null) {
                     Image img = loadImageFromGrh(grhData);
                     ImageView targetView = null;
-                    switch (helmeting) {
+                    switch (heading) {
                         case 0:
                             targetView = imgSur;
                             break;
@@ -336,7 +339,10 @@ public class frmCascos {
                     }
                     if (targetView != null) {
                         targetView.setImage(img);
+                        // Ajustar si queremos pixel art nítido
                         targetView.setSmooth(false);
+                        // Ajuste visual para centrar cabezas (que suelen tener espacio vacío abajo)
+                        targetView.setTranslateY(15);
                     }
                 }
             }
@@ -359,7 +365,6 @@ public class frmCascos {
             Image fullImage = new Image(file.toURI().toString());
             PixelReader reader = fullImage.getPixelReader();
 
-            // Usar getsX/getsY
             int x = grh.getsX();
             int y = grh.getsY();
             int w = grh.getTileWidth();
@@ -374,46 +379,47 @@ public class frmCascos {
 
             return new WritableImage(reader, x, y, w, h);
         } catch (Exception e) {
+            // e.printStackTrace();
             return null;
         }
     }
 
     /**
      * Maneja el evento de acción del botón "Guardar". Aplica los cambios al objeto
-     * helmetData seleccionado.
+     * headData seleccionado.
      *
      * @param actionEvent el evento de acción del botón.
      */
     public void btnSave_OnAction(ActionEvent actionEvent) {
         // Obtenemos el índice seleccionado en la lista:
-        int selectedHelmetIndex = lstHelmets.getSelectionModel().getSelectedIndex();
+        int selectedHeadIndex = lstHeads.getSelectionModel().getSelectedIndex();
 
         // Nos aseguramos de que el índice es válido
-        if (selectedHelmetIndex >= 0) {
-            // Obtenemos el objeto helmetData correspondiente al índice seleccionado
-            HelmetData selectedHelmet = helmetList.get(selectedHelmetIndex);
+        if (selectedHeadIndex >= 0) {
+            // Obtenemos el objeto headData correspondiente al índice seleccionado
+            HeadData selectedHead = headList.get(selectedHeadIndex);
 
             // Comenzamos aplicar los cambios:
             try {
-                if (selectedHelmet.getSystemType() == IndexingSystem.MOLD) {
-                    selectedHelmet.setTexture(Short.parseShort(txtNGrafico.getText()));
-                    selectedHelmet.setStartX(Short.parseShort(txtStartX.getText()));
-                    selectedHelmet.setStartY(Short.parseShort(txtStartY.getText()));
+                if (selectedHead.getSystemType() == IndexingSystem.MOLD) {
+                    selectedHead.setTexture(Short.parseShort(txtNGrafico.getText()));
+                    selectedHead.setStartX(Short.parseShort(txtStartX.getText()));
+                    selectedHead.setStartY(Short.parseShort(txtStartY.getText()));
                 } else {
                     // Tradicional
                     int[] grhs = new int[4];
-                    grhs[0] = Integer.parseInt(txtHelmUp.getText());
-                    grhs[1] = Integer.parseInt(txtHelmDown.getText());
-                    grhs[2] = Integer.parseInt(txtHelmRight.getText());
-                    grhs[3] = Integer.parseInt(txtHelmLeft.getText());
-                    selectedHelmet.setGrhs(grhs);
+                    selectedHead.getGrhIndex()[0] = Integer.parseInt(txtHeadUp.getText());
+                    selectedHead.getGrhIndex()[1] = Integer.parseInt(txtHeadDown.getText());
+                    selectedHead.getGrhIndex()[2] = Integer.parseInt(txtHeadRight.getText());
+                    selectedHead.getGrhIndex()[3] = Integer.parseInt(txtHeadLeft.getText());
+                    selectedHead.setGrhs(grhs);
                 }
 
                 // Recargar visualizacion
-                drawHelmets(selectedHelmet, 0);
-                drawHelmets(selectedHelmet, 1);
-                drawHelmets(selectedHelmet, 2);
-                drawHelmets(selectedHelmet, 3);
+                drawHeads(selectedHead, 0);
+                drawHeads(selectedHead, 1);
+                drawHeads(selectedHead, 2);
+                drawHeads(selectedHead, 3);
 
                 System.out.println(("¡Cambios aplicados!"));
             } catch (NumberFormatException e) {
@@ -424,33 +430,33 @@ public class frmCascos {
 
     /**
      * Maneja el evento de acción del botón "Agregar". Agrega un nuevo objeto
-     * helmetData a la lista.
+     * headData a la lista.
      */
     @FXML
     private void btnAdd_OnAction() {
-        int helmetCount = dataManager.getNumHelmets() + 1;
+        int headCount = dataManager.getNumHeads() + 1;
 
-        // Incrementar el contador de helmetDataManager
-        dataManager.setNumHelmets((short) helmetCount);
+        // Incrementar el contador de headDataManager
+        dataManager.setNumHeads((short) headCount);
 
-        // Crear un nuevo objeto helmetData con los valores adecuados
-        HelmetData newHelmetData = new HelmetData(2, (short) 0, (short) 0, (short) 0);
+        // Crear un nuevo objeto headData con los valores adecuados
+        HeadData newHeadData = new HeadData(1, (short) 0, (short) 0, (short) 0);
 
         // Agregar el nuevo elemento al ListView
-        lstHelmets.getItems().add(String.valueOf(helmetCount));
+        lstHeads.getItems().add(String.valueOf(headCount));
 
-        // Agregar el nuevo elemento a helmetList
-        helmetList.add(newHelmetData);
+        // Agregar el nuevo elemento a headList
+        headList.add(newHeadData);
     }
 
     /**
-     * Maneja el evento de acción del botón "Eliminar". Elimina el objeto helmetData
+     * Maneja el evento de acción del botón "Eliminar". Elimina el objeto headData
      * seleccionado de la lista.
      *
      * @param actionEvent el evento de acción del botón.
      */
     public void btnDelete_OnAction(ActionEvent actionEvent) {
-        int selectedIndex = lstHelmets.getSelectionModel().getSelectedIndex();
+        int selectedIndex = lstHeads.getSelectionModel().getSelectedIndex();
 
         if (selectedIndex != -1) {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -460,8 +466,8 @@ public class frmCascos {
 
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
-                lstHelmets.getItems().remove(selectedIndex);
-                helmetList.remove(selectedIndex);
+                lstHeads.getItems().remove(selectedIndex);
+                headList.remove(selectedIndex);
             }
         }
     }

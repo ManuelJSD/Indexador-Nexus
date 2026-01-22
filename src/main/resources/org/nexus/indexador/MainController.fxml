@@ -30,7 +30,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.shape.Rectangle?>
 
-<AnchorPane fx:id="paneMain" minHeight="768.0" minWidth="1366.0" prefHeight="800.0" prefWidth="1366.0" styleClass="root-pane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nexus.indexador.controllers.frmMain">
+<AnchorPane fx:id="paneMain" minHeight="768.0" minWidth="1366.0" prefHeight="800.0" prefWidth="1366.0" styleClass="root-pane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nexus.indexador.controllers.MainController">
     <children>
         <MenuBar fx:id="MnuBar" prefHeight="25.0" prefWidth="1366.0" styleClass="main-menu-bar">
             <!-- Menus omitted for brevity, no styles to change inside -->

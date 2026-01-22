@@ -6,7 +6,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
 
-public class frmAdaptador {
+public class AdapterController {
 
     @FXML
     private TextField txtPos;

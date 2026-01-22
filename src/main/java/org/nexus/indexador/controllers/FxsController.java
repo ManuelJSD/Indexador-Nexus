@@ -27,7 +27,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-public class frmFXs {
+public class FxsController {
 
     @FXML
     public ListView lstFxs;
@@ -90,7 +90,7 @@ public class frmFXs {
             loadFxData();
             setupFXListListener();
         } catch (Exception e) {
-            System.err.println("Error al inicializar frmFXs:");
+            System.err.println("Error al inicializar FxsController:");
             e.printStackTrace();
         }
     }

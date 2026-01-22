@@ -42,7 +42,7 @@ import java.util.*;
 import javafx.scene.paint.Color; // Importar Color
 import org.nexus.indexador.Main;
 
-public class frmMain {
+public class MainController {
 
     @FXML
     public MenuItem mnuShield;
@@ -264,7 +264,7 @@ public class frmMain {
         logger = Logger.getInstance();
         windowManager = WindowManager.getInstance();
 
-        logger.info("Inicializando controlador frmMain");
+        logger.info("Inicializando controlador MainController");
 
         loadGrh();
         setupGrhListListener();
@@ -275,7 +275,7 @@ public class frmMain {
         // Aplicar color de fondo configurado
         updateBackgroundColor();
 
-        logger.info("Controlador frmMain inicializado correctamente");
+        logger.info("Controlador MainController inicializado correctamente");
     }
 
     /**
@@ -733,7 +733,7 @@ public class frmMain {
      */
     @FXML
     private void mnuConsola_OnAction() {
-        windowManager.showWindow("frmConsola", "Consola", false);
+        windowManager.showWindow("ConsoleController", "Consola", false);
     }
 
     @FXML
@@ -743,7 +743,7 @@ public class frmMain {
         // Pero WindowManager se encarga de abrirla.
 
         // WindowManager abre y retorna true si es nueva
-        boolean isNew = windowManager.showWindow("frmOptions", "Opciones", false);
+        boolean isNew = windowManager.showWindow("OptionsController", "Opciones", false);
 
         if (isNew) {
             // Lógica de inicialización adicional si fuera necesaria
@@ -1206,10 +1206,10 @@ public class frmMain {
     @FXML
     private void mnuConfigPaths_OnAction() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/nexus/indexador/frmPaths.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/nexus/indexador/PathsController.fxml"));
             VBox root = loader.load();
 
-            frmPaths controller = loader.getController();
+            PathsController controller = loader.getController();
 
             Stage stage = new Stage();
             Main.setAppIcon(stage);
@@ -1927,27 +1927,27 @@ public class frmMain {
 
     @FXML
     public void mnuHead_OnAction(ActionEvent actionEvent) {
-        windowManager.showWindow("frmCabezas", "Cabezas", false);
+        windowManager.showWindow("HeadsController", "Cabezas", false);
     }
 
     @FXML
     public void mnuHelmet_OnAction(ActionEvent actionEvent) {
-        windowManager.showWindow("frmCascos", "Cascos", false);
+        windowManager.showWindow("HelmetsController", "Cascos", false);
     }
 
     @FXML
     public void mnuBody_OnAction(ActionEvent actionEvent) {
-        windowManager.showWindow("frmCuerpos", "Cuerpos", false);
+        windowManager.showWindow("BodiesController", "Cuerpos", false);
     }
 
     @FXML
     public void mnuShield_OnAction(ActionEvent actionEvent) {
-        windowManager.showWindow("frmEscudos", "Escudos", false);
+        windowManager.showWindow("ShieldsController", "Escudos", false);
     }
 
     @FXML
     public void mnuConsola_OnAction(ActionEvent actionEvent) {
-        windowManager.showWindow("frmConsola", "Consola de Depuración", false);
+        windowManager.showWindow("ConsoleController", "Consola de Depuración", false);
     }
 
     @FXML
@@ -2023,12 +2023,12 @@ public class frmMain {
 
     @FXML
     public void mnuFXs_OnAction(ActionEvent actionEvent) {
-        windowManager.showWindow("frmFXs", "FXs", false);
+        windowManager.showWindow("FxsController", "FXs", false);
     }
 
     @FXML
     public void mnuWeapon_OnAction(ActionEvent actionEvent) {
-        windowManager.showWindow("frmArmas", "Armas", false);
+        windowManager.showWindow("WeaponsController", "Armas", false);
     }
 
     @FXML
@@ -2227,7 +2227,7 @@ public class frmMain {
      */
     @FXML
     public void mnuGrhAdapter_OnAction(ActionEvent actionEvent) {
-        windowManager.showWindow("frmAdaptador", "Adaptador de Grh", false);
+        windowManager.showWindow("AdapterController", "Adaptador de Grh", false);
     }
 
     /**
@@ -2237,10 +2237,10 @@ public class frmMain {
     private void mnuAutoIndexWizard_OnAction() {
         try {
             javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
-                    getClass().getResource("/org/nexus/indexador/frmAutoIndexWizard.fxml"));
+                    getClass().getResource("/org/nexus/indexador/AutoIndexWizardController.fxml"));
             javafx.scene.Parent root = loader.load();
 
-            frmAutoIndexWizard wizardController = loader.getController();
+            AutoIndexWizardController wizardController = loader.getController();
             wizardController.setMainController(this);
 
             javafx.stage.Stage wizardStage = new javafx.stage.Stage();
@@ -2327,10 +2327,10 @@ public class frmMain {
     private boolean showDetectionPreview(ImageDetectionResult result, String title, String modeDescription) {
         try {
             javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
-                    getClass().getResource("/org/nexus/indexador/frmDetectionPreview.fxml"));
+                    getClass().getResource("/org/nexus/indexador/DetectionPreviewController.fxml"));
             javafx.scene.Parent root = loader.load();
 
-            frmDetectionPreview previewController = loader.getController();
+            DetectionPreviewController previewController = loader.getController();
             previewController.initialize(result.image, result.regions, title, modeDescription);
 
             javafx.stage.Stage previewStage = new javafx.stage.Stage();

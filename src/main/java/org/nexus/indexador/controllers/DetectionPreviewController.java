@@ -20,7 +20,7 @@ import java.util.List;
  * Muestra la imagen con rectángulos sobre los sprites detectados antes de crear
  * GRHs.
  */
-public class frmDetectionPreview {
+public class DetectionPreviewController {
 
     @FXML
     private Canvas canvas;

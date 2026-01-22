@@ -8,9 +8,9 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="410.0" prefWidth="528.0" styleClass="root-pane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nexus.indexador.controllers.frmCuerpos">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="410.0" prefWidth="528.0" styleClass="root-pane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nexus.indexador.controllers.ShieldsController">
    <children>
-      <ListView fx:id="lstBodys" layoutX="14.0" layoutY="14.0" prefHeight="352.0" prefWidth="176.0" styleClass="data-list" />
+      <ListView fx:id="lstShields" layoutX="14.0" layoutY="14.0" prefHeight="352.0" prefWidth="176.0" styleClass="data-list" />
       <Pane layoutX="240.0" layoutY="86.0" prefHeight="82.0" prefWidth="80.0" styleClass="preview-box-param">
          <children>
             <ImageView fx:id="imgOeste" fitHeight="70.0" fitWidth="70.0" layoutX="5.0" layoutY="5.0" pickOnBounds="true" preserveRatio="true" />
@@ -31,21 +31,17 @@
             <ImageView fx:id="imgSur" fitHeight="70.0" fitWidth="70.0" layoutX="5.0" layoutY="5.0" pickOnBounds="true" preserveRatio="true" />
          </children>
       </Pane>
-      <Label layoutX="211.0" layoutY="236.0" text="Norte:" />
-      <Label layoutX="352.0" layoutY="261.0" text="HeadOffsetX:" />
-      <Label layoutX="352.0" layoutY="292.0" text="HeadOffsetY:" />
-      <TextField fx:id="txtNorte" layoutX="253.0" layoutY="232.0" prefHeight="25.0" prefWidth="86.0" />
-      <TextField fx:id="txtHeadOffsetX" layoutX="426.0" layoutY="257.0" prefHeight="25.0" prefWidth="86.0" />
-      <TextField fx:id="txtHeadOffsetY" layoutX="426.0" layoutY="286.0" prefHeight="25.0" prefWidth="86.0" />
-      <Label fx:id="lblNCuerpos" layoutX="211.0" layoutY="14.0" text="Cuerpos cargadas: 0" />
+      <Label layoutX="288.0" layoutY="243.0" text="Norte:" />
+      <TextField fx:id="txtNorte" layoutX="330.0" layoutY="239.0" prefHeight="25.0" prefWidth="86.0" />
+      <Label fx:id="lblNEscudos" layoutX="211.0" layoutY="14.0" text="Escudos cargadas: 0" />
       <Button fx:id="btnSave" layoutX="212.0" layoutY="371.0" mnemonicParsing="false" onAction="#btnSave_OnAction" prefHeight="25.0" prefWidth="280.0" text="Aplicar cambios" />
       <Button fx:id="btnAdd" layoutX="103.0" layoutY="371.0" mnemonicParsing="false" onAction="#btnAdd_OnAction" prefHeight="25.0" prefWidth="86.0" text="Nuevo" />
       <Button fx:id="btnDelete" layoutX="15.0" layoutY="371.0" mnemonicParsing="false" onAction="#btnDelete_OnAction" prefHeight="25.0" prefWidth="80.0" text="Remover" />
-      <Label layoutX="211.0" layoutY="266.0" text="Este:" />
-      <TextField fx:id="txtEste" layoutX="253.0" layoutY="262.0" prefHeight="25.0" prefWidth="86.0" />
-      <Label layoutX="211.0" layoutY="294.0" text="Sur:" />
-      <TextField fx:id="txtSur" layoutX="253.0" layoutY="291.0" prefHeight="25.0" prefWidth="86.0" />
-      <Label layoutX="211.0" layoutY="324.0" text="Oeste:" />
-      <TextField fx:id="txtOeste" layoutX="253.0" layoutY="320.0" prefHeight="25.0" prefWidth="86.0" />
+      <Label layoutX="373.0" layoutY="275.0" text="Este:" />
+      <TextField fx:id="txtEste" layoutX="415.0" layoutY="271.0" prefHeight="25.0" prefWidth="86.0" />
+      <Label layoutX="288.0" layoutY="304.0" text="Sur:" />
+      <TextField fx:id="txtSur" layoutX="330.0" layoutY="301.0" prefHeight="25.0" prefWidth="86.0" />
+      <Label layoutX="203.0" layoutY="275.0" text="Oeste:" />
+      <TextField fx:id="txtOeste" layoutX="245.0" layoutY="271.0" prefHeight="25.0" prefWidth="86.0" />
    </children>
 </AnchorPane>

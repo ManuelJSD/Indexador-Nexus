@@ -16,7 +16,7 @@ import java.io.IOException;
 /**
  * Controller para el asistente de configuración inicial.
  */
-public class frmInitialSetup {
+public class InitialSetupController {
 
     @FXML
     private TextField txtGraphicsPath;

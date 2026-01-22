@@ -9,7 +9,7 @@ import org.nexus.indexador.utils.ConfigManager;
 
 import java.io.IOException;
 
-public class frmCargando {
+public class LoadingController {
 
     @FXML
     public Label lblStatus;
@@ -93,12 +93,12 @@ public class frmCargando {
             }
 
             Platform.runLater(() -> {
-                // Usar WindowManager para abrir frmMain y registrarlo
+                // Usar WindowManager para abrir MainController y registrarlo
                 org.nexus.indexador.utils.WindowManager winMgr = org.nexus.indexador.utils.WindowManager.getInstance();
-                boolean success = winMgr.showWindow("frmMain", "Indexador Nexus", false);
+                boolean success = winMgr.showWindow("MainController", "Indexador Nexus", false);
 
                 if (success) {
-                    Stage mainStage = winMgr.getWindow("frmMain");
+                    Stage mainStage = winMgr.getWindow("MainController");
                     if (mainStage != null) {
                         mainStage.centerOnScreen();
 
@@ -109,7 +109,7 @@ public class frmCargando {
                         });
                     }
 
-                    // Cerrar la ventana actual (frmCargando)
+                    // Cerrar la ventana actual (LoadingController)
                     if (currentStage != null) {
                         currentStage.close();
                     }

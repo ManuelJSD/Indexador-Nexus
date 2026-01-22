@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="500.0" prefWidth="700.0" styleClass="root-pane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nexus.indexador.controllers.frmConsola">
+<BorderPane prefHeight="500.0" prefWidth="700.0" styleClass="root-pane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nexus.indexador.controllers.ConsoleController">
     <top>
         <ToolBar prefHeight="40.0" prefWidth="700.0" styleClass="main-toolbar" BorderPane.alignment="CENTER">
             <items>

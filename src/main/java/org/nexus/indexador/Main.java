@@ -6,7 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import org.nexus.indexador.controllers.frmCargando;
+import org.nexus.indexador.controllers.LoadingController;
 import org.nexus.indexador.utils.Logger;
 
 import java.io.IOException;
@@ -21,7 +21,7 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) {
         // Activar redirección de logs a la consola de depuración
-        org.nexus.indexador.controllers.frmConsola.activateGlobalRedirection();
+        org.nexus.indexador.controllers.ConsoleController.activateGlobalRedirection();
 
         logger.info("Iniciando aplicación Indexador Nexus");
 
@@ -45,7 +45,8 @@ public class Main extends Application {
      */
     private void showInitialSetup(Runnable onComplete) {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("frmInitialSetup.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(
+                    Main.class.getResource("/org/nexus/indexador/InitialSetupController.fxml"));
             Parent root = fxmlLoader.load();
             Scene scene = new Scene(root);
 
@@ -54,7 +55,7 @@ public class Main extends Application {
             scene.getStylesheets().add(darkTheme);
 
             // Configurar controller
-            org.nexus.indexador.controllers.frmInitialSetup controller = fxmlLoader.getController();
+            org.nexus.indexador.controllers.InitialSetupController controller = fxmlLoader.getController();
 
             Stage setupStage = new Stage();
             controller.setStage(setupStage);
@@ -76,7 +77,7 @@ public class Main extends Application {
      * Muestra la pantalla de carga principal.
      */
     private void showLoadingScreen(Stage stage) {
-        FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("frmCargando.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("/org/nexus/indexador/LoadingController.fxml"));
 
         try {
             Parent root = fxmlLoader.load();
@@ -87,7 +88,7 @@ public class Main extends Application {
             scene.getStylesheets().add(darkTheme);
 
             // Obtener el controlador y pasar el Stage
-            frmCargando controller = fxmlLoader.getController();
+            LoadingController controller = fxmlLoader.getController();
             controller.setStage(stage);
             controller.init();
 

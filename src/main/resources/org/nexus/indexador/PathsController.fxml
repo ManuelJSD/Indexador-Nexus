@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 
 <VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" 
-      fx:controller="org.nexus.indexador.controllers.frmPaths"
+      fx:controller="org.nexus.indexador.controllers.PathsController"
       spacing="15" style="-fx-padding: 20; -fx-background-color: #2b2b2b;"
       prefWidth="600" prefHeight="280">
     

@@ -342,3 +342,101 @@
     -fx-shape: "M7.5,5.6L10,7L8.6,4.5L10,2L7.5,3.4L5,2L6.4,4.5L5,7L7.5,5.6M19.5,15.4L22,14L20.6,16.5L22,19L19.5,17.6L17,19L18.4,16.5L17,14L19.5,15.4M22,2L20.6,4.5L22,7L19.5,5.6L17,7L18.4,4.5L17,2L19.5,3.4L22,2M13.34,12.78L15.78,10.34L13.66,8.22L11.22,10.66L13.34,12.78M14.37,7.29L16.71,9.63C17.1,10 17.1,10.65 16.71,11.04L5.04,22.71C4.65,23.1 4,23.1 3.63,22.71L1.29,20.37C0.9,20 0.9,19.35 1.29,18.96L12.96,7.29C13.35,6.9 14,6.9 14.37,7.29Z";
     -fx-background-color: -fx-text-fill;
 }
+
+/* Initial Setup Wizard Styles */
+
+.setup-root {
+    -fx-background-color: #ffffff;
+    -fx-padding: 30;
+}
+
+.setup-header {
+    -fx-text-fill: #333333;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+}
+
+.setup-subheader {
+    -fx-text-fill: #555555;
+    -fx-font-size: 14px;
+}
+
+.setup-description {
+    -fx-text-fill: #666666;
+    -fx-font-size: 12px;
+    -fx-text-alignment: center;
+}
+
+.setup-label {
+    -fx-text-fill: #333333;
+    -fx-font-size: 12px;
+}
+
+.setup-section-title {
+    -fx-text-fill: #333333;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.setup-section-subtitle {
+    -fx-text-fill: #666666;
+    -fx-font-size: 11px;
+}
+
+.setup-card {
+    -fx-background-color: #e0e0e0;
+    -fx-padding: 20;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-border-color: #cccccc;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+}
+
+.setup-card:hover {
+    -fx-background-color: #d0d0d0;
+}
+
+.setup-card-selected {
+    -fx-background-color: #e0e0e0;
+    -fx-border-color: #4a90d9;
+    -fx-border-width: 2;
+}
+
+.setup-card-traditional-selected {
+    -fx-border-color: #00AA00;
+}
+
+.setup-card-title {
+    -fx-text-fill: #333333;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+.setup-card-desc {
+    -fx-text-fill: #555555;
+    -fx-font-size: 10px;
+    -fx-text-alignment: center;
+}
+
+.setup-card-badge {
+    -fx-font-size: 9px;
+    -fx-font-style: italic;
+}
+
+.setup-info-box {
+    -fx-background-color: #f4f4f4;
+    -fx-padding: 15;
+    -fx-background-radius: 5;
+}
+
+.setup-info-title {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #4a90d9;
+}
+
+.setup-info-text {
+    -fx-font-size: 11px;
+    -fx-text-fill: #555555;
+}

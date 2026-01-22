@@ -36,9 +36,16 @@ public class InitialSetupController {
     @FXML
     private VBox cardTraditionalSystem;
 
+    @FXML
+    private VBox cardDarkTheme;
+
+    @FXML
+    private VBox cardLightTheme;
+
     private Stage stage;
     private Runnable onComplete;
     private String selectedIndexingSystem = "TRADITIONAL"; // Default: Sistema Tradicional
+    private String selectedTheme = "DARK"; // Default: Tema Oscuro
 
     /**
      * Inicializa el controller.
@@ -47,6 +54,7 @@ public class InitialSetupController {
     public void initialize() {
         // Sistema de Moldes seleccionado por defecto
         updateCardSelection();
+        updateThemeSelection();
     }
 
     /**
@@ -68,25 +76,73 @@ public class InitialSetupController {
     }
 
     /**
+     * Maneja el clic en la tarjeta del Tema Oscuro.
+     */
+    @FXML
+    private void onDarkThemeClick() {
+        selectedTheme = "DARK";
+        updateThemeSelection();
+        applyThemePreview();
+    }
+
+    /**
+     * Maneja el clic en la tarjeta del Tema Claro.
+     */
+    @FXML
+    private void onLightThemeClick() {
+        selectedTheme = "LIGHT";
+        updateThemeSelection();
+        applyThemePreview();
+    }
+
+    /**
      * Actualiza el estilo visual de las tarjetas según la selección.
      */
     private void updateCardSelection() {
+        // Reset classes
+        cardTraditionalSystem.getStyleClass().remove("setup-card-selected-traditional");
+        cardMoldSystem.getStyleClass().remove("setup-card-selected");
+
         if ("TRADITIONAL".equals(selectedIndexingSystem)) {
-            // Tradicional seleccionado (verde)
-            cardTraditionalSystem.setStyle(
-                    "-fx-background-color: #3c3c3c; -fx-padding: 20; -fx-background-radius: 8; " +
-                            "-fx-cursor: hand; -fx-border-color: #50c878; -fx-border-width: 2; -fx-border-radius: 8;");
-            cardMoldSystem.setStyle(
-                    "-fx-background-color: #3c3c3c; -fx-padding: 20; -fx-background-radius: 8; " +
-                            "-fx-cursor: hand; -fx-border-color: #505050; -fx-border-width: 1; -fx-border-radius: 8;");
+            // Tradicional seleccionado
+            if (!cardTraditionalSystem.getStyleClass().contains("setup-card-selected-traditional")) {
+                cardTraditionalSystem.getStyleClass().add("setup-card-selected-traditional");
+            }
         } else {
-            // Moldes seleccionado (azul)
-            cardMoldSystem.setStyle(
-                    "-fx-background-color: #3c3c3c; -fx-padding: 20; -fx-background-radius: 8; " +
-                            "-fx-cursor: hand; -fx-border-color: #4a90d9; -fx-border-width: 2; -fx-border-radius: 8;");
-            cardTraditionalSystem.setStyle(
-                    "-fx-background-color: #3c3c3c; -fx-padding: 20; -fx-background-radius: 8; " +
-                            "-fx-cursor: hand; -fx-border-color: #505050; -fx-border-width: 1; -fx-border-radius: 8;");
+            // Moldes seleccionado
+            if (!cardMoldSystem.getStyleClass().contains("setup-card-selected")) {
+                cardMoldSystem.getStyleClass().add("setup-card-selected");
+            }
+        }
+    }
+
+    /**
+     * Actualiza el estilo visual de las tarjetas de tema.
+     */
+    private void updateThemeSelection() {
+        // Reset classes
+        cardDarkTheme.getStyleClass().remove("setup-card-selected");
+        cardLightTheme.getStyleClass().remove("setup-card-selected");
+
+        if ("DARK".equals(selectedTheme)) {
+            // Oscuro seleccionado
+            if (!cardDarkTheme.getStyleClass().contains("setup-card-selected")) {
+                cardDarkTheme.getStyleClass().add("setup-card-selected");
+            }
+        } else {
+            // Claro seleccionado
+            if (!cardLightTheme.getStyleClass().contains("setup-card-selected")) {
+                cardLightTheme.getStyleClass().add("setup-card-selected");
+            }
+        }
+    }
+
+    /**
+     * Aplica el tema seleccionado inmediatamente para previsualizar.
+     */
+    private void applyThemePreview() {
+        if (this.stage != null && this.stage.getScene() != null) {
+            org.nexus.indexador.utils.WindowManager.getInstance().applyTheme(this.stage.getScene(), selectedTheme);
         }
     }
 
@@ -187,6 +243,7 @@ public class InitialSetupController {
 
         // Guardar sistema de indexado seleccionado
         config.setIndexingSystem(selectedIndexingSystem);
+        config.setAppTheme(selectedTheme);
 
         try {
             config.writeConfig();

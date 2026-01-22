@@ -2,7 +2,6 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
@@ -13,99 +12,125 @@
 
 <VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" 
       fx:controller="org.nexus.indexador.controllers.InitialSetupController"
-      spacing="20" style="-fx-padding: 30; -fx-background-color: #2b2b2b;"
-      prefWidth="700" prefHeight="450">
+      spacing="20" styleClass="setup-root"
+      prefWidth="700" prefHeight="750">
     
     <!-- Header -->
-    <VBox spacing="10" alignment="CENTER">
-        <Label text="Bienvenido a Indexador Nexus" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #e0e0e0;"/>
-        <Label text="Configuración Inicial" style="-fx-font-size: 14px; -fx-text-fill: #b0b0b0;"/>
-        <Label text="Por favor, configure las rutas de los recursos necesarios para comenzar." 
-               wrapText="true" style="-fx-font-size: 12px; -fx-text-fill: #909090; -fx-text-alignment: center;"/>
+    <VBox spacing="5" alignment="CENTER">
+        <Label text="Configuración Inicial" styleClass="setup-header"/>
+        <Label text="Bienvenido al Indexador Nexus" styleClass="setup-subheader"/>
+        <Label text="Por favor, configure las rutas y preferencias para comenzar." 
+               styleClass="setup-description"/>
     </VBox>
-    
+
     <!-- Paths Configuration -->
     <GridPane hgap="10" vgap="15">
         <Label text="Carpeta de Gráficos:" GridPane.rowIndex="0" GridPane.columnIndex="0" 
-               style="-fx-text-fill: #e0e0e0; -fx-font-size: 12px;"/>
+               styleClass="setup-label"/>
         <TextField fx:id="txtGraphicsPath" GridPane.rowIndex="0" GridPane.columnIndex="1" prefWidth="450" 
                    promptText="Ej: C:/AO/graphics"/>
         <Button fx:id="btnBrowseGraphics" text="Examinar..." onAction="#onBrowseGraphics" 
                 GridPane.rowIndex="0" GridPane.columnIndex="2" prefWidth="100"/>
         
         <Label text="Carpeta de Init:" GridPane.rowIndex="1" GridPane.columnIndex="0" 
-               style="-fx-text-fill: #e0e0e0; -fx-font-size: 12px;"/>
+               styleClass="setup-label"/>
         <TextField fx:id="txtInitPath" GridPane.rowIndex="1" GridPane.columnIndex="1" prefWidth="450"
                    promptText="Ej: C:/AO/init"/>
         <Button fx:id="btnBrowseInit" text="Examinar..." onAction="#onBrowseInit" 
                 GridPane.rowIndex="1" GridPane.columnIndex="2" prefWidth="100"/>
         
         <Label text="Carpeta de Dat:" GridPane.rowIndex="2" GridPane.columnIndex="0" 
-               style="-fx-text-fill: #e0e0e0; -fx-font-size: 12px;"/>
+               styleClass="setup-label"/>
         <TextField fx:id="txtDatPath" GridPane.rowIndex="2" GridPane.columnIndex="1" prefWidth="450"
                    promptText="Ej: C:/AO/dat"/>
         <Button fx:id="btnBrowseDat" text="Examinar..." onAction="#onBrowseDat" 
                 GridPane.rowIndex="2" GridPane.columnIndex="2" prefWidth="100"/>
         
         <Label text="Carpeta de Exportados:" GridPane.rowIndex="3" GridPane.columnIndex="0" 
-               style="-fx-text-fill: #e0e0e0; -fx-font-size: 12px;"/>
+               styleClass="setup-label"/>
         <TextField fx:id="txtExportPath" GridPane.rowIndex="3" GridPane.columnIndex="1" prefWidth="450"
                    promptText="Ej: C:/AO/export"/>
         <Button fx:id="btnBrowseExport" text="Examinar..." onAction="#onBrowseExport" 
                 GridPane.rowIndex="3" GridPane.columnIndex="2" prefWidth="100"/>
     </GridPane>
-    
+
     <!-- Indexing System Selection -->
     <VBox spacing="10">
-        <Label text="Sistema de Indexado:" style="-fx-text-fill: #e0e0e0; -fx-font-size: 14px; -fx-font-weight: bold;"/>
-        <Label text="Seleccione el sistema de indexado para cabezas y cascos:" 
-               style="-fx-text-fill: #b0b0b0; -fx-font-size: 11px;"/>
+        <Label text="Sistema de Indexación:" styleClass="setup-section-title"/>
+        <Label text="Seleccione el método de indexación que desea utilizar:" 
+               styleClass="setup-section-subtitle"/>
         
         <HBox spacing="20" alignment="CENTER">
-            <!-- Sistema de Moldes -->
-            <VBox fx:id="cardMoldSystem" alignment="CENTER" spacing="8" 
-                  style="-fx-background-color: #3c3c3c; -fx-padding: 20; -fx-background-radius: 8; -fx-cursor: hand; -fx-border-color: #4a90d9; -fx-border-width: 2; -fx-border-radius: 8;"
-                  onMouseClicked="#onMoldSystemClick" prefWidth="200" prefHeight="180">
-                <ImageView fitWidth="80" fitHeight="80" preserveRatio="true">
-                    <image>
-                        <Image url="@images/indexing_mold.png"/>
-                    </image>
-                </ImageView>
-                <Label text="Sistema de Moldes" style="-fx-text-fill: #e0e0e0; -fx-font-size: 13px; -fx-font-weight: bold;"/>
-                <Label text="Usa texturas y coordenadas" wrapText="true" textAlignment="CENTER"
-                       style="-fx-text-fill: #909090; -fx-font-size: 10px;"/>
-                <Label text="(Nuevo)" style="-fx-text-fill: #4a90d9; -fx-font-size: 9px; -fx-font-style: italic;"/>
-            </VBox>
-            
             <!-- Sistema Tradicional -->
-            <VBox fx:id="cardTraditionalSystem" alignment="CENTER" spacing="8" 
-                  style="-fx-background-color: #3c3c3c; -fx-padding: 20; -fx-background-radius: 8; -fx-cursor: hand; -fx-border-color: #50c878; -fx-border-width: 2; -fx-border-radius: 8;"
-                  onMouseClicked="#onTraditionalSystemClick" prefWidth="200" prefHeight="180">
-                <ImageView fitWidth="80" fitHeight="80" preserveRatio="true">
+            <VBox fx:id="cardTraditionalSystem" alignment="CENTER" spacing="10" 
+                  styleClass="setup-card, setup-card-selected-traditional"
+                  onMouseClicked="#onTraditionalSystemClick" prefWidth="200" prefHeight="150">
+                 <ImageView fitWidth="64" fitHeight="64" preserveRatio="true">
                     <image>
                         <Image url="@images/indexing_traditional.png"/>
                     </image>
                 </ImageView>
-                <Label text="Sistema Tradicional" style="-fx-text-fill: #e0e0e0; -fx-font-size: 13px; -fx-font-weight: bold;"/>
-                <Label text="Índices directos a gráficos" wrapText="true" textAlignment="CENTER"
-                       style="-fx-text-fill: #909090; -fx-font-size: 10px;"/>
-                <Label text="(Actual)" style="-fx-text-fill: #50c878; -fx-font-size: 9px; -fx-font-style: italic;"/>
+                <Label text="Sistema Tradicional" styleClass="setup-card-title"/>
+                <Label text="Índices directos a gráficos" styleClass="setup-card-desc" wrapText="true"/>
+                <Label text="(Recomendado 0.13.0)" styleClass="setup-card-badge" style="-fx-text-fill: #50c878;"/>
+            </VBox>
+            
+            <!-- Sistema de Moldes -->
+            <VBox fx:id="cardMoldSystem" alignment="CENTER" spacing="10" 
+                  styleClass="setup-card"
+                  onMouseClicked="#onMoldSystemClick" prefWidth="200" prefHeight="150">
+                 <ImageView fitWidth="64" fitHeight="64" preserveRatio="true">
+                    <image>
+                        <Image url="@images/indexing_mold.png"/>
+                    </image>
+                </ImageView>
+                <Label text="Sistema de Moldes" styleClass="setup-card-title"/>
+                <Label text="Indexación mediante moldes" styleClass="setup-card-desc" wrapText="true"/>
+                <Label text="(Experimental)" styleClass="setup-card-badge" style="-fx-text-fill: #4a90d9;"/>
+            </VBox>
+        </HBox>
+    </VBox>
+    
+    <!-- Theme Selection -->
+    <VBox spacing="10">
+        <Label text="Tema de la Aplicación:" styleClass="setup-section-title"/>
+        <Label text="Seleccione el tema visual de preferencia:" 
+               styleClass="setup-section-subtitle"/>
+        
+        <HBox spacing="20" alignment="CENTER">
+            <!-- Tema Oscuro -->
+            <VBox fx:id="cardDarkTheme" alignment="CENTER" spacing="8" 
+                  styleClass="setup-card"
+                  onMouseClicked="#onDarkThemeClick" prefWidth="200" prefHeight="100">
+                  <VBox style="-fx-background-color: #2b2b2b; -fx-padding: 5; -fx-border-color: #505050; -fx-border-radius: 4;" prefWidth="40" prefHeight="30" alignment="CENTER">
+                     <Label text="Dark" style="-fx-text-fill: white; -fx-font-size: 8px;"/>
+                  </VBox>
+                <Label text="Oscuro" styleClass="setup-card-title"/>
+            </VBox>
+            
+            <!-- Tema Claro -->
+            <VBox fx:id="cardLightTheme" alignment="CENTER" spacing="8" 
+                  styleClass="setup-card"
+                  onMouseClicked="#onLightThemeClick" prefWidth="200" prefHeight="100">
+                  <VBox style="-fx-background-color: #f0f0f0; -fx-padding: 5; -fx-border-color: #aaaaaa; -fx-border-radius: 4;" prefWidth="40" prefHeight="30" alignment="CENTER">
+                     <Label text="Light" style="-fx-text-fill: black; -fx-font-size: 8px;"/>
+                  </VBox>
+                <Label text="Claro" styleClass="setup-card-title"/>
             </VBox>
         </HBox>
     </VBox>
     
     <!-- Info Box -->
-    <VBox spacing="5" style="-fx-background-color: #3c3c3c; -fx-padding: 15; -fx-background-radius: 5;">
-        <Label text="ℹ️  Información:" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #4a90d9;"/>
-        <Label text="• Gráficos: Carpeta con archivos .bmp/.png" wrapText="true" style="-fx-font-size: 11px; -fx-text-fill: #b0b0b0;"/>
-        <Label text="• Init: Carpeta con archivos .ind (Graficos.ind, Cabezas.ind, etc.)" wrapText="true" style="-fx-font-size: 11px; -fx-text-fill: #b0b0b0;"/>
-        <Label text="• Dat: Carpeta con archivos .dat" wrapText="true" style="-fx-font-size: 11px; -fx-text-fill: #b0b0b0;"/>
-        <Label text="• Exportados: Carpeta donde se guardarán los archivos exportados" wrapText="true" style="-fx-font-size: 11px; -fx-text-fill: #b0b0b0;"/>
+    <VBox spacing="5" styleClass="setup-info-box">
+        <Label text="ℹ️ Información de Rutas:" styleClass="setup-info-title"/>
+        <Label text="• Gráficos: Archivos .bmp/.png" styleClass="setup-info-text"/>
+        <Label text="• Init: Archivos .ind (Graficos.ind, etc)" styleClass="setup-info-text"/>
+        <Label text="• Dat: Archivos .dat del servidor" styleClass="setup-info-text"/>
     </VBox>
     
     <!-- Buttons -->
     <HBox spacing="10" alignment="CENTER_RIGHT">
         <Button fx:id="btnFinish" text="Finalizar Configuración" onAction="#onFinish" 
-                prefWidth="180" style="-fx-background-color: #4a90d9; -fx-text-fill: white; -fx-font-weight: bold;"/>
+                prefWidth="180" styleClass="button-primary"/>
     </HBox>
 </VBox>

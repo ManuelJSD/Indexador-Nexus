@@ -18,6 +18,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.image.WritableImage;
+import javafx.scene.image.PixelReader;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.control.*;
@@ -2358,22 +2359,26 @@ public class MainController {
     // params down.
     // Since existing methods use TextInputDialog inside 'loadAndDetectSprites', we
     // need to refactor that first.
-    runAutoIndexLogic("Personaje", namePrefix, startFileNum);
+    runAutoIndexLogic("Personaje", namePrefix, startFileNum, 1, 1);
   }
 
   public void autoIndexObjetos(String namePrefix, int startFileNum) {
-    runAutoIndexLogic("Objeto", namePrefix, startFileNum);
+    runAutoIndexLogic("Objeto", namePrefix, startFileNum, 1, 1);
   }
 
   public void autoIndexSuperficies(String namePrefix, int startFileNum) {
-    runAutoIndexLogic("Superficie", namePrefix, startFileNum);
+    autoIndexSuperficies(namePrefix, startFileNum, 1, 1);
+  }
+
+  public void autoIndexSuperficies(String namePrefix, int startFileNum, int cols, int rows) {
+    runAutoIndexLogic("Superficie", namePrefix, startFileNum, cols, rows);
   }
 
   public void autoIndexAnimacion(String namePrefix, int startFileNum) {
-    runAutoIndexLogic("Animacion", namePrefix, startFileNum);
+    runAutoIndexLogic("Animacion", namePrefix, startFileNum, 1, 1);
   }
 
-  private void runAutoIndexLogic(String type, String namePrefix, int fileNum) {
+  private void runAutoIndexLogic(String type, String namePrefix, int fileNum, int atlasCols, int atlasRows) {
     // 1. If fileNum is -1, ask user? Or did wizard handle it?
     // Wizard handles it being optional (-1).
 
@@ -2396,6 +2401,31 @@ public class MainController {
 
     ImageDetectionResult result = loadAndDetectSpritesDirect(fileNum);
     if (result != null) {
+      // Si es superficies, aplicar split ANTES de la preview para que el usuario vea
+      // la rejilla
+      // Si es superficies, aplicar split ANTES de la preview para que el usuario vea
+      // la rejilla
+      if (type != null && type.toLowerCase().startsWith("superficie")) {
+        // Obtenemos el PixelReader de la imagen actual cargada para filtrar tiles
+        // vacíos
+        PixelReader reader = null;
+        try {
+          String imagePath = configManager.getGraphicsDir() + fileNum + ".png";
+          if (!new java.io.File(imagePath).exists()) {
+            imagePath = configManager.getGraphicsDir() + fileNum + ".bmp";
+          }
+          Image img = imageCache.getImage(imagePath);
+          if (img != null) {
+            reader = img.getPixelReader();
+          }
+        } catch (Exception e) {
+          logger.error("Error loading image for tiling check", e);
+        }
+
+        result.regions = org.nexus.indexador.utils.AutoTilingService.getInstance()
+            .splitRegions(result.regions, 32, 32, atlasCols, atlasRows, reader);
+      }
+
       boolean confirmed = showDetectionPreview(result, "Auto-Indexar " + type,
           "Se han detectado " + result.regions.size() + " sprites/cuadros.\n¿Deseas importarlos?");
 
@@ -2430,9 +2460,21 @@ public class MainController {
 
         } else {
           // Objetos / Superficies (Solo estáticos)
-          List<Integer> createdIds = createStaticGrhs(result.regions, fileNum);
-          org.nexus.indexador.utils.ToastNotification.show(txtIndice.getScene().getWindow(),
-              "¡Éxito! Se crearon " + createdIds.size() + " índices.");
+          List<Integer> createdIds;
+
+          if (type != null && type.toLowerCase().startsWith("superficie")) {
+            // El split ya se realizó antes de la preview (línea anrriba)
+            // por lo tanto result.regions ya tiene los tiles correctos.
+            // No volver a splitear o causaremos recursión de división (32px -> 10px).
+            createdIds = createStaticGrhs(result.regions, fileNum);
+
+            org.nexus.indexador.utils.ToastNotification.show(txtIndice.getScene().getWindow(),
+                "¡Éxito! Se crearon (Grid 32x32) " + createdIds.size() + " índices.");
+          } else {
+            createdIds = createStaticGrhs(result.regions, fileNum);
+            org.nexus.indexador.utils.ToastNotification.show(txtIndice.getScene().getWindow(),
+                "¡Éxito! Se crearon " + createdIds.size() + " índices.");
+          }
         }
       }
     }

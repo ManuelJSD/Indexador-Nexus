@@ -16,7 +16,8 @@ import javafx.stage.Stage;
 import java.util.List;
 
 /**
- * Controller para la ventana de vista previa de detección de sprites. Muestra la imagen con
+ * Controller para la ventana de vista previa de detección de sprites. Muestra
+ * la imagen con
  * rectángulos sobre los sprites detectados antes de crear GRHs.
  */
 public class DetectionPreviewController {
@@ -133,6 +134,12 @@ public class DetectionPreviewController {
 
   public void setStage(Stage stage) {
     this.stage = stage;
+    if (stage != null) {
+      try {
+        stage.getIcons().add(new javafx.scene.image.Image(getClass().getResourceAsStream("/img/icon.png")));
+      } catch (Exception e) {
+      }
+    }
   }
 
   public boolean isConfirmed() {

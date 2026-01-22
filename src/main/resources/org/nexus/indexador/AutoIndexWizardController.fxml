@@ -108,6 +108,22 @@
                      </HBox>
                      <Label text="Escribe el número o selecciona el archivo .png" style="-fx-text-fill: #808080; -fx-font-size: 11px;"/>
                 </VBox>
+                
+                <!-- Atlas Configuration -->
+                <VBox fx:id="boxAtlasConfig" spacing="10" alignment="CENTER_LEFT" visible="false" managed="false" style="-fx-background-color: #2a2a2a; -fx-padding: 10; -fx-background-radius: 5;">
+                    <Label text="Configuración Atlas (Superficies)" styleClass="setup-label" style="-fx-font-size: 12px;"/>
+                    <HBox spacing="15">
+                        <VBox spacing="5">
+                             <Label text="Columnas"/>
+                             <TextField fx:id="txtAtlasCols" text="1" prefWidth="60" style="-fx-alignment: CENTER;"/>
+                        </VBox>
+                        <VBox spacing="5">
+                             <Label text="Filas"/>
+                             <TextField fx:id="txtAtlasRows" text="1" prefWidth="60" style="-fx-alignment: CENTER;"/>
+                        </VBox>
+                    </HBox>
+                    <Label text="Divide la imagen en bloques antes de procesar." style="-fx-text-fill: #808080; -fx-font-size: 10px;" wrapText="true"/>
+                </VBox>
 
                  <Button text="Abrir Carpeta de Gráficos" onAction="#onOpenGraphicsFolder" styleClass="button-outlined" maxWidth="Infinity"/>
             </VBox>

@@ -43,6 +43,13 @@ public class AutoIndexWizardController {
   @FXML
   private Label lblNoImage;
 
+  @FXML
+  private VBox boxAtlasConfig;
+  @FXML
+  private TextField txtAtlasCols;
+  @FXML
+  private TextField txtAtlasRows;
+
   // State
   private String selectedType = "";
 
@@ -83,7 +90,7 @@ public class AutoIndexWizardController {
   @FXML
   private void onSuperficiesClick() {
     goToConfig("Superficies", "Introduce el número de archivo inicial.",
-        () -> mainController.autoIndexSuperficies("", getInputFileNum()));
+        () -> mainController.autoIndexSuperficies("", getInputFileNum(), getAtlasCols(), getAtlasRows()));
   }
 
   @FXML
@@ -104,6 +111,15 @@ public class AutoIndexWizardController {
     step1Selection.setVisible(false);
     step2Config.setVisible(true);
 
+    // Atlas Config Visibility
+    if ("Superficies".equals(type) && boxAtlasConfig != null) {
+      boxAtlasConfig.setVisible(true);
+      boxAtlasConfig.setManaged(true);
+    } else if (boxAtlasConfig != null) {
+      boxAtlasConfig.setVisible(false);
+      boxAtlasConfig.setManaged(false);
+    }
+
     // Update Buttons
     btnBack.setVisible(true);
     btnStart.setVisible(true);
@@ -111,6 +127,11 @@ public class AutoIndexWizardController {
 
     // Reset state
     txtFileNum.setText("");
+    if (txtAtlasCols != null)
+      txtAtlasCols.setText("1");
+    if (txtAtlasRows != null)
+      txtAtlasRows.setText("1");
+
     updatePreview("");
 
     // Focus
@@ -138,6 +159,22 @@ public class AutoIndexWizardController {
     if (pendingAction != null) {
       stage.close();
       javafx.application.Platform.runLater(pendingAction);
+    }
+  }
+
+  private int getAtlasCols() {
+    try {
+      return Integer.parseInt(txtAtlasCols.getText().trim());
+    } catch (Exception e) {
+      return 1;
+    }
+  }
+
+  private int getAtlasRows() {
+    try {
+      return Integer.parseInt(txtAtlasRows.getText().trim());
+    } catch (Exception e) {
+      return 1;
     }
   }
 

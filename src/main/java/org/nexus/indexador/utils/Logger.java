@@ -14,12 +14,20 @@ import java.util.Date;
  * de guardarlos en un archivo de registro y/o mostrarlos en la consola.
  */
 public class Logger {
+
+    public interface LogListener {
+        void onLog(String message);
+    }
+
     private static Logger instance;
     private boolean consoleOutput = true;
     private boolean fileOutput = true;
     private String logFilePath;
     private File logFile;
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private final java.util.List<LogListener> listeners = new java.util.ArrayList<>();
+    private final java.util.List<String> logHistory = new java.util.ArrayList<>();
+    private static final int MAX_HISTORY = 1000;
 
     /**
      * Nivel de log para categorizar los mensajes.
@@ -89,6 +97,25 @@ public class Logger {
         this.logFilePath = path;
     }
 
+    public void addLogListener(LogListener listener) {
+        synchronized (listeners) {
+            listeners.add(listener);
+        }
+
+        // Replay history
+        synchronized (logHistory) {
+            for (String historicLog : logHistory) {
+                listener.onLog(historicLog);
+            }
+        }
+    }
+
+    public int getListenerCount() {
+        synchronized (listeners) {
+            return listeners.size();
+        }
+    }
+
     /**
      * Registra un mensaje con el nivel especificado.
      *
@@ -97,6 +124,22 @@ public class Logger {
      */
     public void log(Level level, String message) {
         String formattedMessage = formatLogMessage(level, message);
+        String messageWithNewLine = formattedMessage + System.lineSeparator();
+
+        // Guardar en historial
+        synchronized (logHistory) {
+            if (logHistory.size() >= MAX_HISTORY) {
+                logHistory.remove(0);
+            }
+            logHistory.add(messageWithNewLine);
+        }
+
+        // Notificar listeners
+        synchronized (listeners) {
+            for (LogListener listener : listeners) {
+                listener.onLog(messageWithNewLine);
+            }
+        }
 
         // Salida por consola si está activada
         if (consoleOutput) {
@@ -169,8 +212,25 @@ public class Logger {
      * @param message El mensaje a formatear.
      * @return El mensaje formateado.
      */
+    public String getLastLog() {
+        synchronized (logHistory) {
+            if (logHistory.isEmpty())
+                return "No logs yet";
+            return logHistory.get(logHistory.size() - 1);
+        }
+    }
+
+    /**
+     * Formatea un mensaje de log con la fecha, hora y nivel.
+     *
+     * @param level   Nivel del mensaje.
+     * @param message El mensaje a formatear.
+     * @return El mensaje formateado.
+     */
     private String formatLogMessage(Level level, String message) {
-        return dateFormat.format(new Date()) + " [" + level + "] " + message;
+        synchronized (dateFormat) {
+            return dateFormat.format(new Date()) + " [" + level + "] " + message;
+        }
     }
 
     /**

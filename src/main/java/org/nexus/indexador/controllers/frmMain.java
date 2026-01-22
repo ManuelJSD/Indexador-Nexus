@@ -1943,7 +1943,7 @@ public class frmMain {
 
     @FXML
     public void mnuConsola_OnAction(ActionEvent actionEvent) {
-        windowManager.showWindow("frmConsole", "Consola", false);
+        windowManager.showWindow("frmConsola", "Consola de Depuración", false);
     }
 
     @FXML

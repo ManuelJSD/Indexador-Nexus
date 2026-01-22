@@ -20,6 +20,9 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) {
+        // Activar redirección de logs a la consola de depuración
+        org.nexus.indexador.controllers.frmConsola.activateGlobalRedirection();
+
         logger.info("Iniciando aplicación Indexador Nexus");
 
         // Configurar icono

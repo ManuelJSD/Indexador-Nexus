@@ -1,10 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.TextArea?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #42424;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nexus.indexador.controllers.frmConsola">
-   <children>
-      <TextArea editable="false" layoutX="4.0" layoutY="3.0" prefHeight="394.0" prefWidth="592.0" style="-fx-background-color: #535353; -fx-border-color: #000000;" />
-   </children>
-</AnchorPane>
+<BorderPane prefHeight="500.0" prefWidth="700.0" style="-fx-background-color: #1e1e1e;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nexus.indexador.controllers.frmConsola">
+    <top>
+        <ToolBar prefHeight="40.0" prefWidth="700.0" styleClass="main-toolbar" stylesheets="@styles/dark-theme.css" BorderPane.alignment="CENTER">
+            <items>
+                <Button mnemonicParsing="false" onAction="#btnClear_OnAction" styleClass="toolbar-button" text="Limpiar">
+                    <graphic>
+                        <StackPane styleClass="icon, icon-delete" />
+                    </graphic>
+                    <tooltip>
+                        <Tooltip text="Limpiar consola" />
+                    </tooltip>
+                </Button>
+                <Button mnemonicParsing="false" onAction="#btnCopy_OnAction" styleClass="toolbar-button" text="Copiar">
+                    <graphic>
+                        <StackPane styleClass="icon, icon-copy" />
+                    </graphic>
+                    <tooltip>
+                        <Tooltip text="Copiar todo al portapapeles" />
+                    </tooltip>
+                </Button>
+            <CheckBox fx:id="chkAutoScroll" mnemonicParsing="false" selected="true" text="Auto-Scroll" textFill="WHITE" />
+            </items>
+        </ToolBar>
+    </top>
+    <center>
+        <TextArea fx:id="txtConsole" editable="false" prefHeight="200.0" prefWidth="200.0" style="-fx-font-family: 'Consolas', 'Monospaced'; -fx-font-size: 13px;" stylesheets="@styles/dark-theme.css" wrapText="true" BorderPane.alignment="CENTER">
+         <font>
+            <Font name="Consolas" size="13.0" />
+         </font></TextArea>
+    </center>
+</BorderPane>

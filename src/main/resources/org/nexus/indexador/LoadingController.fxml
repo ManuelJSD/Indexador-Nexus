@@ -7,17 +7,18 @@
 <?import javafx.scene.text.Font?>
 
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="296.0" prefWidth="524.0" style="-fx-background-color: #424242;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nexus.indexador.controllers.LoadingController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="330.0" prefWidth="524.0" style="-fx-background-color: #424242;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nexus.indexador.controllers.LoadingController">
    <children>
       <ImageView fx:id="imgLogo" fitHeight="262.0" fitWidth="922.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../../../img/NexusEditor.jpg" />
          </image>
       </ImageView>
-      <Label fx:id="lblStatus" alignment="CENTER" layoutX="4.0" layoutY="262.0" prefHeight="35.0" prefWidth="516.0" text="Iniciando..." textFill="WHITE">
+      <Label fx:id="lblStatus" alignment="CENTER" layoutX="4.0" layoutY="270.0" prefHeight="30.0" prefWidth="516.0" text="Iniciando..." textFill="WHITE">
          <font>
-            <Font size="18.0" />
+            <Font size="14.0" />
          </font>
       </Label>
+      <javafx.scene.control.ProgressBar fx:id="progressBar" layoutX="12.0" layoutY="300.0" prefHeight="18.0" prefWidth="500.0" progress="0.0" />
    </children>
 </AnchorPane>

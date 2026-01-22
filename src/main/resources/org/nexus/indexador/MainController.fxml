@@ -90,6 +90,13 @@
                         <Menu mnemonicParsing="true" text="_Configuración">
                             <items>
                                 <MenuItem fx:id="mnuOptions" mnemonicParsing="false" onAction="#mnuOptions_OnAction" text="Opciones..." />
+                                <SeparatorMenuItem />
+                                <Menu text="Tema">
+                                    <items>
+                                        <MenuItem fx:id="mnuThemeDark" onAction="#mnuThemeDark_OnAction" text="Oscuro" />
+                                        <MenuItem fx:id="mnuThemeLight" onAction="#mnuThemeLight_OnAction" text="Claro" />
+                                    </items>
+                                </Menu>
                             </items>
                         </Menu>
                         <SeparatorMenuItem />
@@ -298,11 +305,11 @@
             </items>
         </ToolBar>
         
-        <Label fx:id="lblIndices" layoutX="836.0" layoutY="70.0" prefWidth="200.0" styleClass="info-label" text="Indices cargados: 0" />
+        <Label fx:id="lblIndices" AnchorPane.rightAnchor="330.0" layoutY="70.0" prefWidth="200.0" styleClass="info-label" text="Indices cargados: 0" />
         
         <!-- Panel de Filtros Colapsable -->
         <!-- Left Panel Container (VBox) -->
-        <VBox layoutX="12.0" AnchorPane.topAnchor="70.0" AnchorPane.bottomAnchor="25.0" prefWidth="200.0" spacing="0">
+        <VBox AnchorPane.leftAnchor="12.0" AnchorPane.topAnchor="70.0" AnchorPane.bottomAnchor="25.0" prefWidth="200.0" spacing="0">
             <!-- 1. Lista (Grow Always) -->
             <ListView fx:id="lstIndices" VBox.vgrow="ALWAYS" prefWidth="200.0" styleClass="indices-list" />
             
@@ -348,41 +355,41 @@
                 </children>
             </Pane>
         </VBox>
-        <Label fx:id="lblVersion" layoutX="1056.0" layoutY="70.0" prefHeight="17.0" prefWidth="156.0" styleClass="version-label" text="Versión: 0" />
+        <Label fx:id="lblVersion" AnchorPane.rightAnchor="154.0" layoutY="70.0" prefHeight="17.0" prefWidth="156.0" styleClass="version-label" text="Versión: 0" />
         <!-- Moved Indice controls to end for Z-Order -->
         
-        <ColorPicker fx:id="cpBackground" layoutX="1225.0" layoutY="70.0" prefHeight="25.0" prefWidth="130.0" promptText="Color de Fondo" styleClass="bg-color-picker">
+        <ColorPicker fx:id="cpBackground" AnchorPane.rightAnchor="11.0" layoutY="70.0" prefHeight="25.0" prefWidth="130.0" promptText="Color de Fondo" styleClass="bg-color-picker">
              <tooltip>
                  <Tooltip text="Cambiar el color de fondo del visualizador" />
              </tooltip>
         </ColorPicker>
 
-        <ScrollPane fx:id="PaneGrhView" layoutX="221.0" AnchorPane.topAnchor="70.0" AnchorPane.bottomAnchor="120.0" prefWidth="604.0" styleClass="grh-view-scroll">
+        <ScrollPane fx:id="PaneGrhView" AnchorPane.leftAnchor="221.0" AnchorPane.rightAnchor="540.0" AnchorPane.topAnchor="70.0" AnchorPane.bottomAnchor="120.0" styleClass="grh-view-scroll">
             <content>
                 <ImageView fx:id="imgIndice" layoutX="5.0" layoutY="5.0" onMouseDragged="#onMouseDragged" onMousePressed="#onMousePressed" pickOnBounds="true" preserveRatio="true" smooth="true" style="-fx-border-color: #EA3FF7" />
             </content>
         </ScrollPane>
 
-        <Pane fx:id="panePreviewBackground" layoutX="836.0" layoutY="96.0" prefHeight="330.0" prefWidth="520.0" styleClass="preview-pane">
+        <Pane fx:id="panePreviewBackground" AnchorPane.rightAnchor="10.0" layoutY="96.0" prefHeight="330.0" prefWidth="520.0" styleClass="preview-pane">
             <children>
                 <ImageView fx:id="imgGrafico" fitHeight="374.0" fitWidth="508.0" layoutX="5.0" layoutY="6.0" pickOnBounds="true" preserveRatio="true" smooth="false" />
                 <Rectangle fx:id="rectanguloIndice" fill="TRANSPARENT" stroke="RED" strokeWidth="1.0" />
             </children>
         </Pane>
 
-        <Button fx:id="btnAplicar" layoutX="910.0" AnchorPane.bottomAnchor="40.0" mnemonicParsing="false" onAction="#saveGrhData" prefHeight="25.0" prefWidth="368.0" text="Aplicar cambios" textAlignment="CENTER" styleClass="button-primary">
+        <Button fx:id="btnAplicar" AnchorPane.rightAnchor="88.0" AnchorPane.bottomAnchor="40.0" mnemonicParsing="false" onAction="#saveGrhData" prefHeight="25.0" prefWidth="368.0" text="Aplicar cambios" textAlignment="CENTER" styleClass="button-primary">
             <tooltip>
                 <Tooltip text="Guardar cambios del GRH seleccionado" />
             </tooltip>
         </Button>
         <!-- Eliminado txtFiltro de aqui, movido arriba -->
-        <Slider fx:id="sldZoom" layoutX="231.0" AnchorPane.bottomAnchor="20.0" max="50.0" min="1.0" prefHeight="66.0" prefWidth="586.0" value="1.0">
+        <Slider fx:id="sldZoom" AnchorPane.leftAnchor="231.0" AnchorPane.rightAnchor="549.0" AnchorPane.bottomAnchor="35.0" max="50.0" min="1.0" value="1.0">
             <tooltip>
                 <Tooltip text="Ajustar zoom de la vista previa" />
             </tooltip>
         </Slider>
 
-        <TabPane layoutX="837.0" layoutY="440.0" prefHeight="210.0" prefWidth="519.0" tabClosingPolicy="UNAVAILABLE">
+        <TabPane AnchorPane.rightAnchor="10.0" layoutY="440.0" prefHeight="210.0" prefWidth="519.0" tabClosingPolicy="UNAVAILABLE">
             <tabs>
                 <Tab text="Estatico">
                     <content>

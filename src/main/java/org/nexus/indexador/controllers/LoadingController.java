@@ -16,8 +16,14 @@ public class LoadingController {
     @FXML
     public Label lblStatus;
 
+    @FXML
+    public javafx.scene.control.ProgressBar progressBar;
+
     private Stage currentStage;
     private final Logger logger = Logger.getInstance();
+
+    private static final int TOTAL_STEPS = 7;
+    private int currentStep = 0;
 
     public void setStage(Stage stage) {
         this.currentStage = stage;
@@ -59,7 +65,7 @@ public class LoadingController {
             Platform.runLater(() -> {
                 // Usar WindowManager para abrir MainController y registrarlo
                 org.nexus.indexador.utils.WindowManager winMgr = org.nexus.indexador.utils.WindowManager.getInstance();
-                boolean success = winMgr.showWindow("MainController", "Indexador Nexus", false);
+                boolean success = winMgr.showWindow("MainController", "Indexador Nexus", true); // Resizable = true
 
                 if (success) {
                     Stage mainStage = winMgr.getWindow("MainController");
@@ -92,15 +98,25 @@ public class LoadingController {
      */
     private void loadDataSafe(DataLoadingTask task, String description) {
         try {
-            Platform.runLater(() -> lblStatus
-                    .setText(Character.toUpperCase(description.charAt(0)) + description.substring(1) + "..."));
+            Platform.runLater(() -> {
+                lblStatus.setText(Character.toUpperCase(description.charAt(0)) + description.substring(1) + "...");
+                double progress = (double) currentStep / TOTAL_STEPS;
+                if (progressBar != null)
+                    progressBar.setProgress(progress);
+            });
+
             task.execute();
+
+            currentStep++;
+            Platform.runLater(() -> {
+                double progress = (double) currentStep / TOTAL_STEPS;
+                if (progressBar != null)
+                    progressBar.setProgress(progress);
+            });
+
         } catch (Exception e) {
             String errorMsg = "Error al " + description + ": " + e.getMessage();
             logger.error(errorMsg, e);
-            // No detenemos la carga por un error en un índice específico, pero lo
-            // notificamos
-            // Podríamos decidir mostrar un alert no bloqueante o simplemente logguear
         }
     }
 

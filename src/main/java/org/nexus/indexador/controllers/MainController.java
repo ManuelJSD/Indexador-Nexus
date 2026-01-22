@@ -32,6 +32,7 @@ import org.nexus.indexador.utils.ConfigManager;
 import org.nexus.indexador.utils.ExportService;
 import org.nexus.indexador.utils.ImageCache;
 import org.nexus.indexador.utils.Logger;
+import org.nexus.indexador.utils.ToastNotification;
 import org.nexus.indexador.utils.UndoManager;
 import org.nexus.indexador.utils.ValidationService;
 import org.nexus.indexador.utils.WindowManager;
@@ -97,6 +98,12 @@ public class MainController {
 
     @FXML
     public MenuItem mnuReloadWeapons;
+
+    @FXML
+    public MenuItem mnuThemeDark;
+
+    @FXML
+    public MenuItem mnuThemeLight;
 
     @FXML
     public MenuItem mnuReloadFXs;
@@ -358,6 +365,29 @@ public class MainController {
                 GrhData selectedGrh = grhList.get(selectedIndex);
                 updateEditor(selectedGrh);
                 updateViewer(selectedGrh);
+            }
+        });
+
+        // Manejar atajos de teclado explícitamente porque ListView consume algunos
+        // eventos
+        lstIndices.setOnKeyPressed(event -> {
+            if (event.isControlDown()) {
+                switch (event.getCode()) {
+                    case C:
+                        mnuCopy_OnAction();
+                        event.consume();
+                        break;
+                    case V:
+                        mnuPaste_OnAction();
+                        event.consume();
+                        break;
+                    case D:
+                        mnuDuplicate_OnAction();
+                        event.consume();
+                        break;
+                    default:
+                        break;
+                }
             }
         });
     }
@@ -751,6 +781,26 @@ public class MainController {
         }
     }
 
+    @FXML
+    private void mnuThemeDark_OnAction(ActionEvent event) {
+        changeTheme("DARK");
+    }
+
+    @FXML
+    private void mnuThemeLight_OnAction(ActionEvent event) {
+        changeTheme("LIGHT");
+    }
+
+    private void changeTheme(String theme) {
+        configManager.setAppTheme(theme);
+        try {
+            configManager.writeConfig();
+        } catch (IOException e) {
+            logger.error("Error saving theme config", e);
+        }
+        windowManager.updateThemeForAll(theme);
+    }
+
     /**
      * Método para manejar la acción cuando se hace clic en el elemento del menú
      * "Color de Fondo..."
@@ -886,7 +936,9 @@ public class MainController {
                         original.getTileWidth(), original.getTileHeight());
             }
             logger.info("GRH " + original.getGrh() + " copiado al clipboard");
-            showInfoAlert("Copiado", "GRH " + original.getGrh() + " copiado al clipboard.");
+            logger.info("GRH " + original.getGrh() + " copiado al clipboard");
+            ToastNotification.show(WindowManager.getInstance().getWindow("MainController"),
+                    "GRH " + original.getGrh() + " copiado al clipboard");
         } else {
             showWarningAlert("Sin selección", "Seleccione un GRH para copiar.");
         }
@@ -941,7 +993,9 @@ public class MainController {
             });
 
             logger.info("Propiedades pegadas en GRH " + target.getGrh());
-            showInfoAlert("Pegado", "Propiedades pegadas en GRH " + target.getGrh());
+            logger.info("Propiedades pegadas en GRH " + target.getGrh());
+            ToastNotification.show(WindowManager.getInstance().getWindow("MainController"),
+                    "Propiedades pegadas en GRH " + target.getGrh());
         } else {
             showWarningAlert("Sin selección", "Seleccione un GRH donde pegar.");
         }
@@ -1279,7 +1333,30 @@ public class MainController {
             selectedGrh.setTileHeight(Short.parseShort(txtAlto.getText()));
 
             logger.info("Cambios aplicados!");
+            logger.info("Cambios aplicados!");
+            ToastNotification.show(WindowManager.getInstance().getWindow("MainController"), "Cambios aplicados");
         }
+    }
+
+    @FXML
+    private void toggleFilters(MouseEvent event) {
+        boolean isVisible = paneFilterContent.isVisible();
+        paneFilterContent.setVisible(!isVisible);
+        paneFilterContent.setManaged(!isVisible);
+        lblFilterToggle.setText(!isVisible ? "▼ Filtros" : "▶ Filtros");
+    }
+
+    @FXML
+    private void onApplyFilters(ActionEvent event) {
+        filterIndices(txtFiltro.getText(), false);
+    }
+
+    @FXML
+    private void onClearFilters(ActionEvent event) {
+        txtFiltro.clear();
+        chkAnimations.setSelected(false);
+        chkStatics.setSelected(false);
+        filterIndices("", false);
     }
 
     /**

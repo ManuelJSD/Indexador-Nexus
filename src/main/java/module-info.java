@@ -3,6 +3,7 @@ module org.nexus.indexador {
 	requires javafx.fxml;
 	requires javafx.base;
 	requires java.desktop;
+	requires com.google.gson;
 
 	opens org.nexus.indexador to javafx.fxml;
 

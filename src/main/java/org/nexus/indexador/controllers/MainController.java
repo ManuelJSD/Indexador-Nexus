@@ -1,8 +1,5 @@
 package org.nexus.indexador.controllers;
 
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -10,25 +7,20 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
-import javafx.util.Duration;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.scene.image.WritableImage;
 import javafx.scene.image.PixelReader;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.control.*;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import org.nexus.indexador.gamedata.DataManager;
 import org.nexus.indexador.gamedata.models.GrhData;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import org.nexus.indexador.utils.byteMigration;
 import org.nexus.indexador.utils.ConfigManager;
 import org.nexus.indexador.utils.ExportService;
 import org.nexus.indexador.utils.ImageCache;
@@ -38,6 +30,10 @@ import org.nexus.indexador.utils.UndoManager;
 import org.nexus.indexador.utils.ValidationService;
 import org.nexus.indexador.utils.WindowManager;
 import org.nexus.indexador.utils.AutoTilingService;
+import org.nexus.indexador.utils.GameRenderer;
+import org.nexus.indexador.utils.GrhEditorHelper;
+import org.nexus.indexador.services.FilterService;
+import org.nexus.indexador.services.UIService;
 
 import java.io.*;
 import java.util.*;
@@ -226,8 +222,6 @@ public class MainController {
   // lectura y escritura de archivos de configuración.
   private ConfigManager configManager;
 
-  private byteMigration byteMigration;
-
   private DataManager dataManager;
 
   // Estado del panel de filtros (expandido/colapsado)
@@ -242,13 +236,20 @@ public class MainController {
   // Gestor de ventanas
   private WindowManager windowManager;
 
+  // Renderizador de gráficos y animaciones
+  private GameRenderer gameRenderer;
+
+  // Servicio de filtrado y búsqueda
+  private FilterService filterService;
+
+  // Ayudante para el editor de propiedades
+  private GrhEditorHelper editorHelper;
+
+  // Servicio de UI (Alertas y Tareas Asíncronas)
+  private UIService uiService;
+
   // Clipboard para copiar/pegar GRH
   private GrhData copiedGrh = null;
-
-  // Índice del frame actual en la animación.
-  private int currentFrameIndex = 1;
-  // Línea de tiempo que controla la animación de los frames en el visor.
-  private Timeline animationTimeline;
 
   // Coordenadas originales del cursor del mouse en la escena al presionar el
   // botón del mouse.
@@ -268,9 +269,8 @@ public class MainController {
   @FXML
   protected void initialize() throws IOException {
 
-    // Obtener instancias de configManager y byteMigration
+    // Obtener instancias de configuración y datos
     configManager = ConfigManager.getInstance();
-    byteMigration = org.nexus.indexador.utils.byteMigration.getInstance();
     dataManager = org.nexus.indexador.gamedata.DataManager.getInstance();
     imageCache = ImageCache.getInstance();
     logger = Logger.getInstance();
@@ -283,6 +283,14 @@ public class MainController {
     setupFilterTextFieldListener();
     setupSliderZoom();
     setupColorPicker();
+
+    // Inicializar servicios
+    gameRenderer = new GameRenderer(imgIndice, imgGrafico, rectanguloIndice);
+    filterService = FilterService.getInstance();
+    editorHelper = new GrhEditorHelper(txtImagen, txtPosX, txtPosY, txtAncho, txtAlto, txtSpeed,
+        txtIndice, lstFrames);
+    uiService = new UIService();
+    uiService.init(lblStatus, progressMain);
 
     // Aplicar color de fondo configurado
     updateBackgroundColor();
@@ -361,9 +369,7 @@ public class MainController {
         .addListener((observable, oldValue, newValue) -> {
 
           // Detenemos la animación actual si existe
-          if (animationTimeline != null) {
-            animationTimeline.stop();
-          }
+          gameRenderer.stopAnimation();
 
           // Obtener el índice seleccionado
           int selectedIndex = lstIndices.getSelectionModel().getSelectedIndex();
@@ -408,49 +414,7 @@ public class MainController {
    * @param selectedGrh El gráfico seleccionado.
    */
   private void updateEditor(GrhData selectedGrh) {
-    // Obtenemos todos los datos
-    int fileGrh = selectedGrh.getFileNum();
-    int nFrames = selectedGrh.getNumFrames();
-    int x = selectedGrh.getsX();
-    int y = selectedGrh.getsY();
-    int width = selectedGrh.getTileWidth();
-    int height = selectedGrh.getTileHeight();
-    float speed = selectedGrh.getSpeed();
-
-    txtImagen.setText(String.valueOf(fileGrh));
-    txtPosX.setText(String.valueOf(x));
-    txtPosY.setText(String.valueOf(y));
-    txtAncho.setText(String.valueOf(width));
-    txtAlto.setText(String.valueOf(height));
-    txtSpeed.setText(String.valueOf(speed));
-
-    if (nFrames == 1) { // ¿Es estatico?
-
-      txtIndice.setText("Grh" + selectedGrh.getGrh() + "=" + nFrames + "-" + fileGrh + "-" + x + "-"
-          + y + "-" + width + "-" + height);
-
-      lstFrames.getItems().clear();
-
-    } else { // Entonces es animación...
-
-      StringBuilder frameText = new StringBuilder();
-
-      // Agregar los índices de gráficos al ListView
-      ObservableList<String> grhIndices = FXCollections.observableArrayList();
-
-      int[] frames = selectedGrh.getFrames();
-
-      for (int i = 1; i < selectedGrh.getNumFrames() + 1; i++) {
-        String frame = String.valueOf(frames[i]);
-        grhIndices.add(frame);
-
-        frameText.append("-").append(frame);
-      }
-
-      lstFrames.setItems(grhIndices);
-
-      txtIndice.setText("Grh" + selectedGrh.getGrh() + "=" + nFrames + frameText + "-" + speed);
-    }
+    editorHelper.updateEditor(selectedGrh);
   }
 
   /**
@@ -461,257 +425,7 @@ public class MainController {
    * @param selectedGrh El gráfico seleccionado.
    */
   private void updateViewer(GrhData selectedGrh) {
-    int nFrames = selectedGrh.getNumFrames();
-    if (nFrames == 1) {
-      displayStaticImage(selectedGrh);
-    } else {
-      displayAnimation(selectedGrh, nFrames);
-    }
-
-  }
-
-  /**
-   * Muestra una imagen estática en el ImageView correspondiente al gráfico
-   * seleccionado. Si el
-   * archivo de imagen existe, carga la imagen y la muestra en el ImageView.
-   * Además, recorta la
-   * región adecuada de la imagen completa para mostrar solo la parte relevante
-   * del gráfico. Si el
-   * archivo de imagen no existe, imprime un mensaje de advertencia.
-   *
-   * @param selectedGrh El gráfico seleccionado.
-   */
-  private void displayStaticImage(GrhData selectedGrh) {
-    // Construir la ruta completa de la imagen para imagePath
-    String imagePath = configManager.getGraphicsDir() + selectedGrh.getFileNum() + ".png";
-
-    if (!new File(imagePath).exists()) {
-      imagePath = configManager.getGraphicsDir() + selectedGrh.getFileNum() + ".bmp";
-    }
-
-    // Usar el caché de imágenes para obtener la imagen
-    Image staticImage = imageCache.getImage(imagePath);
-
-    if (staticImage != null) {
-      // Mandamos a dibujar el grafico completo en otro ImageView
-      drawFullImage(staticImage, selectedGrh);
-
-      // Obtener la imagen recortada del caché
-      WritableImage croppedImage = imageCache.getCroppedImage(imagePath, selectedGrh.getsX(),
-          selectedGrh.getsY(), selectedGrh.getTileWidth(), selectedGrh.getTileHeight());
-
-      if (croppedImage != null) {
-        // Establecer el tamaño preferido del ImageView para que coincida con el tamaño
-        // de la imagen
-        // imgIndice.setFitWidth(selectedGrh.getTileWidth()); // Ancho de la imagen -
-        // Comentado para evitar estiramiento
-        // imgIndice.setFitHeight(selectedGrh.getTileHeight()); // Alto de la imagen -
-        // Comentado para evitar estiramiento
-
-        // Preservar la relación de aspecto para evitar estiramientos
-        imgIndice.setPreserveRatio(true);
-
-        // Mostrar la región recortada en el ImageView
-        imgIndice.setImage(croppedImage);
-      }
-    } else {
-      logger.warning("No se encontró la imagen: " + imagePath);
-    }
-  }
-
-  /**
-   * Muestra una animación en el ImageView correspondiente al gráfico
-   * seleccionado. Configura y
-   * ejecuta una animación de fotogramas clave para mostrar la animación. La
-   * animación se ejecuta en
-   * un bucle infinito hasta que se detenga explícitamente.
-   *
-   * @param selectedGrh El gráfico seleccionado.
-   * @param nFrames     El número total de fotogramas en la animación.
-   */
-  private void displayAnimation(GrhData selectedGrh, int nFrames) {
-    // Configurar la animación
-    if (animationTimeline != null) {
-      animationTimeline.stop();
-    }
-
-    currentFrameIndex = 1; // Reiniciar el índice del frame al iniciar la animación
-
-    animationTimeline = new Timeline(new KeyFrame(Duration.ZERO, event -> {
-      // Actualizar la imagen en el ImageView con el frame actual
-      updateFrame(selectedGrh);
-      currentFrameIndex = (currentFrameIndex + 1) % nFrames; // Avanzar al siguiente frame
-                                                             // circularmente
-      if (currentFrameIndex == 0) {
-        currentFrameIndex = 1; // Omitir la posición 0
-      }
-    }), new KeyFrame(Duration.millis(100)) // Ajustar la duración según sea necesario
-    );
-    animationTimeline.setCycleCount(Animation.INDEFINITE); // Repetir la animación indefinidamente
-    animationTimeline.play(); // Iniciar la animación
-  }
-
-  /**
-   * Actualiza el fotograma actual en el ImageView durante la reproducción de una
-   * animación. Obtiene
-   * el siguiente fotograma de la animación y actualiza el ImageView con la imagen
-   * correspondiente.
-   *
-   * @param selectedGrh El gráfico seleccionado.
-   */
-  private void updateFrame(GrhData selectedGrh) {
-    int[] frames = selectedGrh.getFrames(); // Obtener el arreglo de índices de los frames de la
-                                            // animación
-
-    // Verificar que el índice actual esté dentro del rango adecuado
-    if (currentFrameIndex >= 0 && currentFrameIndex < frames.length) {
-      int frameId = frames[currentFrameIndex];
-
-      // Buscar el GrhData correspondiente al frameId utilizando el mapa
-      GrhData currentGrh = grhDataMap.get(frameId);
-
-      if (currentGrh != null) {
-        String imagePath = configManager.getGraphicsDir() + currentGrh.getFileNum() + ".png";
-
-        if (!new File(imagePath).exists()) {
-          imagePath = configManager.getGraphicsDir() + currentGrh.getFileNum() + ".bmp";
-        }
-
-        // Obtener imagen desde el caché
-        Image frameImage = imageCache.getImage(imagePath);
-
-        if (frameImage != null) {
-          // Mandar a dibujar el gráfico completo en otro ImageView
-          drawFullImage(frameImage, currentGrh);
-
-          // Obtener subimagen recortada desde el caché
-          WritableImage croppedImage = imageCache.getCroppedImage(imagePath, currentGrh.getsX(),
-              currentGrh.getsY(), currentGrh.getTileWidth(), currentGrh.getTileHeight());
-
-          if (croppedImage != null) {
-            // Mostrar la región recortada en el ImageView
-            imgIndice.setImage(croppedImage);
-          }
-        } else {
-          logger.warning("No se encontró la imagen: " + imagePath);
-        }
-      } else {
-        logger.warning("No se encontró el GrhData correspondiente para frameId: " + frameId);
-      }
-    } else {
-      logger.warning("El índice actual está fuera del rango adecuado: " + currentFrameIndex);
-    }
-  }
-
-  /**
-   * Dibuja un rectángulo alrededor de la región del índice seleccionado en la
-   * imagen completa del
-   * gráfico.
-   *
-   * @param selectedGrh El gráfico seleccionado que contiene la información de la
-   *                    región del índice.
-   */
-  private void drawRectangle(GrhData selectedGrh) {
-    try {
-      // Verificar que la imagen esté cargada
-      if (imgGrafico.getImage() == null) {
-        return;
-      }
-
-      // Obtener las dimensiones del ImageView imgGrafico
-      // Obtener las dimensiones reales del ImageView (visuales)
-      double imgViewWidth = imgGrafico.getBoundsInLocal().getWidth();
-      double imgViewHeight = imgGrafico.getBoundsInLocal().getHeight();
-
-      // Si los bounds aún no están listos (ej. 0), usar fit dimensions como fallback
-      if (imgViewWidth <= 0)
-        imgViewWidth = imgGrafico.getFitWidth();
-      if (imgViewHeight <= 0)
-        imgViewHeight = imgGrafico.getFitHeight();
-
-      // Obtener las dimensiones de la imagen original
-      double originalWidth = imgGrafico.getImage().getWidth();
-      double originalHeight = imgGrafico.getImage().getHeight();
-
-      // Calcular la escala entre el ImageView y la imagen original
-      double scaleX = imgViewWidth / originalWidth;
-      double scaleY = imgViewHeight / originalHeight;
-
-      // Si la imagen se está ajustando para preservar la relación, usar la escala más
-      // pequeña
-      if (imgGrafico.isPreserveRatio()) {
-        double scale = Math.min(scaleX, scaleY);
-        scaleX = scale;
-        scaleY = scale;
-      }
-
-      // Obtener las coordenadas del rectángulo en relación con las coordenadas del
-      // ImageView
-      // Usar layout fijo para evitar problemas
-      double layoutX = 5.0;
-      double layoutY = 6.0;
-
-      double rectX = selectedGrh.getsX() * scaleX + layoutX;
-      double rectY = selectedGrh.getsY() * scaleY + layoutY;
-      double rectWidth = selectedGrh.getTileWidth() * scaleX;
-      double rectHeight = selectedGrh.getTileHeight() * scaleY;
-
-      // Si la imagen está centrada en el ImageView, ajustar las coordenadas
-      double xOffset = (imgViewWidth - (originalWidth * scaleX)) / 2;
-      double yOffset = (imgViewHeight - (originalHeight * scaleY)) / 2;
-
-      if (xOffset > 0)
-        rectX += xOffset;
-      if (yOffset > 0)
-        rectY += yOffset;
-
-      // Configurar las propiedades del rectángulo (RESTAURADO)
-      rectanguloIndice.setX(rectX);
-      rectanguloIndice.setY(rectY);
-      rectanguloIndice.setWidth(rectWidth);
-      rectanguloIndice.setHeight(rectHeight);
-      rectanguloIndice.setVisible(true);
-
-      // Debugging detallado
-      logger.info("Rectángulo: layout=[" + layoutX + "," + layoutY + "], " + "orig=["
-          + originalWidth + "x" + originalHeight + "], " + "view=[" + imgViewWidth + "x"
-          + imgViewHeight + "], " + "scale=" + scaleX + ", offset=[" + xOffset + "," + yOffset
-          + "], " + "rect=[" + rectX + "," + rectY + "]");
-    } catch (Exception e) {
-      logger.error("Error al dibujar el rectángulo", e);
-    }
-  }
-
-  /**
-   * Dibuja la imagen completa en un ImageView para visualización y coloca un
-   * rectángulo alrededor
-   * de la región específica que representa el gráfico.
-   *
-   * @param image La imagen a dibujar.
-   * @param grh   El objeto GrhData que contiene la información sobre la imagen.
-   */
-  private void drawFullImage(Image image, GrhData grh) {
-    try {
-      // Establecer la imagen completa en el ImageView
-      imgGrafico.setImage(image);
-
-      // Ajustar tamaño del ImageView para evitar upscaling borroso
-      double MAX_WIDTH = 508.0;
-      double MAX_HEIGHT = 374.0;
-
-      if (image.getWidth() <= MAX_WIDTH && image.getHeight() <= MAX_HEIGHT) {
-        imgGrafico.setFitWidth(image.getWidth());
-        imgGrafico.setFitHeight(image.getHeight());
-      } else {
-        imgGrafico.setFitWidth(MAX_WIDTH);
-        imgGrafico.setFitHeight(MAX_HEIGHT);
-      }
-
-      // Dibujar el rectángulo que marca la región del gráfico
-      drawRectangle(grh);
-    } catch (Exception e) {
-      logger.error("Error al dibujar la imagen completa", e);
-    }
+    gameRenderer.displayGrh(selectedGrh, grhDataMap);
   }
 
   /**
@@ -1046,48 +760,15 @@ public class MainController {
    */
   @FXML
   private void mnuExportGrh_OnAction() {
-
     File file = new File(configManager.getExportDir() + "graficos.ini");
-
     logger.info("Exportando indices, espera...");
 
-    try (BufferedWriter bufferWriter = new BufferedWriter(new FileWriter(file))) {
-      bufferWriter.write("[INIT]");
-      bufferWriter.newLine();
-      bufferWriter.write("NumGrh=" + dataManager.getGrhCount());
-      bufferWriter.newLine();
-      bufferWriter.write("Version=" + dataManager.getGrhVersion());
-      bufferWriter.newLine();
-      bufferWriter.write("[GRAPHICS]");
-      bufferWriter.newLine();
-
-      for (GrhData grh : grhList) {
-        if (grh.getNumFrames() > 1) {
-          bufferWriter.write("Grh" + grh.getGrh() + "=" + grh.getNumFrames() + "-");
-
-          int[] frames = grh.getFrames();
-
-          for (int i = 1; i < grh.getNumFrames() + 1; i++) {
-            bufferWriter.write(frames[i] + "-");
-          }
-
-          bufferWriter.write(String.valueOf(grh.getSpeed()));
-
-        } else {
-          bufferWriter.write("Grh" + grh.getGrh() + "=" + grh.getNumFrames() + "-"
-              + grh.getFileNum() + "-" + grh.getsX() + "-" + grh.getsY() + "-" + grh.getTileWidth()
-              + "-" + grh.getTileHeight());
-        }
-        bufferWriter.newLine();
-
-      }
-
-      logger.info("Indices exportados!");
-      showInfoAlert("Exportación Completa", "Índices exportados a:\n" + file.getAbsolutePath());
-
-    } catch (IOException e) {
-      logger.error("Error al exportar los datos de gráficos", e);
-      showErrorAlert("Error de Exportación", "No se pudieron exportar los índices.");
+    ExportService exportService = ExportService.getInstance();
+    if (exportService.exportToIni(grhList, dataManager.getGrhCount(), dataManager.getGrhVersion(),
+        file)) {
+      uiService.showInfo("Exportación Completa", "Índices exportados a:\n" + file.getAbsolutePath());
+    } else {
+      uiService.showError("Error de Exportación", "No se pudieron exportar los índices.");
     }
   }
 
@@ -1100,10 +781,10 @@ public class MainController {
 
     ExportService exportService = ExportService.getInstance();
     if (exportService.exportToJson(grhList, file)) {
-      showInfoAlert("Exportación JSON Completa",
+      uiService.showInfo("Exportación JSON Completa",
           "Índices exportados a:\n" + file.getAbsolutePath());
     } else {
-      showErrorAlert("Error de Exportación", "No se pudo exportar a JSON.");
+      uiService.showError("Error de Exportación", "No se pudo exportar a JSON.");
     }
   }
 
@@ -1116,9 +797,9 @@ public class MainController {
 
     ExportService exportService = ExportService.getInstance();
     if (exportService.exportToCsv(grhList, file)) {
-      showInfoAlert("Exportación CSV Completa", "Índices exportados a:\n" + file.getAbsolutePath());
+      uiService.showInfo("Exportación CSV Completa", "Índices exportados a:\n" + file.getAbsolutePath());
     } else {
-      showErrorAlert("Error de Exportación", "No se pudo exportar a CSV.");
+      uiService.showError("Error de Exportación", "No se pudo exportar a CSV.");
     }
   }
 
@@ -1126,7 +807,7 @@ public class MainController {
    * Valida la integridad de los datos de GRH.
    */
   @FXML
-  public void mnuValidate_OnAction(ActionEvent actionEvent) {
+  private void mnuValidate_OnAction(ActionEvent actionEvent) {
     ValidationService validationService = ValidationService.getInstance();
     ValidationService.ValidationResult result = validationService.validate(grhList, configManager.getGraphicsDir());
 
@@ -1141,21 +822,16 @@ public class MainController {
 
       Stage stage = new Stage();
       stage.setTitle("Reporte de Integridad - " + result.getTotalIssues() + " incidencias");
-      stage.setScene(new Scene(root));
+      Scene scene = new Scene(root);
+      WindowManager.getInstance().applyTheme(scene, configManager.getAppTheme());
+      stage.setScene(scene);
       stage.initModality(Modality.NONE);
-      // Theme support for the new window
-      if ("DARK".equalsIgnoreCase(configManager.getAppTheme())) {
-        root.getStylesheets()
-            .add(getClass().getResource("/org/nexus/indexador/styles/dark-theme.css").toExternalForm());
-      } else {
-        root.getStylesheets()
-            .add(getClass().getResource("/org/nexus/indexador/styles/light-theme.css").toExternalForm());
-      }
+      Main.setAppIcon(stage);
       stage.show();
 
     } catch (IOException e) {
       logger.error("Error al abrir ventana de validación", e);
-      showErrorAlert("Error", "No se pudo abrir el reporte de validación: " + e.getMessage());
+      uiService.showError("Error", "No se pudo abrir el reporte de validación: " + e.getMessage());
     }
   }
 
@@ -1184,39 +860,15 @@ public class MainController {
    * Muestra un diálogo de información.
    */
   private void showInfoAlert(String title, String content) {
-    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-    alert.setTitle(title);
-    alert.setHeaderText(null);
-    alert.setContentText(content);
-    Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-    Main.setAppIcon(stage);
-    alert.showAndWait();
+    uiService.showInfo(title, content);
   }
 
-  /**
-   * Muestra un diálogo de error.
-   */
   private void showErrorAlert(String title, String content) {
-    Alert alert = new Alert(Alert.AlertType.ERROR);
-    alert.setTitle(title);
-    alert.setHeaderText(null);
-    alert.setContentText(content);
-    Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-    Main.setAppIcon(stage);
-    alert.showAndWait();
+    uiService.showError(title, content);
   }
 
-  /**
-   * Muestra un diálogo de advertencia.
-   */
   private void showWarningAlert(String title, String content) {
-    Alert alert = new Alert(Alert.AlertType.WARNING);
-    alert.setTitle(title);
-    alert.setHeaderText(null);
-    alert.setContentText(content);
-    Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-    Main.setAppIcon(stage);
-    alert.showAndWait();
+    uiService.showWarning(title, content);
   }
 
   /**
@@ -1321,23 +973,42 @@ public class MainController {
     // Obtenemos el índice seleccionado en la lista:
     int selectedIndex = lstIndices.getSelectionModel().getSelectedIndex();
 
-    // Nos aseguramos de que el índice es válido
     if (selectedIndex >= 0) {
-      // Obtenemos el objeto grhData correspondiente al índice seleccionado
       GrhData selectedGrh = grhList.get(selectedIndex);
 
-      // Comenzamos aplicar los cambios:
-      selectedGrh.setFileNum(Integer.parseInt(txtImagen.getText()));
-      selectedGrh.setsX(Short.parseShort(txtPosX.getText()));
-      selectedGrh.setsY(Short.parseShort(txtPosY.getText()));
-      selectedGrh.setTileWidth(Short.parseShort(txtAncho.getText()));
-      selectedGrh.setTileHeight(Short.parseShort(txtAlto.getText()));
-
-      logger.info("Cambios aplicados!");
-      logger.info("Cambios aplicados!");
-      ToastNotification.show(WindowManager.getInstance().getWindow("MainController"),
-          "Cambios aplicados");
+      try {
+        editorHelper.saveGrhData(selectedGrh);
+        logger.info("Cambios aplicados!");
+        ToastNotification.show(WindowManager.getInstance().getWindow("MainController"),
+            "Cambios aplicados");
+      } catch (NumberFormatException e) {
+        uiService.showError("Error de Formato", "Asegúrate de ingresar solo números válidos.");
+      }
     }
+  }
+
+  /**
+   * Obtiene los criterios de filtrado avanzado desde la UI.
+   */
+  private FilterService.FilterCriteria getFilterCriteria() {
+    FilterService.FilterCriteria criteria = new FilterService.FilterCriteria();
+    criteria.onlyAnimations = chkAnimations.isSelected();
+    criteria.onlyStatics = chkStatics.isSelected();
+
+    try {
+      if (txtFilterFileNum != null && !txtFilterFileNum.getText().isEmpty()) {
+        criteria.fileNum = Integer.parseInt(txtFilterFileNum.getText().trim());
+      }
+      if (txtFilterWidth != null && !txtFilterWidth.getText().isEmpty()) {
+        criteria.width = Integer.parseInt(txtFilterWidth.getText().trim());
+      }
+      if (txtFilterHeight != null && !txtFilterHeight.getText().isEmpty()) {
+        criteria.height = Integer.parseInt(txtFilterHeight.getText().trim());
+      }
+    } catch (NumberFormatException e) {
+      // Ignorar valores numéricos inválidos
+    }
+    return criteria;
   }
 
   @FXML
@@ -1349,16 +1020,35 @@ public class MainController {
   }
 
   @FXML
-  private void onApplyFilters(ActionEvent event) {
-    filterIndices(txtFiltro.getText(), false);
+  private void onApplyFilters() {
+    applyFilters();
   }
 
   @FXML
-  private void onClearFilters(ActionEvent event) {
+  private void onClearFilters() {
     txtFiltro.clear();
     chkAnimations.setSelected(false);
     chkStatics.setSelected(false);
-    filterIndices("", false);
+    applyFilters();
+  }
+
+  private void applyFilters() {
+    if (grhList == null)
+      return;
+
+    FilterService.FilterCriteria criteria = getFilterCriteria();
+    String query = txtFiltro.getText();
+
+    ObservableList<String> filteredIndices = FXCollections.observableArrayList();
+    for (GrhData grh : grhList) {
+      if (filterService.matches(grh, query, criteria)) {
+        String entry = grh.getGrh() + (grh.getNumFrames() > 1 ? " (Animación)" : "");
+        filteredIndices.add(entry);
+      }
+    }
+
+    lstIndices.setItems(filteredIndices);
+    lblIndices.setText("Indices cargados: " + filteredIndices.size());
   }
 
   /**
@@ -1370,12 +1060,13 @@ public class MainController {
    * contenido.
    */
   private void setupFilterTextFieldListener() {
-    // Listener de texto (LIVE SEARCH - busca desde el principio)
+    // Listener de texto (LIVE FILTER)
     txtFiltro.textProperty().addListener((observable, oldValue, newValue) -> {
-      filterIndices(newValue, false);
+      applyFilters();
     });
 
-    // Listener de ENTER (FIND NEXT - busca siguiente coincidencia)
+    // Listener de ENTER (FIND NEXT) - Opcional, mantengo filterIndices si se quiere
+    // buscar
     txtFiltro.setOnAction(event -> {
       filterIndices(txtFiltro.getText(), true);
     });
@@ -1393,8 +1084,12 @@ public class MainController {
    *                   posición actual.
    */
   private void filterIndices(String filterText, boolean findNext) {
-    if (filterText.isEmpty()) {
-      lstIndices.getSelectionModel().clearSelection();
+    FilterService.FilterCriteria criteria = getFilterCriteria();
+
+    // Si no hay texto ni filtros avanzados, limpiar selección
+    if (filterText.isEmpty() && !criteria.onlyAnimations && !criteria.onlyStatics
+        && criteria.fileNum == null && criteria.width == null && criteria.height == null) {
+      // lstIndices.getSelectionModel().clearSelection();
       return;
     }
 
@@ -1402,51 +1097,14 @@ public class MainController {
       int startIndex = 0;
       if (findNext) {
         startIndex = lstIndices.getSelectionModel().getSelectedIndex() + 1;
-        if (startIndex >= grhList.size())
+        if (startIndex >= grhList.size()) {
           startIndex = 0; // Wrap around
+        }
       }
 
-      // Detectar tipo de búsqueda
-      String query = filterText.toLowerCase().trim();
-
+      // Buscar coincidencia utilizando el FilterService
       for (int i = startIndex; i < grhList.size(); i++) {
-        GrhData grh = grhList.get(i);
-        boolean match = false;
-
-        if (query.startsWith("f:")) {
-          // Buscar por FileNum
-          try {
-            int fileNum = Integer.parseInt(query.substring(2).trim());
-            match = (grh.getFileNum() == fileNum);
-          } catch (NumberFormatException ignored) {
-          }
-
-        } else if (query.startsWith("w:")) {
-          // Buscar por Ancho
-          try {
-            int width = Integer.parseInt(query.substring(2).trim());
-            match = (grh.getTileWidth() == width);
-          } catch (NumberFormatException ignored) {
-          }
-
-        } else if (query.startsWith("h:")) {
-          // Buscar por Alto
-          try {
-            int height = Integer.parseInt(query.substring(2).trim());
-            match = (grh.getTileHeight() == height);
-          } catch (NumberFormatException ignored) {
-          }
-
-        } else {
-          // Buscar por GRH ID (default)
-          try {
-            int grhId = Integer.parseInt(query);
-            match = (grh.getGrh() == grhId);
-          } catch (NumberFormatException ignored) {
-          }
-        }
-
-        if (match) {
+        if (filterService.matches(grhList.get(i), filterText, criteria)) {
           lstIndices.getSelectionModel().select(i);
           lstIndices.scrollTo(i);
           return;
@@ -1456,34 +1114,8 @@ public class MainController {
       // Si buscamos siguiente y no encontramos, probamos desde el principio (wrap
       // total)
       if (findNext && startIndex > 0) {
-        // Loop search from 0 to startIndex
         for (int i = 0; i < startIndex; i++) {
-          GrhData grh = grhList.get(i);
-          boolean match = false;
-          // (Repetir lógica de matching - idealmente extraer a método helper isMatch)
-          if (query.startsWith("f:")) {
-            try {
-              match = (grh.getFileNum() == Integer.parseInt(query.substring(2).trim()));
-            } catch (Exception e) {
-            }
-          } else if (query.startsWith("w:")) {
-            try {
-              match = (grh.getTileWidth() == Integer.parseInt(query.substring(2).trim()));
-            } catch (Exception e) {
-            }
-          } else if (query.startsWith("h:")) {
-            try {
-              match = (grh.getTileHeight() == Integer.parseInt(query.substring(2).trim()));
-            } catch (Exception e) {
-            }
-          } else {
-            try {
-              match = (grh.getGrh() == Integer.parseInt(query));
-            } catch (Exception e) {
-            }
-          }
-
-          if (match) {
+          if (filterService.matches(grhList.get(i), filterText, criteria)) {
             lstIndices.getSelectionModel().select(i);
             lstIndices.scrollTo(i);
             return;
@@ -1492,7 +1124,7 @@ public class MainController {
       }
 
     } catch (Exception e) {
-      // Ignorar errores de parseo durante la escritura
+      logger.error("Error al filtrar índices", e);
     }
   }
 
@@ -1761,182 +1393,107 @@ public class MainController {
     }, "Indexando TODO desde Exportados...", "Todo indexado correctamente");
   }
 
+  private void handleReload(String type, String startMsg, String endMsg, boolean isGrh) {
+    uiService.runAsyncTask(() -> {
+      try {
+        dataManager.reloadResources(type);
+        if (isGrh) {
+          Platform.runLater(this::loadGrh);
+        }
+      } catch (Exception e) {
+        logger.error("Error al recargar " + type, e);
+      }
+    }, startMsg, endMsg);
+  }
+
   @FXML
   public void mnuReloadGrhs_OnAction(ActionEvent actionEvent) {
-    runAsyncTask(() -> {
-      try {
-        dataManager.reloadResources("GRHS");
-        Platform.runLater(this::loadGrh);
-      } catch (IOException e) {
-        logger.error("Error al recargar índices", e);
-      }
-    }, "Recargando Índices...", "Índices recargados correctamente");
+    handleReload("GRHS", "Recargando Índices...", "Índices recargados correctamente", true);
   }
 
   @FXML
   public void mnuReloadHeads_OnAction(ActionEvent actionEvent) {
-    runAsyncTask(() -> {
-      try {
-        dataManager.reloadResources("HEADS");
-      } catch (IOException e) {
-        logger.error("Error al recargar cabezas", e);
-      }
-    }, "Recargando Cabezas...", "Cabezas recargadas correctamente");
+    handleReload("HEADS", "Recargando Cabezas...", "Cabezas recargadas correctamente", false);
   }
 
   @FXML
   public void mnuReloadHelmets_OnAction(ActionEvent actionEvent) {
-    runAsyncTask(() -> {
-      try {
-        dataManager.reloadResources("HELMETS");
-      } catch (IOException e) {
-        logger.error("Error al recargar cascos", e);
-      }
-    }, "Recargando Cascos...", "Cascos recargados correctamente");
+    handleReload("HELMETS", "Recargando Cascos...", "Cascos recargados correctamente", false);
   }
 
   @FXML
   public void mnuReloadBodies_OnAction(ActionEvent actionEvent) {
-    runAsyncTask(() -> {
-      try {
-        dataManager.reloadResources("BODIES");
-      } catch (IOException e) {
-        logger.error("Error al recargar cuerpos", e);
-      }
-    }, "Recargando Cuerpos...", "Cuerpos recargados correctamente");
+    handleReload("BODIES", "Recargando Cuerpos...", "Cuerpos recargados correctamente", false);
   }
 
   @FXML
   public void mnuReloadShields_OnAction(ActionEvent actionEvent) {
-    runAsyncTask(() -> {
-      try {
-        dataManager.reloadResources("SHIELDS");
-      } catch (IOException e) {
-        logger.error("Error al recargar escudos", e);
-      }
-    }, "Recargando Escudos...", "Escudos recargados correctamente");
+    handleReload("SHIELDS", "Recargando Escudos...", "Escudos recargados correctamente", false);
   }
 
   @FXML
   public void mnuReloadWeapons_OnAction(ActionEvent actionEvent) {
-    runAsyncTask(() -> {
-      try {
-        dataManager.reloadResources("WEAPONS");
-      } catch (IOException e) {
-        logger.error("Error al recargar armas", e);
-      }
-    }, "Recargando Armas...", "Armas recargadas correctamente");
+    handleReload("WEAPONS", "Recargando Armas...", "Armas recargadas correctamente", false);
   }
 
   @FXML
   public void mnuReloadFXs_OnAction(ActionEvent actionEvent) {
-    runAsyncTask(() -> {
-      try {
-        dataManager.reloadResources("FXS");
-      } catch (IOException e) {
-        logger.error("Error al recargar FXs", e);
-      }
-    }, "Recargando FXs...", "FXs recargados correctamente");
+    handleReload("FXS", "Recargando FXs...", "FXs recargados correctamente", false);
   }
 
   @FXML
   public void mnuReloadAll_OnAction(ActionEvent actionEvent) {
-    runAsyncTask(() -> {
+    handleReload("ALL", "Recargando TODO...", "Todos los recursos recargados correctamente", true);
+  }
+
+  private void handleExport(String type, String startMsg, String endMsg) {
+    uiService.runAsyncTask(() -> {
       try {
-        dataManager.reloadResources("ALL");
-        Platform.runLater(this::loadGrh);
-      } catch (Exception e) {
-        logger.error("Error al recargar todo", e);
+        dataManager.exportToText(type);
+      } catch (IOException e) {
+        logger.error("Error al exportar " + type, e);
       }
-    }, "Recargando TODO...", "Todos los recursos recargados correctamente");
+    }, startMsg, endMsg);
   }
 
   @FXML
   public void mnuExportGrh_OnAction(ActionEvent actionEvent) {
-    runAsyncTask(() -> {
-      try {
-        dataManager.exportToText("GRHS");
-      } catch (IOException e) {
-        logger.error("Error al exportar GRHs", e);
-      }
-    }, "Exportando Indices...", "Indices exportados correctamente");
+    handleExport("GRHS", "Exportando Indices...", "Indices exportados correctamente");
   }
 
   @FXML
   public void mnuExportHead_OnAction(ActionEvent actionEvent) {
-    runAsyncTask(() -> {
-      try {
-        dataManager.exportToText("HEADS");
-      } catch (IOException e) {
-        logger.error("Error al exportar cabezas", e);
-      }
-    }, "Exportando Cabezas...", "Cabezas exportadas correctamente");
+    handleExport("HEADS", "Exportando Cabezas...", "Cabezas exportadas correctamente");
   }
 
   @FXML
   public void mnuExportHelmet_OnAction(ActionEvent actionEvent) {
-    runAsyncTask(() -> {
-      try {
-        dataManager.exportToText("HELMETS");
-      } catch (IOException e) {
-        logger.error("Error al exportar cascos", e);
-      }
-    }, "Exportando Cascos...", "Cascos exportados correctamente");
+    handleExport("HELMETS", "Exportando Cascos...", "Cascos exportados correctamente");
   }
 
   @FXML
   public void mnuExportBody_OnAction(ActionEvent actionEvent) {
-    runAsyncTask(() -> {
-      try {
-        dataManager.exportToText("BODIES");
-      } catch (IOException e) {
-        logger.error("Error al exportar cuerpos", e);
-      }
-    }, "Exportando Cuerpos...", "Cuerpos exportados correctamente");
+    handleExport("BODIES", "Exportando Cuerpos...", "Cuerpos exportadas correctamente");
   }
 
   @FXML
   public void mnuExportShield_OnAction(ActionEvent actionEvent) {
-    runAsyncTask(() -> {
-      try {
-        dataManager.exportToText("SHIELDS");
-      } catch (IOException e) {
-        logger.error("Error al exportar escudos", e);
-      }
-    }, "Exportando Escudos...", "Escudos exportados correctamente");
+    handleExport("SHIELDS", "Exportando Escudos...", "Escudos exportados correctamente");
   }
 
   @FXML
   public void mnuExportFX_OnAction(ActionEvent actionEvent) {
-    runAsyncTask(() -> {
-      try {
-        dataManager.exportToText("FXS");
-      } catch (IOException e) {
-        logger.error("Error al exportar FXs", e);
-      }
-    }, "Exportando FXs...", "FXs exportados correctamente");
+    handleExport("FXS", "Exportando FXs...", "FXs exportados correctamente");
   }
 
   @FXML
   public void mnuExportWeapon_OnAction(ActionEvent actionEvent) {
-    runAsyncTask(() -> {
-      try {
-        dataManager.exportToText("WEAPONS");
-      } catch (IOException e) {
-        logger.error("Error al exportar armas", e);
-      }
-    }, "Exportando Armas...", "Armas exportadas correctamente");
+    handleExport("WEAPONS", "Exportando Armas...", "Armas exportadas correctamente");
   }
 
   @FXML
   public void mnuExportAll_OnAction(ActionEvent actionEvent) {
-    runAsyncTask(() -> {
-      try {
-        dataManager.exportToText("ALL");
-      } catch (IOException e) {
-        logger.error("Error al exportar todo", e);
-      }
-    }, "Exportando TODO...", "Todo exportado correctamente");
+    handleExport("ALL", "Exportando TODO...", "Todo exportado correctamente");
   }
 
   @FXML
@@ -2061,28 +1618,7 @@ public class MainController {
   }
 
   private void runAsyncTask(Runnable task, String startMsg, String endMsg) {
-    progressMain.setVisible(true);
-    progressMain.setProgress(ProgressBar.INDETERMINATE_PROGRESS);
-    lblStatus.setText(startMsg);
-    lblStatus.setTextFill(javafx.scene.paint.Color.web("#FFA500"));
-
-    new Thread(() -> {
-      try {
-        task.run();
-        Platform.runLater(() -> {
-          lblStatus.setText(endMsg);
-          lblStatus.setTextFill(javafx.scene.paint.Color.web("#00FF00"));
-          progressMain.setVisible(false);
-        });
-      } catch (Exception e) {
-        logger.error("Error en tarea asíncrona: " + startMsg, e);
-        Platform.runLater(() -> {
-          lblStatus.setText("Error en la operación");
-          lblStatus.setTextFill(javafx.scene.paint.Color.RED);
-          progressMain.setVisible(false);
-        });
-      }
-    }).start();
+    uiService.runAsyncTask(task, startMsg, endMsg);
   }
 
   private void updateEditorFromCurrentSelection() {
@@ -3133,125 +2669,7 @@ public class MainController {
     }
   }
 
-  // ========== FILTROS AVANZADOS ==========
-
-  /**
-   * Alterna la visibilidad del panel de filtros (colapsar/expandir).
-   */
-  @FXML
-  private void toggleFilters() {
-    filterExpanded = !filterExpanded;
-
-    if (filterExpanded) {
-      // Expandir
-      paneFilterContent.setVisible(true);
-      paneFilterContent.setManaged(true);
-      lblFilterToggle.setText("▼ Filtros");
-
-      // Ajustar posición de la lista (con toolbar: +29px del ajuste)
-      // lstIndices.setLayoutY(240); // Eliminado: VBox maneja el layout
-      // IMPORTANTE: Asegurar que el anchor se mantenga para estirar la lista
-      // AnchorPane.setBottomAnchor(lstIndices, 25.0); // Eliminado
-      // No establecemos prefHeight fijo, dejamos que el anchor lo calcule
-    } else {
-      // Colapsar
-      paneFilterContent.setVisible(false);
-      paneFilterContent.setManaged(false);
-      lblFilterToggle.setText("▶ Filtros");
-
-      // Ajustar posición de la lista (más espacio, con toolbar)
-      // lstIndices.setLayoutY(100); // Eliminado
-      // AnchorPane.setBottomAnchor(lstIndices, 25.0); // Eliminado
-    }
-  }
-
-  /**
-   * Aplica los filtros avanzados a la lista de GRHs.
-   */
-  @FXML
-  private void onApplyFilters() {
-    if (grhList == null || grhList.isEmpty()) {
-      return;
-    }
-
-    lstIndices.getItems().clear();
-
-    for (GrhData grh : grhList) {
-      if (matchesFilters(grh)) {
-        String entry = grh.getGrh() + (grh.getNumFrames() > 1 ? " (Animación)" : "");
-        lstIndices.getItems().add(entry);
-      }
-    }
-
-    lblIndices.setText("Indices cargados: " + lstIndices.getItems().size());
-  }
-
-  /**
-   * Limpia todos los filtros y muestra la lista completa.
-   */
-  @FXML
-  private void onClearFilters() {
-    chkAnimations.setSelected(false);
-    chkStatics.setSelected(false);
-    // txtFilterFileNum.clear(); // Removed
-    // txtFilterWidth.clear(); // Removed
-    // txtFilterHeight.clear(); // Removed
-
-    // Recargar lista completa
-    lstIndices.getItems().clear();
-    for (GrhData grh : grhList) {
-      String entry = grh.getGrh() + (grh.getNumFrames() > 1 ? " (Animación)" : "");
-      lstIndices.getItems().add(entry);
-    }
-
-    lblIndices.setText("Indices cargados: " + lstIndices.getItems().size());
-  }
-
-  /**
-   * Verifica si un GRH cumple con todos los filtros activos.
-   */
-  private boolean matchesFilters(GrhData grh) {
-    // Filtro de tipo: Animaciones
-    if (chkAnimations.isSelected() && grh.getNumFrames() <= 1) {
-      return false;
-    }
-
-    // Filtro de tipo: Estáticos
-    if (chkStatics.isSelected() && grh.getNumFrames() > 1) {
-      return false;
-    }
-
-    // Lógica de filtrado basada en el Buscador Unificado
-    String query = txtFiltro.getText().toLowerCase().trim();
-
-    if (query.isEmpty()) {
-      return true;
-    }
-
-    try {
-      if (query.startsWith("f:")) {
-        // Filtro por FileNum
-        int filterFileNum = Integer.parseInt(query.substring(2).trim());
-        return grh.getFileNum() == filterFileNum;
-      } else if (query.startsWith("w:")) {
-        // Filtro por Ancho
-        int filterWidth = Integer.parseInt(query.substring(2).trim());
-        return grh.getTileWidth() == filterWidth;
-      } else if (query.startsWith("h:")) {
-        // Filtro por Alto
-        int filterHeight = Integer.parseInt(query.substring(2).trim());
-        return grh.getTileHeight() == filterHeight;
-      } else {
-        // Filtro por ID (Grh Index)
-        int filterId = Integer.parseInt(query);
-        return grh.getGrh() == filterId;
-      }
-    } catch (NumberFormatException e) {
-      // Si el texto no es válido, no filtramos (mostramos todo o nada? mejor
-      // mostramos todo para no romper UX)
-      return true;
-    }
-  }
+  // ========== FINAL DEL CONTROLADOR ==========
 
   private void setupColorPicker() {
     if (cpBackground != null) {

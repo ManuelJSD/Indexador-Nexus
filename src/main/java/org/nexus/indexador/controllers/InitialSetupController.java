@@ -256,6 +256,7 @@ public class InitialSetupController {
         Platform.runLater(onComplete);
       }
     } catch (IOException e) {
+      Logger.getInstance().error("Error de E/S al guardar configuración", e);
       Alert alert = new Alert(Alert.AlertType.ERROR);
       alert.setTitle("Error al Guardar");
       alert.setHeaderText("No se pudo guardar la configuración");
@@ -269,7 +270,6 @@ public class InitialSetupController {
       alert.setHeaderText("Ocurrió un error al finalizar la configuración");
       alert.setContentText("Error: " + e.getClass().getSimpleName() + " - " + e.getMessage());
       alert.showAndWait();
-      e.printStackTrace(); // Imprimir stack trace en consola
     }
   }
 }

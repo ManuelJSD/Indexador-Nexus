@@ -6,14 +6,16 @@ import java.io.*;
 import java.util.List;
 
 /**
- * Servicio para exportar datos de GRH a diferentes formatos. Soporta JSON y CSV.
+ * Servicio para exportar datos de GRH a diferentes formatos. Soporta JSON y
+ * CSV.
  */
 public class ExportService {
 
   private static volatile ExportService instance;
   private final Logger logger = Logger.getInstance();
 
-  private ExportService() {}
+  private ExportService() {
+  }
 
   public static ExportService getInstance() {
     if (instance == null) {
@@ -27,10 +29,61 @@ public class ExportService {
   }
 
   /**
+   * Exporta la lista de GRH al formato "graficos.ini".
+   *
+   * @param grhList    Lista de GrhData a exportar.
+   * @param grhCount   Número total de gráficos.
+   * @param grhVersion Versión de los índices.
+   * @param file       Archivo destino.
+   * @return true si la exportación fue exitosa.
+   */
+  public boolean exportToIni(List<GrhData> grhList, int grhCount, int grhVersion, File file) {
+    logger.info("Exportando a INI: " + file.getAbsolutePath());
+
+    try (BufferedWriter bufferWriter = new BufferedWriter(new FileWriter(file))) {
+      bufferWriter.write("[INIT]");
+      bufferWriter.newLine();
+      bufferWriter.write("NumGrh=" + grhCount);
+      bufferWriter.newLine();
+      bufferWriter.write("Version=" + grhVersion);
+      bufferWriter.newLine();
+      bufferWriter.write("[GRAPHICS]");
+      bufferWriter.newLine();
+
+      for (GrhData grh : grhList) {
+        if (grh.getNumFrames() > 1) {
+          bufferWriter.write("Grh" + grh.getGrh() + "=" + grh.getNumFrames() + "-");
+
+          int[] frames = grh.getFrames();
+          if (frames != null) {
+            for (int i = 1; i <= grh.getNumFrames() && i < frames.length; i++) {
+              bufferWriter.write(frames[i] + "-");
+            }
+          }
+          bufferWriter.write(String.valueOf(grh.getSpeed()));
+
+        } else {
+          bufferWriter.write("Grh" + grh.getGrh() + "=" + grh.getNumFrames() + "-"
+              + grh.getFileNum() + "-" + grh.getsX() + "-" + grh.getsY() + "-" + grh.getTileWidth()
+              + "-" + grh.getTileHeight());
+        }
+        bufferWriter.newLine();
+      }
+
+      logger.info("Exportación INI completada: " + grhList.size() + " registros");
+      return true;
+
+    } catch (IOException e) {
+      logger.error("Error al exportar a INI", e);
+      return false;
+    }
+  }
+
+  /**
    * Exporta la lista de GRH a formato JSON.
    *
    * @param grhList Lista de GrhData a exportar.
-   * @param file Archivo destino.
+   * @param file    Archivo destino.
    * @return true si la exportación fue exitosa.
    */
   public boolean exportToJson(List<GrhData> grhList, File file) {
@@ -68,7 +121,7 @@ public class ExportService {
    * Exporta la lista de GRH a formato CSV.
    *
    * @param grhList Lista de GrhData a exportar.
-   * @param file Archivo destino.
+   * @param file    Archivo destino.
    * @return true si la exportación fue exitosa.
    */
   public boolean exportToCsv(List<GrhData> grhList, File file) {

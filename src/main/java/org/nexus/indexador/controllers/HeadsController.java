@@ -85,15 +85,10 @@ public class HeadsController {
   @FXML
   public Button btnDelete;
 
-  private HeadData headDataManager; // Objeto que gestiona los datos de las cabezas, incluyendo la
-                                    // carga y
-                                    // manipulación de los mismos
-  private ObservableList<HeadData> headList; // Lista observable que contiene los datos de los
-                                             // gráficos indexados.
+  private HeadData headDataManager;
+  private ObservableList<HeadData> headList;
 
-  private ConfigManager configManager; // Objeto encargado de manejar la configuración de la
-                                       // aplicación, incluyendo la
-                                       // lectura y escritura de archivos de configuración.
+  private ConfigManager configManager;
   private DataManager dataManager;
   private ImageCache imageCache;
   private Logger logger;
@@ -120,10 +115,8 @@ public class HeadsController {
   }
 
   /**
-   * Carga los datos de las cabezas desde un archivo y los muestra en la interfaz.
-   */
-  /**
-   * Carga los datos de las cabezas desde un archivo y los muestra en la interfaz.
+   * Carga los datos de las cabezas desde la memoria/disco y los muestra en la
+   * interfaz.
    */
   private void loadHeadData() {
     // Llamar al método para leer el archivo binario y obtener la lista de headData
@@ -190,7 +183,7 @@ public class HeadsController {
   /**
    * Actualiza el editor de la interfaz con los datos de la cabeza seleccionada.
    *
-   * @param selectedHead el objeto headData seleccionado.
+   * @param selectedHead el objeto HeadData seleccionado.
    */
   private void updateEditor(HeadData selectedHead) {
     // Verificar el tipo de sistema
@@ -422,13 +415,6 @@ public class HeadsController {
     }
   }
 
-  /**
-   * Maneja el evento de acción del botón "Guardar". Aplica los cambios al objeto
-   * headData
-   * seleccionado.
-   *
-   * @param actionEvent el evento de acción del botón.
-   */
   public void btnSave_OnAction(ActionEvent actionEvent) {
     // Obtenemos el índice seleccionado en la lista:
     int selectedHeadIndex = lstHeads.getSelectionModel().getSelectedIndex();
@@ -468,8 +454,7 @@ public class HeadsController {
   }
 
   /**
-   * Maneja el evento de acción del botón "Agregar". Agrega un nuevo objeto
-   * headData a la lista.
+   * Maneja el evento de acción del botón "Agregar". Crea una nueva cabeza vacía.
    */
   @FXML
   private void btnAdd_OnAction() {
@@ -506,16 +491,8 @@ public class HeadsController {
 
       Optional<ButtonType> result = alert.showAndWait();
       if (result.isPresent() && result.get() == ButtonType.OK) {
-        // headList.remove(selectedIndex); // Removing from ObservableList
-        // lstHeads.getItems().remove(selectedIndex); // Re-sync ui?
-
-        // Actually, if we use filtered list, we should remove from source list
-        // (headList)
-        // and then reload or let listener handle it?
-        // But headList is the data source. list of strings is just indices.
-
         headList.remove(selectedIndex);
-        loadHeadData(); // Reload to refresh indices and filter
+        loadHeadData(); // Recargar para actualizar índices y filtros
       }
     }
   }

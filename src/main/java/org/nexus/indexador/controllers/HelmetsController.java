@@ -85,15 +85,10 @@ public class HelmetsController {
   @FXML
   public Button btnDelete;
 
-  private HelmetData helmetDataManager; // Objeto que gestiona los datos de los cascos, incluyendo
-                                        // la carga y
-                                        // manipulación de los mismos
-  private ObservableList<HelmetData> helmetList; // Lista observable que contiene los datos de los
-                                                 // gráficos indexados.
+  private HelmetData helmetDataManager;
+  private ObservableList<HelmetData> helmetList;
 
-  private ConfigManager configManager; // Objeto encargado de manejar la configuración de la
-                                       // aplicación, incluyendo la
-                                       // lectura y escritura de archivos de configuración.
+  private ConfigManager configManager;
   private DataManager dataManager;
   private ImageCache imageCache;
   private Logger logger;
@@ -109,7 +104,7 @@ public class HelmetsController {
       dataManager = DataManager.getInstance();
       imageCache = ImageCache.getInstance();
       logger = Logger.getInstance();
-      // helmetDataManager = new HelmetData(); // No se usa, comentado
+
       loadHelmetData();
       setupHelmetListListener();
     } catch (Exception e) {
@@ -119,11 +114,11 @@ public class HelmetsController {
   }
 
   /**
-   * Carga los datos de los cascos desde un archivo y los muestra en la interfaz.
+   * Carga los datos de los cascos desde la memoria/disco y los muestra en la
+   * lista.
    */
   private void loadHelmetData() {
-    // Llamar al método para leer el archivo binario y obtener la lista de
-    // helmetData
+    // Obtener lista de cascos
     helmetList = dataManager.getHelmetList();
 
     // Actualizar el texto de los labels con la información obtenida
@@ -149,8 +144,6 @@ public class HelmetsController {
         });
       });
     }
-
-    lstHelmets.setItems(filteredData);
 
     lstHelmets.setItems(filteredData);
   }
@@ -180,14 +173,9 @@ public class HelmetsController {
   }
 
   /**
-   * Actualiza el editor de la interfaz con los datos del casco seleccionado.
+   * Actualiza los campos del editor con los datos del casco seleccionado.
    *
-   * @param selectedHelmet el objeto helmetData seleccionado.
-   */
-  /**
-   * Actualiza el editor de la interfaz con los datos del casco seleccionado.
-   *
-   * @param selectedHelmet el objeto helmetData seleccionado.
+   * @param selectedHelmet El objeto HelmetData seleccionado.
    */
   private void updateEditor(HelmetData selectedHelmet) {
     // Verificar el tipo de sistema
@@ -414,11 +402,7 @@ public class HelmetsController {
   }
 
   /**
-   * Maneja el evento de acción del botón "Guardar". Aplica los cambios al objeto
-   * helmetData
-   * seleccionado.
-   *
-   * @param actionEvent el evento de acción del botón.
+   * Guarda los cambios realizados en el casco seleccionado.
    */
   public void btnSave_OnAction(ActionEvent actionEvent) {
     // Obtenemos el índice seleccionado en la lista:
@@ -459,8 +443,7 @@ public class HelmetsController {
   }
 
   /**
-   * Maneja el evento de acción del botón "Agregar". Agrega un nuevo objeto
-   * helmetData a la lista.
+   * Crea un nuevo casco vacío y lo añade a la lista.
    */
   @FXML
   private void btnAdd_OnAction() {
@@ -480,11 +463,7 @@ public class HelmetsController {
   }
 
   /**
-   * Maneja el evento de acción del botón "Eliminar". Elimina el objeto helmetData
-   * seleccionado de
-   * la lista.
-   *
-   * @param actionEvent el evento de acción del botón.
+   * Elimina el casco seleccionado actualmente.
    */
   public void btnDelete_OnAction(ActionEvent actionEvent) {
     int selectedIndex = lstHelmets.getSelectionModel().getSelectedIndex();

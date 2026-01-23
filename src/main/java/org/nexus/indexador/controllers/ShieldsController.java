@@ -60,9 +60,7 @@ public class ShieldsController {
   @FXML
   public TextField txtSearch;
 
-  private ShieldData shieldDataManager; // Objeto que gestiona los datos de los escudos, incluyendo
-                                        // la carga y
-                                        // manipulación de los mismos
+  private ShieldData shieldDataManager;
   private ObservableList<ShieldData> shieldList;
   private ObservableList<GrhData> grhList;
 
@@ -73,12 +71,12 @@ public class ShieldsController {
 
   private Map<Integer, AnimationState> animationStates = new HashMap<>();
 
-  // Clase con los datos de la animación y el mapa para la búsqueda rápida
+  // Mapa para búsqueda rápida de datos Grh
   private Map<Integer, GrhData> grhDataMap;
 
   /**
    * Inicializa el controlador, cargando la configuración y los datos de los
-   * cuerpos.
+   * escudos.
    */
   @FXML
   protected void initialize() {
@@ -90,7 +88,7 @@ public class ShieldsController {
 
       logger.info("Inicializando controlador ShieldsController");
 
-      shieldDataManager = new ShieldData(); // Crear una instancia de headData
+      shieldDataManager = new ShieldData();
 
       animationStates.put(0, new AnimationState());
       animationStates.put(1, new AnimationState());
@@ -98,7 +96,7 @@ public class ShieldsController {
       animationStates.put(3, new AnimationState());
 
       loadShieldData();
-      setupHeadListListener();
+      setupShieldListListener();
 
       logger.info("Controlador ShieldsController inicializado correctamente");
     } catch (Exception e) {
@@ -108,11 +106,12 @@ public class ShieldsController {
   }
 
   /**
-   * Carga los datos de los cuerpos desde un archivo y los muestra en la interfaz.
+   * Carga los datos de los escudos desde la memoria/disco y los muestra en la
+   * lista.
    */
   private void loadShieldData() {
     try {
-      // Llamar al método para leer el archivo binario y obtener la lista de headData
+      // Obtener lista de escudos
       shieldList = dataManager.readShieldFile();
 
       // Inicializar el mapa de grhData
@@ -161,10 +160,9 @@ public class ShieldsController {
   }
 
   /**
-   * Configura un listener para el ListView, manejando los eventos de selección de
-   * ítems.
+   * Configura el listener de selección para la lista de escudos.
    */
-  private void setupHeadListListener() {
+  private void setupShieldListListener() {
     // Agregar un listener al ListView para capturar los eventos de selección
     lstShields.getSelectionModel().selectedItemProperty()
         .addListener((observable, oldValue, newValue) -> {
@@ -187,9 +185,9 @@ public class ShieldsController {
   }
 
   /**
-   * Actualiza el editor de la interfaz con los datos de la cabeza seleccionada.
+   * Actualiza los campos del editor con los datos del escudo seleccionado.
    *
-   * @param selectedShield el objeto headData seleccionado.
+   * @param selectedShield El objeto ShieldData seleccionado.
    */
   private void updateEditor(ShieldData selectedShield) {
     // Obtenemos todos los datos
@@ -202,13 +200,10 @@ public class ShieldsController {
   }
 
   /**
-   * Dibuja las imágenes de los cuerpos en las diferentes vistas (Norte, Sur,
-   * Este, Oeste).
+   * Muestra y reproduce la animación del escudo en las 4 direcciones.
    *
-   * @param selectedShield el objeto headData seleccionado.
-   * @param heading        la dirección en la que se debe dibujar la cabeza (0:
-   *                       Sur, 1: Norte, 2: Oeste, 3:
-   *                       Este).
+   * @param selectedShield El escudo seleccionado.
+   * @param heading        La dirección (0: Sur, 1: Norte, 2: Oeste, 3: Este).
    */
   private void drawShields(ShieldData selectedShield, int heading) {
     int[] bodies = selectedShield.getShield();
@@ -249,12 +244,10 @@ public class ShieldsController {
   }
 
   /**
-   * Actualiza el fotograma actual en el ImageView durante la reproducción de una
-   * animación. Obtiene
-   * el siguiente fotograma de la animación y actualiza el ImageView con la imagen
-   * correspondiente.
+   * Renderiza el frame actual de la animación en el ImageView correspondiente.
    *
-   * @param selectedGrh El gráfico seleccionado.
+   * @param selectedGrh El gráfico (GRH) actual.
+   * @param heading     La dirección actual.
    */
   private void updateFrame(GrhData selectedGrh, int heading) {
     int[] frames = selectedGrh.getFrames();

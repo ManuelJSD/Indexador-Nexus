@@ -139,4 +139,50 @@ public class ImageUtils {
     public static WritableImage drawMarker(Image source, int x, int y, Color color) {
         return drawSpriteOnCanvas(source, (int) source.getWidth(), (int) source.getHeight(), 0, 0, x, y, color);
     }
+
+    /**
+     * Dibuja una imagen (FX) desplazada respecto al centro del lienzo.
+     * Dibuja una marca en el centro del lienzo para referencia (Target).
+     */
+    public static WritableImage drawCenteredImageWithOffset(Image image, int canvasWidth, int canvasHeight, int offX,
+            int offY,
+            boolean showMarker) {
+        WritableImage canvas = new WritableImage(canvasWidth, canvasHeight);
+        PixelWriter writer = canvas.getPixelWriter();
+
+        int centerX = canvasWidth / 2;
+        int centerY = canvasHeight / 2;
+
+        // 1. Dibujar Referencia Visual (Centro del Tile/Target) - Fijo
+        if (showMarker) {
+            Color color = Color.RED;
+            int size = 5;
+            for (int i = -size; i <= size; i++) {
+                writePixelSafeColor(writer, canvasWidth, canvasHeight, centerX + i, centerY, color);
+                writePixelSafeColor(writer, canvasWidth, canvasHeight, centerX, centerY + i, color);
+            }
+        }
+
+        if (image == null)
+            return canvas;
+
+        // 2. Dibujar Imagen desplazada
+        PixelReader reader = image.getPixelReader();
+        int imgW = (int) image.getWidth();
+        int imgH = (int) image.getHeight();
+
+        int destX = centerX + offX;
+        int destY = centerY + offY;
+
+        for (int x = 0; x < imgW; x++) {
+            for (int y = 0; y < imgH; y++) {
+                int argb = reader.getArgb(x, y);
+                if ((argb >> 24) != 0 && (argb & 0x00FFFFFF) != 0) {
+                    writePixelSafe(writer, canvasWidth, canvasHeight, destX + x, destY + y, argb);
+                }
+            }
+        }
+
+        return canvas;
+    }
 }

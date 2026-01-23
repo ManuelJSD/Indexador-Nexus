@@ -28,6 +28,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Controlador para la gestión de Armas.
+ * Permite visualizar, editar, añadir y eliminar armas del juego.
+ */
 public class WeaponsController {
 
   @FXML
@@ -70,6 +74,9 @@ public class WeaponsController {
   private Map<Integer, AnimationState> animationStates = new HashMap<>();
   private Map<Integer, GrhData> grhDataMap;
 
+  /**
+   * Inicializa el controlador, cargando dependencias y datos.
+   */
   @FXML
   protected void initialize() {
     configManager = ConfigManager.getInstance();
@@ -80,6 +87,7 @@ public class WeaponsController {
 
       logger.info("Inicializando controlador WeaponsController");
 
+      // Inicializar estados de animación para las 4 direcciones
       animationStates.put(0, new AnimationState());
       animationStates.put(1, new AnimationState());
       animationStates.put(2, new AnimationState());
@@ -95,12 +103,17 @@ public class WeaponsController {
     }
   }
 
+  /**
+   * Carga los datos de las armas desde el DataManager y configura la lista
+   * visual.
+   */
   private void loadWeaponData() {
     try {
       weaponList = dataManager.readWeaponFile();
       grhDataMap = new HashMap<>();
       grhList = dataManager.getGrhList();
 
+      // Mapear GRHs para acceso rápido
       for (GrhData grh : grhList) {
         grhDataMap.put(grh.getGrh(), grh);
       }
@@ -114,7 +127,7 @@ public class WeaponsController {
 
       lstWeapons.setItems(weaponIndices);
 
-      // Configurar FilteredList
+      // Configurar lista filtrada para búsquedas
       FilteredList<String> filteredData = new FilteredList<>(weaponIndices, p -> true);
 
       // Binding del buscador
@@ -137,6 +150,9 @@ public class WeaponsController {
     }
   }
 
+  /**
+   * Configura el listener de selección de la lista.
+   */
   private void setupWeaponListListener() {
     lstWeapons.getSelectionModel().selectedItemProperty()
         .addListener((observable, oldValue, newValue) -> {
@@ -152,6 +168,9 @@ public class WeaponsController {
         });
   }
 
+  /**
+   * Actualiza los campos de texto con los datos del arma seleccionada.
+   */
   private void updateEditor(WeaponData selectedWeapon) {
     int[] grhs = selectedWeapon.getGrhIndex();
     txtNorte.setText(String.valueOf(grhs[0]));
@@ -160,6 +179,12 @@ public class WeaponsController {
     txtOeste.setText(String.valueOf(grhs[3]));
   }
 
+  /**
+   * Dibuja y anima el arma en la dirección especificada.
+   *
+   * @param selectedWeapon El arma seleccionada.
+   * @param heading        La dirección (0-3).
+   */
   private void drawWeapons(WeaponData selectedWeapon, int heading) {
     int[] indices = selectedWeapon.getGrhIndex();
     int grhId = indices[heading];
@@ -180,6 +205,7 @@ public class WeaponsController {
     }
 
     if (nFrames > 1) {
+      // Configurar animación si tiene múltiples frames
       animationTimeline.getKeyFrames().clear();
       animationState.setCurrentFrameIndex(1);
       animationTimeline.getKeyFrames().add(new KeyFrame(Duration.ZERO, event -> {
@@ -193,6 +219,7 @@ public class WeaponsController {
       animationTimeline.setCycleCount(Animation.INDEFINITE);
       animationTimeline.play();
     } else {
+      // Imagen estática
       updateFrame(selectedGrh, heading);
     }
   }
@@ -246,6 +273,9 @@ public class WeaponsController {
     setImageView(heading, null);
   }
 
+  /**
+   * Guarda los cambios del arma seleccionada en memoria y disco.
+   */
   @FXML
   public void btnSave_OnAction(ActionEvent actionEvent) {
     int selectedIndex = lstWeapons.getSelectionModel().getSelectedIndex();
@@ -268,6 +298,9 @@ public class WeaponsController {
     }
   }
 
+  /**
+   * Añade una nueva arma vacía.
+   */
   @FXML
   public void btnAdd_OnAction(ActionEvent actionEvent) {
     weaponList.add(new WeaponData(new int[4]));
@@ -276,6 +309,9 @@ public class WeaponsController {
     logger.info("Nueva arma añadida.");
   }
 
+  /**
+   * Elimina el arma seleccionada.
+   */
   @FXML
   public void btnDelete_OnAction(ActionEvent actionEvent) {
     int selectedIndex = lstWeapons.getSelectionModel().getSelectedIndex();

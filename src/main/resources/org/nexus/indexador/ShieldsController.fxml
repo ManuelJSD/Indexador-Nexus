@@ -10,7 +10,8 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="410.0" prefWidth="528.0" styleClass="root-pane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nexus.indexador.controllers.ShieldsController">
    <children>
-      <ListView fx:id="lstShields" layoutX="14.0" layoutY="14.0" prefHeight="352.0" prefWidth="176.0" styleClass="data-list" />
+      <TextField fx:id="txtSearch" layoutX="14.0" layoutY="14.0" prefHeight="25.0" prefWidth="176.0" promptText="Buscar ID..." />
+      <ListView fx:id="lstShields" layoutX="14.0" layoutY="44.0" prefHeight="322.0" prefWidth="176.0" styleClass="data-list" />
       <Pane layoutX="240.0" layoutY="86.0" prefHeight="82.0" prefWidth="80.0" styleClass="preview-box-param">
          <children>
             <ImageView fx:id="imgOeste" fitHeight="70.0" fitWidth="70.0" layoutX="5.0" layoutY="5.0" pickOnBounds="true" preserveRatio="true" />

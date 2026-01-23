@@ -1,112 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.geometry.Pos?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="550.0" prefWidth="750.0" styleClass="root-pane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nexus.indexador.controllers.WeaponsController">
-   <padding>
-      <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
-   </padding>
-   <left>
-      <VBox spacing="5.0" BorderPane.alignment="CENTER">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="410.0" prefWidth="528.0" styleClass="root-pane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nexus.indexador.controllers.WeaponsController">
+   <children>
+      <TextField fx:id="txtSearch" layoutX="14.0" layoutY="14.0" prefHeight="25.0" prefWidth="176.0" promptText="Buscar ID..." />
+      <ListView fx:id="lstWeapons" layoutX="14.0" layoutY="44.0" prefHeight="322.0" prefWidth="176.0" styleClass="data-list" />
+      <Pane layoutX="240.0" layoutY="86.0" prefHeight="82.0" prefWidth="80.0" styleClass="preview-box-param">
          <children>
-            <Label fx:id="lblNArmas" styleClass="label-header" text="Armas cargadas: 0" />
-            <ListView fx:id="lstWeapons" styleClass="data-list" VBox.vgrow="ALWAYS" />
+            <ImageView fx:id="imgOeste" fitHeight="70.0" fitWidth="70.0" layoutX="5.0" layoutY="5.0" pickOnBounds="true" preserveRatio="true" />
          </children>
-         <BorderPane.margin>
-            <Insets right="15.0" />
-         </BorderPane.margin>
-      </VBox>
-   </left>
-   <center>
-      <VBox spacing="15.0" BorderPane.alignment="CENTER">
+      </Pane>
+      <Pane layoutX="326.0" layoutY="37.0" prefHeight="82.0" prefWidth="80.0" styleClass="preview-box-param">
          <children>
-            <Label styleClass="label-header" text="Vistas Previas (Direcciones)" />
-            
-            <!-- Grid 3x3 para disponer N/S/E/O visualmente -->
-            <GridPane alignment="CENTER" hgap="10.0" vgap="10.0">
-              <columnConstraints>
-                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" />
-                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" />
-                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" />
-              </columnConstraints>
-              <rowConstraints>
-                <RowConstraints valignment="CENTER" vgrow="SOMETIMES" />
-                <RowConstraints valignment="CENTER" vgrow="SOMETIMES" />
-                <RowConstraints valignment="CENTER" vgrow="SOMETIMES" />
-              </rowConstraints>
-               <children>
-               
-                  <!-- NORTE (Arriba Centro) -->
-                  <VBox alignment="CENTER" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
-                      <Label text="Norte" style="-fx-font-weight: bold;" />
-                      <Pane prefHeight="80.0" prefWidth="80.0" styleClass="preview-box-param">
-                         <children>
-                            <ImageView fx:id="imgNorte" fitHeight="70.0" fitWidth="70.0" layoutX="5.0" layoutY="5.0" pickOnBounds="true" preserveRatio="true" />
-                         </children>
-                      </Pane>
-                      <TextField fx:id="txtNorte" prefWidth="80.0" alignment="CENTER" promptText="GrhId" />
-                  </VBox>
-
-                  <!-- OESTE (Izquierda Centro) -->
-                  <VBox alignment="CENTER" spacing="5.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
-                      <Label text="Oeste" style="-fx-font-weight: bold;" />
-                      <Pane prefHeight="80.0" prefWidth="80.0" styleClass="preview-box-param">
-                         <children>
-                            <ImageView fx:id="imgOeste" fitHeight="70.0" fitWidth="70.0" layoutX="5.0" layoutY="5.0" pickOnBounds="true" preserveRatio="true" />
-                         </children>
-                      </Pane>
-                      <TextField fx:id="txtOeste" prefWidth="80.0" alignment="CENTER" promptText="GrhId" />
-                  </VBox>
-
-                  <!-- ESTE (Derecha Centro) -->
-                   <VBox alignment="CENTER" spacing="5.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
-                      <Label text="Este" style="-fx-font-weight: bold;" />
-                      <Pane prefHeight="80.0" prefWidth="80.0" styleClass="preview-box-param">
-                         <children>
-                            <ImageView fx:id="imgEste" fitHeight="70.0" fitWidth="70.0" layoutX="5.0" layoutY="5.0" pickOnBounds="true" preserveRatio="true" />
-                         </children>
-                      </Pane>
-                      <TextField fx:id="txtEste" prefWidth="80.0" alignment="CENTER" promptText="GrhId" />
-                  </VBox>
-                  
-                  <!-- SUR (Abajo Centro) -->
-                  <VBox alignment="CENTER" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
-                      <Label text="Sur" style="-fx-font-weight: bold;" />
-                      <Pane prefHeight="80.0" prefWidth="80.0" styleClass="preview-box-param">
-                         <children>
-                            <ImageView fx:id="imgSur" fitHeight="70.0" fitWidth="70.0" layoutX="5.0" layoutY="5.0" pickOnBounds="true" preserveRatio="true" />
-                         </children>
-                      </Pane>
-                      <TextField fx:id="txtSur" prefWidth="80.0" alignment="CENTER" promptText="GrhId" />
-                  </VBox>
-                  
-               </children>
-            </GridPane>
-            
-            <HBox alignment="CENTER_RIGHT" spacing="10.0">
-               <children>
-                  <Button fx:id="btnDelete" mnemonicParsing="false" onAction="#btnDelete_OnAction" styleClass="button-danger" text="Remover" />
-                  <Button fx:id="btnAdd" mnemonicParsing="false" onAction="#btnAdd_OnAction" text="Nuevo" />
-                   <Button fx:id="btnSave" defaultButton="true" mnemonicParsing="false" onAction="#btnSave_OnAction" text="Aplicar cambios" />
-               </children>
-               <VBox.margin>
-                  <Insets top="20.0" />
-               </VBox.margin>
-            </HBox>
+            <ImageView fx:id="imgNorte" fitHeight="70.0" fitWidth="70.0" layoutX="5.0" layoutY="5.0" pickOnBounds="true" preserveRatio="true" />
          </children>
-      </VBox>
-   </center>
-</BorderPane>
+      </Pane>
+      <Pane layoutX="412.0" layoutY="86.0" prefHeight="82.0" prefWidth="80.0" styleClass="preview-box-param">
+         <children>
+            <ImageView fx:id="imgEste" fitHeight="70.0" fitWidth="70.0" layoutX="5.0" layoutY="5.0" pickOnBounds="true" preserveRatio="true" />
+         </children>
+      </Pane>
+      <Pane layoutX="326.0" layoutY="127.0" prefHeight="82.0" prefWidth="80.0" styleClass="preview-box-param">
+         <children>
+            <ImageView fx:id="imgSur" fitHeight="70.0" fitWidth="70.0" layoutX="5.0" layoutY="5.0" pickOnBounds="true" preserveRatio="true" />
+         </children>
+      </Pane>
+      <Label layoutX="288.0" layoutY="243.0" text="Norte:" />
+      <TextField fx:id="txtNorte" layoutX="330.0" layoutY="239.0" prefHeight="25.0" prefWidth="86.0" />
+      <Label fx:id="lblNArmas" layoutX="211.0" layoutY="14.0" text="Armas cargadas: 0" />
+      <Button fx:id="btnSave" layoutX="212.0" layoutY="371.0" mnemonicParsing="false" onAction="#btnSave_OnAction" prefHeight="25.0" prefWidth="280.0" text="Aplicar cambios" />
+      <Button fx:id="btnAdd" layoutX="103.0" layoutY="371.0" mnemonicParsing="false" onAction="#btnAdd_OnAction" prefHeight="25.0" prefWidth="86.0" text="Nuevo" />
+      <Button fx:id="btnDelete" layoutX="15.0" layoutY="371.0" mnemonicParsing="false" onAction="#btnDelete_OnAction" prefHeight="25.0" prefWidth="80.0" text="Remover" />
+      <Label layoutX="373.0" layoutY="275.0" text="Este:" />
+      <TextField fx:id="txtEste" layoutX="415.0" layoutY="271.0" prefHeight="25.0" prefWidth="86.0" />
+      <Label layoutX="288.0" layoutY="304.0" text="Sur:" />
+      <TextField fx:id="txtSur" layoutX="330.0" layoutY="301.0" prefHeight="25.0" prefWidth="86.0" />
+      <Label layoutX="203.0" layoutY="275.0" text="Oeste:" />
+      <TextField fx:id="txtOeste" layoutX="245.0" layoutY="271.0" prefHeight="25.0" prefWidth="86.0" />
+   </children>
+</AnchorPane>

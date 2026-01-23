@@ -9,9 +9,13 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.transformation.FilteredList;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
+
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
 import org.nexus.indexador.gamedata.DataManager;
@@ -24,6 +28,8 @@ import java.io.File;
 import java.util.Optional;
 
 import org.nexus.indexador.gamedata.models.GrhData;
+import org.nexus.indexador.utils.ImageCache;
+import org.nexus.indexador.utils.Logger;
 
 public class HelmetsController {
 
@@ -71,6 +77,8 @@ public class HelmetsController {
   @FXML
   public Label lblNCascos;
   @FXML
+  public TextField txtSearch;
+  @FXML
   public Button btnSave;
   @FXML
   public Button btnAdd;
@@ -87,15 +95,20 @@ public class HelmetsController {
                                        // aplicación, incluyendo la
                                        // lectura y escritura de archivos de configuración.
   private DataManager dataManager;
+  private ImageCache imageCache;
+  private Logger logger;
 
   /**
-   * Inicializa el controlador, cargando la configuración y los datos de los cascos.
+   * Inicializa el controlador, cargando la configuración y los datos de los
+   * cascos.
    */
   @FXML
   protected void initialize() {
     configManager = ConfigManager.getInstance();
     try {
       dataManager = DataManager.getInstance();
+      imageCache = ImageCache.getInstance();
+      logger = Logger.getInstance();
       // helmetDataManager = new HelmetData(); // No se usa, comentado
       loadHelmetData();
       setupHelmetListListener();
@@ -116,18 +129,35 @@ public class HelmetsController {
     // Actualizar el texto de los labels con la información obtenida
     lblNCascos.setText("Cascos cargados: " + dataManager.getNumHelmets());
 
-    // Agregar los índices de gráficos al ListView
+    // Crear lista de índices
     ObservableList<String> helmetIndices = FXCollections.observableArrayList();
-    for (int i = 1; i < helmetList.size() + 1; i++) {
+    for (int i = 1; i <= helmetList.size(); i++) {
       helmetIndices.add(String.valueOf(i));
     }
 
-    lstHelmets.setItems(helmetIndices);
+    // Configurar FilteredList
+    FilteredList<String> filteredData = new FilteredList<>(helmetIndices, p -> true);
 
+    // Binding del buscador
+    if (txtSearch != null) {
+      txtSearch.textProperty().addListener((observable, oldValue, newValue) -> {
+        filteredData.setPredicate(index -> {
+          if (newValue == null || newValue.isEmpty()) {
+            return true;
+          }
+          return index.contains(newValue); // Filtrado simple por ID
+        });
+      });
+    }
+
+    lstHelmets.setItems(filteredData);
+
+    lstHelmets.setItems(filteredData);
   }
 
   /**
-   * Configura un listener para el ListView, manejando los eventos de selección de ítems.
+   * Configura un listener para el ListView, manejando los eventos de selección de
+   * ítems.
    */
   private void setupHelmetListListener() {
     // Agregar un listener al ListView para capturar los eventos de selección
@@ -210,11 +240,13 @@ public class HelmetsController {
   }
 
   /**
-   * Dibuja las imágenes de los cascos en las diferentes vistas (Norte, Sur, Este, Oeste).
+   * Dibuja las imágenes de los cascos en las diferentes vistas (Norte, Sur, Este,
+   * Oeste).
    *
    * @param selectedHelmet el objeto helmetData seleccionado.
-   * @param helmeting la dirección en la que se debe dibujar el casco (0: Sur, 1: Norte, 2: Oeste,
-   *        3: Este).
+   * @param helmeting      la dirección en la que se debe dibujar el casco (0:
+   *                       Sur, 1: Norte, 2: Oeste,
+   *                       3: Este).
    */
   private void drawHelmets(HelmetData selectedHelmet, int helmeting) {
     // Verificar el tipo de sistema
@@ -236,48 +268,48 @@ public class HelmetsController {
 
     // ¿La imagen existe?
     if (imageFile.exists()) {
-      Image staticImage = new Image(imageFile.toURI().toString());
+      Image staticImage = imageCache.getImage(imagePath);
 
-      int textureX2 = 27;
-      int textureY2 = 32;
-      int textureX1 = selectedHelmet.getStartX();
-      int textureY1 = (helmeting * textureY2) + selectedHelmet.getStartY();
+      if (staticImage != null) {
+        int textureX2 = 27;
+        int textureY2 = 32;
+        int textureX1 = selectedHelmet.getStartX();
+        int textureY1 = (helmeting * textureY2) + selectedHelmet.getStartY();
 
-      // Verificar que las coordenadas de recorte estén dentro de los límites de la
-      // imagen
-      if (textureX1 + textureX2 > staticImage.getWidth()) {
-        textureX1 = (int) staticImage.getWidth() - textureX2;
-      }
-      if (textureY1 + textureY2 > staticImage.getHeight()) {
-        textureY1 = (int) staticImage.getHeight() - textureY2;
-      }
+        // Verificar que las coordenadas de recorte estén dentro de los límites de la
+        // imagen
+        if (textureX1 + textureX2 > staticImage.getWidth()) {
+          textureX1 = (int) staticImage.getWidth() - textureX2;
+        }
+        if (textureY1 + textureY2 > staticImage.getHeight()) {
+          textureY1 = (int) staticImage.getHeight() - textureY2;
+        }
 
-      // Recortar la región adecuada de la imagen completa
-      PixelReader pixelReader = staticImage.getPixelReader();
-      WritableImage croppedImage =
-          new WritableImage(pixelReader, textureX1, textureY1, textureX2, textureY2);
+        // Recortar la región adecuada de la imagen completa
+        WritableImage croppedImage = imageCache.getCroppedImage(imagePath, textureX1, textureY1, textureX2, textureY2);
 
-      // Desactivar la preservación de la relación de aspecto
-      imgNorte.setPreserveRatio(false);
+        // Desactivar la preservación de la relación de aspecto
+        imgNorte.setPreserveRatio(false);
 
-      // Mostrar la región recortada en el ImageView correspondiente
-      switch (helmeting) {
-        case 0:
-          imgSur.setImage(croppedImage);
-          break;
-        case 1:
-          imgNorte.setImage(croppedImage);
-          break;
-        case 2:
-          imgOeste.setImage(croppedImage);
-          break;
-        case 3:
-          imgEste.setImage(croppedImage);
-          break;
-        default:
-          // Dirección desconocida
-          System.out.println("Dirección desconocida: " + helmeting);
-          break;
+        // Mostrar la región recortada en el ImageView correspondiente
+        switch (helmeting) {
+          case 0:
+            imgSur.setImage(croppedImage);
+            break;
+          case 1:
+            imgNorte.setImage(croppedImage);
+            break;
+          case 2:
+            imgOeste.setImage(croppedImage);
+            break;
+          case 3:
+            imgEste.setImage(croppedImage);
+            break;
+          default:
+            // Dirección desconocida
+            System.out.println("Dirección desconocida: " + helmeting);
+            break;
+        }
       }
 
     } else {
@@ -358,8 +390,9 @@ public class HelmetsController {
       if (!file.exists())
         return null;
 
-      Image fullImage = new Image(file.toURI().toString());
-      PixelReader reader = fullImage.getPixelReader();
+      Image fullImage = imageCache.getImage(imagePath);
+      if (fullImage == null)
+        return null;
 
       // Usar getsX/getsY
       int x = grh.getsX();
@@ -374,14 +407,15 @@ public class HelmetsController {
       if (w <= 0 || h <= 0)
         return null;
 
-      return new WritableImage(reader, x, y, w, h);
+      return imageCache.getCroppedImage(imagePath, x, y, w, h);
     } catch (Exception e) {
       return null;
     }
   }
 
   /**
-   * Maneja el evento de acción del botón "Guardar". Aplica los cambios al objeto helmetData
+   * Maneja el evento de acción del botón "Guardar". Aplica los cambios al objeto
+   * helmetData
    * seleccionado.
    *
    * @param actionEvent el evento de acción del botón.
@@ -425,7 +459,8 @@ public class HelmetsController {
   }
 
   /**
-   * Maneja el evento de acción del botón "Agregar". Agrega un nuevo objeto helmetData a la lista.
+   * Maneja el evento de acción del botón "Agregar". Agrega un nuevo objeto
+   * helmetData a la lista.
    */
   @FXML
   private void btnAdd_OnAction() {
@@ -445,7 +480,8 @@ public class HelmetsController {
   }
 
   /**
-   * Maneja el evento de acción del botón "Eliminar". Elimina el objeto helmetData seleccionado de
+   * Maneja el evento de acción del botón "Eliminar". Elimina el objeto helmetData
+   * seleccionado de
    * la lista.
    *
    * @param actionEvent el evento de acción del botón.
@@ -461,9 +497,10 @@ public class HelmetsController {
 
       Optional<ButtonType> result = alert.showAndWait();
       if (result.isPresent() && result.get() == ButtonType.OK) {
-        lstHelmets.getItems().remove(selectedIndex);
         helmetList.remove(selectedIndex);
+        loadHelmetData(); // Recargar lista visual
       }
     }
   }
+
 }

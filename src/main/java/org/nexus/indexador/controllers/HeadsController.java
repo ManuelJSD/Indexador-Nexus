@@ -9,9 +9,13 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.transformation.FilteredList;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
+
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
 import org.nexus.indexador.gamedata.DataManager;
@@ -24,6 +28,8 @@ import java.io.File;
 import java.util.Optional;
 
 import org.nexus.indexador.gamedata.models.GrhData;
+import org.nexus.indexador.utils.ImageCache;
+import org.nexus.indexador.utils.Logger;
 
 public class HeadsController {
 
@@ -71,6 +77,8 @@ public class HeadsController {
   @FXML
   public Label lblNCabezas;
   @FXML
+  public TextField txtSearch; // New search field
+  @FXML
   public Button btnSave;
   @FXML
   public Button btnAdd;
@@ -87,15 +95,20 @@ public class HeadsController {
                                        // aplicación, incluyendo la
                                        // lectura y escritura de archivos de configuración.
   private DataManager dataManager;
+  private ImageCache imageCache;
+  private Logger logger;
 
   /**
-   * Inicializa el controlador, cargando la configuración y los datos de las cabezas.
+   * Inicializa el controlador, cargando la configuración y los datos de las
+   * cabezas.
    */
   @FXML
   protected void initialize() {
     configManager = ConfigManager.getInstance();
     try {
       dataManager = DataManager.getInstance();
+      imageCache = ImageCache.getInstance();
+      logger = Logger.getInstance();
 
       // headDataManager = new HeadData(); // No se usa, comentado
       loadHeadData();
@@ -109,6 +122,9 @@ public class HeadsController {
   /**
    * Carga los datos de las cabezas desde un archivo y los muestra en la interfaz.
    */
+  /**
+   * Carga los datos de las cabezas desde un archivo y los muestra en la interfaz.
+   */
   private void loadHeadData() {
     // Llamar al método para leer el archivo binario y obtener la lista de headData
     headList = dataManager.getHeadList();
@@ -116,18 +132,35 @@ public class HeadsController {
     // Actualizar el texto de los labels con la información obtenida
     lblNCabezas.setText("Cabezas cargadas: " + dataManager.getNumHeads());
 
-    // Agregar los índices de gráficos al ListView
+    // Crear lista de índices
     ObservableList<String> headIndices = FXCollections.observableArrayList();
-    for (int i = 1; i < headList.size() + 1; i++) {
+    for (int i = 1; i <= headList.size(); i++) {
       headIndices.add(String.valueOf(i));
     }
 
-    lstHeads.setItems(headIndices);
+    // Configurar FilteredList
+    FilteredList<String> filteredData = new FilteredList<>(headIndices, p -> true);
 
+    // Binding del buscador
+    if (txtSearch != null) {
+      txtSearch.textProperty().addListener((observable, oldValue, newValue) -> {
+        filteredData.setPredicate(index -> {
+          if (newValue == null || newValue.isEmpty()) {
+            return true;
+          }
+          return index.contains(newValue); // Filtrado simple por ID
+        });
+      });
+    }
+
+    lstHeads.setItems(filteredData);
+
+    lstHeads.setItems(filteredData);
   }
 
   /**
-   * Configura un listener para el ListView, manejando los eventos de selección de ítems.
+   * Configura un listener para el ListView, manejando los eventos de selección de
+   * ítems.
    */
   private void setupHeadListListener() {
     // Agregar un listener al ListView para capturar los eventos de selección
@@ -210,11 +243,13 @@ public class HeadsController {
   }
 
   /**
-   * Dibuja las imágenes de las cabezas en las diferentes vistas (Norte, Sur, Este, Oeste).
+   * Dibuja las imágenes de las cabezas en las diferentes vistas (Norte, Sur,
+   * Este, Oeste).
    *
    * @param selectedHead el objeto headData seleccionado.
-   * @param heading la dirección en la que se debe dibujar la cabeza (0: Sur, 1: Norte, 2: Oeste, 3:
-   *        Este).
+   * @param heading      la dirección en la que se debe dibujar la cabeza (0: Sur,
+   *                     1: Norte, 2: Oeste, 3:
+   *                     Este).
    */
   private void drawHeads(HeadData selectedHead, int heading) {
     // Verificar el tipo de sistema
@@ -236,48 +271,48 @@ public class HeadsController {
 
     // ¿La imagen existe?
     if (imageFile.exists()) {
-      Image staticImage = new Image(imageFile.toURI().toString());
+      Image staticImage = imageCache.getImage(imagePath);
 
-      int textureX2 = 27;
-      int textureY2 = 32;
-      int textureX1 = selectedHead.getStartX();
-      int textureY1 = (heading * textureY2) + selectedHead.getStartY();
+      if (staticImage != null) {
+        int textureX2 = 27;
+        int textureY2 = 32;
+        int textureX1 = selectedHead.getStartX();
+        int textureY1 = (heading * textureY2) + selectedHead.getStartY();
 
-      // Verificar que las coordenadas de recorte estén dentro de los límites de la
-      // imagen
-      if (textureX1 + textureX2 > staticImage.getWidth()) {
-        textureX1 = (int) staticImage.getWidth() - textureX2;
-      }
-      if (textureY1 + textureY2 > staticImage.getHeight()) {
-        textureY1 = (int) staticImage.getHeight() - textureY2;
-      }
+        // Verificar que las coordenadas de recorte estén dentro de los límites de la
+        // imagen
+        if (textureX1 + textureX2 > staticImage.getWidth()) {
+          textureX1 = (int) staticImage.getWidth() - textureX2;
+        }
+        if (textureY1 + textureY2 > staticImage.getHeight()) {
+          textureY1 = (int) staticImage.getHeight() - textureY2;
+        }
 
-      // Recortar la región adecuada de la imagen completa
-      PixelReader pixelReader = staticImage.getPixelReader();
-      WritableImage croppedImage =
-          new WritableImage(pixelReader, textureX1, textureY1, textureX2, textureY2);
+        // Recortar la región adecuada de la imagen completa
+        WritableImage croppedImage = imageCache.getCroppedImage(imagePath, textureX1, textureY1, textureX2, textureY2);
 
-      // Desactivar la preservación de la relación de aspecto
-      imgNorte.setPreserveRatio(false);
+        // Desactivar la preservación de la relación de aspecto
+        imgNorte.setPreserveRatio(false);
 
-      // Mostrar la región recortada en el ImageView correspondiente
-      switch (heading) {
-        case 0:
-          imgSur.setImage(croppedImage);
-          break;
-        case 1:
-          imgNorte.setImage(croppedImage);
-          break;
-        case 2:
-          imgOeste.setImage(croppedImage);
-          break;
-        case 3:
-          imgEste.setImage(croppedImage);
-          break;
-        default:
-          // Dirección desconocida
-          System.out.println("Dirección desconocida: " + heading);
-          break;
+        // Mostrar la región recortada en el ImageView correspondiente
+        switch (heading) {
+          case 0:
+            imgSur.setImage(croppedImage);
+            break;
+          case 1:
+            imgNorte.setImage(croppedImage);
+            break;
+          case 2:
+            imgOeste.setImage(croppedImage);
+            break;
+          case 3:
+            imgEste.setImage(croppedImage);
+            break;
+          default:
+            // Dirección desconocida
+            System.out.println("Dirección desconocida: " + heading);
+            break;
+        }
       }
 
     } else {
@@ -364,8 +399,9 @@ public class HeadsController {
       if (!file.exists())
         return null;
 
-      Image fullImage = new Image(file.toURI().toString());
-      PixelReader reader = fullImage.getPixelReader();
+      Image fullImage = imageCache.getImage(imagePath);
+      if (fullImage == null)
+        return null;
 
       int x = grh.getsX();
       int y = grh.getsY();
@@ -379,7 +415,7 @@ public class HeadsController {
       if (w <= 0 || h <= 0)
         return null;
 
-      return new WritableImage(reader, x, y, w, h);
+      return imageCache.getCroppedImage(imagePath, x, y, w, h);
     } catch (Exception e) {
       // e.printStackTrace();
       return null;
@@ -387,7 +423,8 @@ public class HeadsController {
   }
 
   /**
-   * Maneja el evento de acción del botón "Guardar". Aplica los cambios al objeto headData
+   * Maneja el evento de acción del botón "Guardar". Aplica los cambios al objeto
+   * headData
    * seleccionado.
    *
    * @param actionEvent el evento de acción del botón.
@@ -431,7 +468,8 @@ public class HeadsController {
   }
 
   /**
-   * Maneja el evento de acción del botón "Agregar". Agrega un nuevo objeto headData a la lista.
+   * Maneja el evento de acción del botón "Agregar". Agrega un nuevo objeto
+   * headData a la lista.
    */
   @FXML
   private void btnAdd_OnAction() {
@@ -451,7 +489,8 @@ public class HeadsController {
   }
 
   /**
-   * Maneja el evento de acción del botón "Eliminar". Elimina el objeto headData seleccionado de la
+   * Maneja el evento de acción del botón "Eliminar". Elimina el objeto headData
+   * seleccionado de la
    * lista.
    *
    * @param actionEvent el evento de acción del botón.
@@ -467,9 +506,18 @@ public class HeadsController {
 
       Optional<ButtonType> result = alert.showAndWait();
       if (result.isPresent() && result.get() == ButtonType.OK) {
-        lstHeads.getItems().remove(selectedIndex);
+        // headList.remove(selectedIndex); // Removing from ObservableList
+        // lstHeads.getItems().remove(selectedIndex); // Re-sync ui?
+
+        // Actually, if we use filtered list, we should remove from source list
+        // (headList)
+        // and then reload or let listener handle it?
+        // But headList is the data source. list of strings is just indices.
+
         headList.remove(selectedIndex);
+        loadHeadData(); // Reload to refresh indices and filter
       }
     }
   }
+
 }

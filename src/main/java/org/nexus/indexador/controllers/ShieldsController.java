@@ -7,13 +7,13 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.transformation.FilteredList;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
+
 import javafx.util.Duration;
 import org.nexus.indexador.gamedata.DataManager;
 import org.nexus.indexador.gamedata.models.GrhData;
@@ -57,6 +57,8 @@ public class ShieldsController {
   public Button btnAdd;
   @FXML
   public Button btnDelete;
+  @FXML
+  public TextField txtSearch;
 
   private ShieldData shieldDataManager; // Objeto que gestiona los datos de los escudos, incluyendo
                                         // la carga y
@@ -75,7 +77,8 @@ public class ShieldsController {
   private Map<Integer, GrhData> grhDataMap;
 
   /**
-   * Inicializa el controlador, cargando la configuración y los datos de los cuerpos.
+   * Inicializa el controlador, cargando la configuración y los datos de los
+   * cuerpos.
    */
   @FXML
   protected void initialize() {
@@ -133,6 +136,23 @@ public class ShieldsController {
 
       lstShields.setItems(shieldIndices);
 
+      // Configurar FilteredList
+      FilteredList<String> filteredData = new FilteredList<>(shieldIndices, p -> true);
+
+      // Binding del buscador
+      if (txtSearch != null) {
+        txtSearch.textProperty().addListener((observable, oldValue, newValue) -> {
+          filteredData.setPredicate(index -> {
+            if (newValue == null || newValue.isEmpty()) {
+              return true;
+            }
+            return index.contains(newValue); // Filtrado simple por ID
+          });
+        });
+      }
+
+      lstShields.setItems(filteredData);
+
       logger.info("Datos de escudos cargados: " + shieldList.size() + " escudos");
     } catch (IOException e) {
       logger.error("Error al cargar datos de escudos", e);
@@ -141,7 +161,8 @@ public class ShieldsController {
   }
 
   /**
-   * Configura un listener para el ListView, manejando los eventos de selección de ítems.
+   * Configura un listener para el ListView, manejando los eventos de selección de
+   * ítems.
    */
   private void setupHeadListListener() {
     // Agregar un listener al ListView para capturar los eventos de selección
@@ -181,11 +202,13 @@ public class ShieldsController {
   }
 
   /**
-   * Dibuja las imágenes de los cuerpos en las diferentes vistas (Norte, Sur, Este, Oeste).
+   * Dibuja las imágenes de los cuerpos en las diferentes vistas (Norte, Sur,
+   * Este, Oeste).
    *
    * @param selectedShield el objeto headData seleccionado.
-   * @param heading la dirección en la que se debe dibujar la cabeza (0: Sur, 1: Norte, 2: Oeste, 3:
-   *        Este).
+   * @param heading        la dirección en la que se debe dibujar la cabeza (0:
+   *                       Sur, 1: Norte, 2: Oeste, 3:
+   *                       Este).
    */
   private void drawShields(ShieldData selectedShield, int heading) {
     int[] bodies = selectedShield.getShield();
@@ -226,8 +249,10 @@ public class ShieldsController {
   }
 
   /**
-   * Actualiza el fotograma actual en el ImageView durante la reproducción de una animación. Obtiene
-   * el siguiente fotograma de la animación y actualiza el ImageView con la imagen correspondiente.
+   * Actualiza el fotograma actual en el ImageView durante la reproducción de una
+   * animación. Obtiene
+   * el siguiente fotograma de la animación y actualiza el ImageView con la imagen
+   * correspondiente.
    *
    * @param selectedGrh El gráfico seleccionado.
    */
@@ -285,15 +310,46 @@ public class ShieldsController {
     }
   }
 
+  @FXML
   public void btnSave_OnAction(ActionEvent actionEvent) {
-    logger.info("Función de guardado aún no implementada");
+    int selectedIndex = lstShields.getSelectionModel().getSelectedIndex();
+    if (selectedIndex >= 0) {
+      try {
+        ShieldData data = shieldList.get(selectedIndex);
+        int[] grhs = data.getShield();
+        grhs[0] = Integer.parseInt(txtNorte.getText());
+        grhs[1] = Integer.parseInt(txtEste.getText());
+        grhs[2] = Integer.parseInt(txtSur.getText());
+        grhs[3] = Integer.parseInt(txtOeste.getText());
+        data.setShield(grhs);
+
+        logger.info("Cambios aplicados en memoria para el escudo " + (selectedIndex + 1));
+
+        // Guardado real en disco
+        dataManager.getIndexLoader().saveShields(shieldList);
+        logger.info("Escudos guardados en disco correctamente.");
+      } catch (Exception e) {
+        logger.error("Error al guardar escudos", e);
+      }
+    }
   }
 
+  @FXML
   public void btnAdd_OnAction(ActionEvent actionEvent) {
-    logger.info("Función de añadir aún no implementada");
+    shieldList.add(new ShieldData(new int[4]));
+    lstShields.getItems().add(String.valueOf(shieldList.size()));
+    lstShields.getSelectionModel().selectLast();
+    logger.info("Nuevo escudo añadido.");
   }
 
+  @FXML
   public void btnDelete_OnAction(ActionEvent actionEvent) {
-    logger.info("Función de eliminar aún no implementada");
+    int selectedIndex = lstShields.getSelectionModel().getSelectedIndex();
+    if (selectedIndex >= 0) {
+      shieldList.remove(selectedIndex);
+      loadShieldData(); // Recargar lista visual
+      logger.info("Escudo eliminado.");
+    }
   }
+
 }

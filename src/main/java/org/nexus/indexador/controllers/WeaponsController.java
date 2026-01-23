@@ -7,13 +7,13 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.transformation.FilteredList;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
+
 import javafx.util.Duration;
 import org.nexus.indexador.gamedata.DataManager;
 import org.nexus.indexador.gamedata.models.GrhData;
@@ -56,6 +56,8 @@ public class WeaponsController {
   public Button btnAdd;
   @FXML
   public Button btnDelete;
+  @FXML
+  public TextField txtSearch;
 
   private ObservableList<WeaponData> weaponList;
   private ObservableList<GrhData> grhList;
@@ -111,6 +113,24 @@ public class WeaponsController {
       }
 
       lstWeapons.setItems(weaponIndices);
+
+      // Configurar FilteredList
+      FilteredList<String> filteredData = new FilteredList<>(weaponIndices, p -> true);
+
+      // Binding del buscador
+      if (txtSearch != null) {
+        txtSearch.textProperty().addListener((observable, oldValue, newValue) -> {
+          filteredData.setPredicate(index -> {
+            if (newValue == null || newValue.isEmpty()) {
+              return true;
+            }
+            return index.contains(newValue); // Filtrado simple por ID
+          });
+        });
+      }
+
+      lstWeapons.setItems(filteredData);
+
       logger.info("Datos de armas cargados: " + weaponList.size() + " armas");
     } catch (IOException e) {
       logger.error("Error al cargar datos de armas", e);
@@ -265,4 +285,5 @@ public class WeaponsController {
       logger.info("Arma eliminada.");
     }
   }
+
 }

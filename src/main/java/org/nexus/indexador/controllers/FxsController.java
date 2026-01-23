@@ -7,20 +7,23 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+
+import javafx.collections.transformation.FilteredList;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
+import org.nexus.indexador.utils.ImageUtils;
+import javafx.scene.paint.Color;
+
 import javafx.util.Duration;
 import org.nexus.indexador.gamedata.DataManager;
 import org.nexus.indexador.gamedata.models.FXData;
 import org.nexus.indexador.gamedata.models.GrhData;
 import org.nexus.indexador.utils.AnimationState;
 import org.nexus.indexador.utils.ConfigManager;
+import org.nexus.indexador.utils.ImageCache;
+import org.nexus.indexador.utils.Logger;
 
 import java.io.File;
 
@@ -51,6 +54,8 @@ public class FxsController {
   public Button btnAdd;
   @FXML
   public Button btnDelete;
+  @FXML
+  public TextField txtSearch;
 
   private FXData fxDataManager; // Objeto que gestiona los datos de los FXs, incluyendo la carga y
                                 // manipulación
@@ -60,6 +65,8 @@ public class FxsController {
 
   private ConfigManager configManager;
   private DataManager dataManager;
+  private ImageCache imageCache;
+  private Logger logger;
 
   private Map<Integer, AnimationState> animationStates = new HashMap<>();
 
@@ -72,13 +79,16 @@ public class FxsController {
   private Timeline animationTimeline;
 
   /**
-   * Inicializa el controlador, cargando la configuración y los datos de los cuerpos.
+   * Inicializa el controlador, cargando la configuración y los datos de los
+   * cuerpos.
    */
   @FXML
   protected void initialize() {
     configManager = ConfigManager.getInstance();
     try {
       dataManager = DataManager.getInstance();
+      imageCache = ImageCache.getInstance();
+      logger = Logger.getInstance();
 
       fxDataManager = new FXData(); // Crear una instancia de headData
 
@@ -123,10 +133,28 @@ public class FxsController {
 
     lstFxs.setItems(fxIndices);
 
+    // Configurar FilteredList
+    FilteredList<String> filteredData = new FilteredList<>(fxIndices, p -> true);
+
+    // Binding del buscador
+    if (txtSearch != null) {
+      txtSearch.textProperty().addListener((observable, oldValue, newValue) -> {
+        filteredData.setPredicate(index -> {
+          if (newValue == null || newValue.isEmpty()) {
+            return true;
+          }
+          return index.contains(newValue); // Filtrado simple por ID
+        });
+      });
+    }
+
+    lstFxs.setItems(filteredData);
+
   }
 
   /**
-   * Configura un listener para el ListView, manejando los eventos de selección de ítems.
+   * Configura un listener para el ListView, manejando los eventos de selección de
+   * ítems.
    */
   private void setupFXListListener() {
     // Agregar un listener al ListView para capturar los eventos de selección
@@ -163,8 +191,10 @@ public class FxsController {
   }
 
   /**
-   * Muestra una animación en el ImageView correspondiente al gráfico seleccionado. Configura y
-   * ejecuta una animación de fotogramas clave para mostrar la animación. La animación se ejecuta en
+   * Muestra una animación en el ImageView correspondiente al gráfico
+   * seleccionado. Configura y
+   * ejecuta una animación de fotogramas clave para mostrar la animación. La
+   * animación se ejecuta en
    * un bucle infinito hasta que se detenga explícitamente.
    *
    * @param selectedFX El gráfico seleccionado.
@@ -198,8 +228,10 @@ public class FxsController {
   }
 
   /**
-   * Actualiza el fotograma actual en el ImageView durante la reproducción de una animación. Obtiene
-   * el siguiente fotograma de la animación y actualiza el ImageView con la imagen correspondiente.
+   * Actualiza el fotograma actual en el ImageView durante la reproducción de una
+   * animación. Obtiene
+   * el siguiente fotograma de la animación y actualiza el ImageView con la imagen
+   * correspondiente.
    *
    * @param selectedGrh El gráfico seleccionado.
    */
@@ -225,15 +257,42 @@ public class FxsController {
 
         // Verificar si el archivo de imagen existe
         if (imageFile.exists()) {
-          Image frameImage = new Image(imageFile.toURI().toString());
+          Image frameImage = imageCache.getImage(imagePath);
 
-          PixelReader pixelReader = frameImage.getPixelReader();
-          WritableImage croppedImage = new WritableImage(pixelReader, currentGrh.getsX(),
-              currentGrh.getsY(), currentGrh.getTileWidth(), currentGrh.getTileHeight());
-          imgFX.setImage(croppedImage);
+          if (frameImage != null) {
+            WritableImage croppedImage = imageCache.getCroppedImage(imagePath, currentGrh.getsX(),
+                currentGrh.getsY(), currentGrh.getTileWidth(), currentGrh.getTileHeight());
+            WritableImage finalImage = croppedImage;
+
+            // Visualizar Offsets en un lienzo expandido
+            try {
+              int offX = Integer.parseInt(txtOffsetX.getText());
+              int offY = Integer.parseInt(txtOffsetY.getText());
+
+              int canvasW = 150;
+              int canvasH = 150;
+
+              int spriteW = (int) croppedImage.getWidth();
+              int spriteH = (int) croppedImage.getHeight();
+
+              int marginX = (canvasW - spriteW) / 2;
+              int marginY = (canvasH - spriteH) / 2;
+              if (marginX < 0)
+                marginX = 0;
+              if (marginY < 0)
+                marginY = 0;
+
+              WritableImage canvas = ImageUtils.drawSpriteOnCanvas(croppedImage, canvasW, canvasH, marginX, marginY,
+                  offX, offY, Color.RED);
+              if (canvas != null)
+                finalImage = canvas;
+            } catch (NumberFormatException e) {
+              // Ignorar
+            }
+
+            imgFX.setImage(finalImage);
+          }
         } else {
-          // El archivo no existe, mostrar un mensaje de error o registrar un mensaje de
-          // advertencia
           System.out.println("updateFrame: El archivo de imagen no existe: " + imagePath);
         }
       } else {
@@ -248,9 +307,45 @@ public class FxsController {
     }
   }
 
-  public void btnSave_OnAction(ActionEvent actionEvent) {}
+  public void btnSave_OnAction(ActionEvent actionEvent) {
+    int selectedIndex = lstFxs.getSelectionModel().getSelectedIndex();
+    if (selectedIndex >= 0) {
+      try {
+        FXData data = fxList.get(selectedIndex);
 
-  public void btnAdd_OnAction(ActionEvent actionEvent) {}
+        data.setFx(Integer.parseInt(txtFX.getText()));
+        data.setOffsetX(Short.parseShort(txtOffsetX.getText()));
+        data.setOffsetY(Short.parseShort(txtOffsetY.getText()));
 
-  public void btnDelete_OnAction(ActionEvent actionEvent) {}
+        // Guardado real en disco
+        dataManager.getIndexLoader().saveFXs(fxList);
+        logger.info("FXs guardados en disco correctamente.");
+
+        // Recargar animación visual
+        displayAnimation(data);
+      } catch (Exception e) {
+        logger.error("Error al guardar FXs", e);
+      }
+    }
+  }
+
+  public void btnAdd_OnAction(ActionEvent actionEvent) {
+    // Crear nuevo FX inicializado
+    FXData newFx = new FXData(0, (short) 0, (short) 0);
+    fxList.add(newFx);
+
+    lstFxs.getItems().add(String.valueOf(fxList.size()));
+    lstFxs.getSelectionModel().selectLast();
+    logger.info("Nuevo FX añadido.");
+  }
+
+  public void btnDelete_OnAction(ActionEvent actionEvent) {
+    int selectedIndex = lstFxs.getSelectionModel().getSelectedIndex();
+    if (selectedIndex >= 0) {
+      fxList.remove(selectedIndex);
+      loadFxData();
+      logger.info("FX eliminado de memoria. Recuerde guardar.");
+    }
+  }
+
 }

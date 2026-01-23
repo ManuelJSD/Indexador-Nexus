@@ -10,8 +10,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Clase que implementa un sistema de caché para imágenes. Utiliza referencias suaves
- * (SoftReference) para permitir al recolector de basura liberar la memoria de las imágenes cuando
+ * Clase que implementa un sistema de caché para imágenes. Utiliza referencias
+ * suaves
+ * (SoftReference) para permitir al recolector de basura liberar la memoria de
+ * las imágenes cuando
  * el sistema lo necesite.
  */
 public class ImageCache {
@@ -50,19 +52,19 @@ public class ImageCache {
 
       // Si la referencia no ha sido recolectada por el GC, retornarla
       if (cachedImage != null) {
-        logger.debug("Imagen obtenida del caché: " + imagePath);
+        // logger.debug("Imagen obtenida del caché: " + imagePath);
         return cachedImage;
       }
       // Si ha sido recolectada, eliminarla del caché
       imageCache.remove(imagePath);
-      logger.debug("Referencia de imagen liberada por GC: " + imagePath);
+      // logger.debug("Referencia de imagen liberada por GC: " + imagePath);
     }
 
     // Cargar la imagen desde el archivo
     File imageFile = new File(imagePath);
     if (imageFile.exists()) {
       try {
-        logger.debug("Cargando imagen nueva: " + imagePath);
+        // logger.debug("Cargando imagen nueva: " + imagePath);
         Image newImage = new Image(imageFile.toURI().toString());
         // Almacenar en caché con referencia suave
         imageCache.put(imagePath, new SoftReference<>(newImage));
@@ -81,10 +83,10 @@ public class ImageCache {
    * Obtiene una subimagen (región recortada) de una imagen.
    *
    * @param imagePath Ruta de la imagen original.
-   * @param x Coordenada X de inicio del recorte.
-   * @param y Coordenada Y de inicio del recorte.
-   * @param width Ancho del recorte.
-   * @param height Alto del recorte.
+   * @param x         Coordenada X de inicio del recorte.
+   * @param y         Coordenada Y de inicio del recorte.
+   * @param width     Ancho del recorte.
+   * @param height    Alto del recorte.
    * @return La imagen recortada, o null si la imagen original no existe.
    */
   public WritableImage getCroppedImage(String imagePath, int x, int y, int width, int height) {
@@ -92,8 +94,11 @@ public class ImageCache {
     if (sourceImage != null) {
       try {
         PixelReader pixelReader = sourceImage.getPixelReader();
-        logger.debug("Recortando imagen: " + imagePath + " en coordenadas [" + x + "," + y
-            + "] con tamaño " + width + "x" + height);
+        /*
+         * logger.debug("Recortando imagen: " + imagePath + " en coordenadas [" + x +
+         * "," + y
+         * + "] con tamaño " + width + "x" + height);
+         */
         return new WritableImage(pixelReader, x, y, width, height);
       } catch (Exception e) {
         logger.error("Error al recortar imagen " + imagePath, e);

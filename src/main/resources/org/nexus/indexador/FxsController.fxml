@@ -22,6 +22,7 @@
       <VBox spacing="5.0" BorderPane.alignment="CENTER">
          <children>
             <Label fx:id="lblNFXs" styleClass="label-header" text="FXs cargadas: 0" />
+            <TextField fx:id="txtSearch" promptText="Buscar ID..." />
             <ListView fx:id="lstFxs" styleClass="data-list" VBox.vgrow="ALWAYS" />
          </children>
          <BorderPane.margin>

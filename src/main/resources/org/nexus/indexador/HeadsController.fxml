@@ -11,7 +11,8 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="528.0" styleClass="root-pane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nexus.indexador.controllers.HeadsController">
    <children>
-      <ListView fx:id="lstHeads" layoutX="14.0" layoutY="14.0" prefHeight="308.0" prefWidth="176.0" styleClass="data-list" />
+      <TextField fx:id="txtSearch" layoutX="14.0" layoutY="14.0" prefHeight="25.0" prefWidth="176.0" promptText="Buscar ID..." />
+      <ListView fx:id="lstHeads" layoutX="14.0" layoutY="44.0" prefHeight="278.0" prefWidth="176.0" styleClass="data-list" />
       <StackPane layoutX="240.0" layoutY="86.0" prefHeight="82.0" prefWidth="80.0" styleClass="preview-box-param">
          <children>
             <ImageView fx:id="imgOeste" pickOnBounds="true" preserveRatio="true" />

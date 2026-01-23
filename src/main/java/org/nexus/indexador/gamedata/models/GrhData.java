@@ -37,7 +37,8 @@ public class GrhData {
   }
 
   // Constructor vacio
-  public GrhData() {}
+  public GrhData() {
+  }
 
   // Metodos SET
   public void setFileNum(int FileNum) {
@@ -138,5 +139,13 @@ public class GrhData {
 
   public short getPixelHeight() {
     return this.TileHeight;
+  }
+
+  public void setPixelWidth(short pixelWidth) {
+    this.TileWidth = pixelWidth;
+  }
+
+  public void setPixelHeight(short pixelHeight) {
+    this.TileHeight = pixelHeight;
   }
 }

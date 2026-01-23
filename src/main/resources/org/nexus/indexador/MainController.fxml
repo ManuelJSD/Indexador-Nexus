@@ -193,6 +193,7 @@
                 </Menu>
                 <Menu mnemonicParsing="true" text="_Herramientas">
                     <items>
+                        <MenuItem fx:id="mnuManualIndexer" mnemonicParsing="false" onAction="#mnuManualIndexer_OnAction" text="Indexador Manual (Visual)" />
                         <MenuItem fx:id="mnuGrhAdapter" mnemonicParsing="false" onAction="#mnuGrhAdapter_OnAction" text="Adaptador de Grh" />
                         <MenuItem fx:id="mnuBuscarGrhLibres" mnemonicParsing="false" onAction="#mnuBuscarGrhLibres_OnAction" text="Buscar Grh Libres">
                             <accelerator>

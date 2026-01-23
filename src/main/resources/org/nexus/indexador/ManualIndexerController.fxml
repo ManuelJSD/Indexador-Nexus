@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.ColorPicker?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.Group?>
+<?import javafx.scene.canvas.Canvas?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nexus.indexador.controllers.ManualIndexerController" prefWidth="1024" prefHeight="768">
+   <top>
+      <ToolBar BorderPane.alignment="CENTER">
+        <items>
+            <Button fx:id="btnOpen" mnemonicParsing="false" onAction="#onOpenImage" text="Abrir Imagen" />
+            <Separator orientation="VERTICAL" />
+            <Label text="Zoom:" />
+            <Button mnemonicParsing="false" onAction="#onZoomOut" text="-" />
+            <Label fx:id="lblZoom" text="100%" minWidth="40" alignment="CENTER"/>
+            <Button mnemonicParsing="false" onAction="#onZoomIn" text="+" />
+            <Button mnemonicParsing="false" onAction="#onZoomReset" text="1:1" />
+            <Separator orientation="VERTICAL" />
+            <ToggleButton fx:id="tglGrid" mnemonicParsing="false" onAction="#onToggleGrid" text="Rejilla" selected="true"/>
+            <CheckBox fx:id="chkSnap" mnemonicParsing="false"  text="Magnetismo" selected="true"/>
+            <Separator orientation="VERTICAL" />
+             <Label fx:id="lblSelection" text="Sel: 0,0 (0x0)" />
+            <Separator orientation="VERTICAL" />
+            <CheckBox fx:id="chkGridDetection" mnemonicParsing="false" text="Modo Rejilla" style="-fx-text-fill: white;"/>
+            <Button fx:id="btnAutoDetect" mnemonicParsing="false" onAction="#onAutoDetect" text="Auto Detectar" />
+            <Separator orientation="VERTICAL" />
+            <Button fx:id="btnCreate" mnemonicParsing="false" onAction="#onCreateGrh" text="Crear Indice" 
+                    style="-fx-base: #3498db; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 5 15; -fx-text-fill: white;" />
+        </items>
+      </ToolBar>
+   </top>
+   <center>
+      <ScrollPane fx:id="scrollPane" onScroll="#onScroll" BorderPane.alignment="CENTER" style="-fx-background: #2b2b2b;">
+         <content>
+            <StackPane fx:id="stackContainer" alignment="TOP_LEFT" style="-fx-background-color: #202020;">
+               <children>
+                  <Group fx:id="groupContent">
+                     <children>
+                        <ImageView fx:id="imageView" pickOnBounds="true" preserveRatio="true" />
+                        <Canvas fx:id="gridCanvas" mouseTransparent="true" />
+                        <Canvas fx:id="selectionCanvas" 
+                                onMousePressed="#onCanvasPressed" 
+                                onMouseDragged="#onCanvasDragged" 
+                                onMouseReleased="#onCanvasReleased" />
+                     </children>
+                  </Group>
+               </children>
+            </StackPane>
+         </content>
+      </ScrollPane>
+   </center>
+   <right>
+        <VBox spacing="10" style="-fx-background-color: #333; -fx-padding: 10;" prefWidth="250">
+            
+            <TitledPane text="Configuración Rejilla" expanded="false" collapsible="true">
+                <VBox spacing="5">
+                    <HBox alignment="CENTER_LEFT" spacing="5">
+                        <Label text="Ancho:" minWidth="50"/>
+                        <Spinner fx:id="spnGridW" editable="true" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
+                    </HBox>
+                    <HBox alignment="CENTER_LEFT" spacing="5">
+                        <Label text="Alto:" minWidth="50" />
+                        <Spinner fx:id="spnGridH" editable="true" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
+                    </HBox>
+                     <HBox alignment="CENTER_LEFT" spacing="5">
+                        <Label text="Off X:" minWidth="50"/>
+                        <Spinner fx:id="spnOffX" editable="true" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
+                    </HBox>
+                    <HBox alignment="CENTER_LEFT" spacing="5">
+                        <Label text="Off Y:" minWidth="50"/>
+                        <Spinner fx:id="spnOffY" editable="true" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
+                    </HBox>
+                     <HBox alignment="CENTER_LEFT" spacing="5">
+                        <Label text="Color:" minWidth="50"/>
+                        <ColorPicker fx:id="cpGridColor" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
+                    </HBox>
+                </VBox>
+            </TitledPane>
+
+            <TitledPane text="Propiedades Selección" expanded="true" collapsible="true">
+                <VBox spacing="5">
+                    <HBox alignment="CENTER_LEFT" spacing="5">
+                        <Label text="Pos X:" minWidth="50"/>
+                        <Spinner fx:id="spnSelX" editable="true" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
+                    </HBox>
+                    <HBox alignment="CENTER_LEFT" spacing="5">
+                        <Label text="Pos Y:" minWidth="50" />
+                        <Spinner fx:id="spnSelY" editable="true" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
+                    </HBox>
+                     <HBox alignment="CENTER_LEFT" spacing="5">
+                        <Label text="Ancho:" minWidth="50"/>
+                        <Spinner fx:id="spnSelW" editable="true" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
+                    </HBox>
+                    <HBox alignment="CENTER_LEFT" spacing="5">
+                        <Label text="Alto:" minWidth="50"/>
+                        <Spinner fx:id="spnSelH" editable="true" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
+                    </HBox>
+                </VBox>
+            </TitledPane>
+
+            <Label text="Indices Temporales" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
+            <ListView fx:id="lstStaging" VBox.vgrow="ALWAYS" />
+            <HBox spacing="10">
+                <Button onAction="#onResetStaging" text="Reset" style="-fx-base: #f44336;" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
+                <Button onAction="#onSaveAll" text="Guardar Todo" style="-fx-base: #4CAF50;" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
+            </HBox>
+        </VBox>
+   </right>
+   <bottom>
+       <HBox spacing="10" style="-fx-padding: 5;">
+           <Label fx:id="lblStatus" text="Listo" />
+       </HBox>
+   </bottom>
+</BorderPane>

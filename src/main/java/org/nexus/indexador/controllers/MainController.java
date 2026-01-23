@@ -2314,6 +2314,21 @@ public class MainController {
   }
 
   /**
+   * Abre el Indexador Visual Manual (Slicer).
+   */
+  @FXML
+  public void mnuManualIndexer_OnAction(ActionEvent actionEvent) {
+    // Usamos path relativo/absoluto según funcione el WindowManager
+    // Si WindowManager usa Main.class.getResource(name + ".fxml"), y name empieza
+    // con /, busca en root.
+    // Probemos con el path completo por si acaso, o solo el nombre si están en el
+    // mismo paquete.
+    // Dado que AdapterController usa solo el nombre, asumimos que están en el mismo
+    // paquete.
+    windowManager.showWindow("ManualIndexerController", "Indexador Visual", true);
+  }
+
+  /**
    * Abre el asistente visual de Auto-Indexación.
    */
   @FXML

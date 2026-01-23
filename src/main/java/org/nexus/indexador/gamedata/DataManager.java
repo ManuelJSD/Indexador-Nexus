@@ -427,4 +427,34 @@ public class DataManager {
     indexFromExported("FXS");
     indexFromExported("WEAPONS");
   }
+
+  /**
+   * Obtiene el siguiente ID de GRH libre.
+   * 
+   * @return El primer ID disponible.
+   */
+  public int getNextFreeGrhIndex() {
+    int maxId = 0;
+    for (Integer id : grhMap.keySet()) {
+      if (id > maxId)
+        maxId = id;
+    }
+    return maxId + 1;
+  }
+
+  /**
+   * Añade un nuevo GRH a la lista y al mapa.
+   * 
+   * @param grh El objeto GrhData a añadir.
+   */
+  public void addGrh(GrhData grh) {
+    if (grh == null)
+      return;
+
+    grhList.add(grh);
+    grhMap.put(grh.getGrh(), grh);
+
+    // Update count
+    setGrhCount(grhList.size());
+  }
 }

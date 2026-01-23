@@ -39,5 +39,6 @@ jobs:
       with:
         files: |
           indexador-nexus-windows.zip
+          target/*-fat.jar
         draft: false
         prerelease: false

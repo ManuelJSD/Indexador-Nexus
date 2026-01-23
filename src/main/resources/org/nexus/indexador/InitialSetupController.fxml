@@ -32,26 +32,19 @@
         <Button fx:id="btnBrowseGraphics" text="Examinar..." onAction="#onBrowseGraphics" 
                 GridPane.rowIndex="0" GridPane.columnIndex="2" prefWidth="100"/>
         
-        <Label text="Carpeta de Init:" GridPane.rowIndex="1" GridPane.columnIndex="0" 
+        <Label text="Carpeta de Índices:" GridPane.rowIndex="1" GridPane.columnIndex="0" 
                styleClass="setup-label"/>
         <TextField fx:id="txtInitPath" GridPane.rowIndex="1" GridPane.columnIndex="1" prefWidth="450"
                    promptText="Ej: C:/AO/init"/>
         <Button fx:id="btnBrowseInit" text="Examinar..." onAction="#onBrowseInit" 
                 GridPane.rowIndex="1" GridPane.columnIndex="2" prefWidth="100"/>
         
-        <Label text="Carpeta de Dat:" GridPane.rowIndex="2" GridPane.columnIndex="0" 
+        <Label text="Carpeta de Exportados:" GridPane.rowIndex="2" GridPane.columnIndex="0" 
                styleClass="setup-label"/>
-        <TextField fx:id="txtDatPath" GridPane.rowIndex="2" GridPane.columnIndex="1" prefWidth="450"
-                   promptText="Ej: C:/AO/dat"/>
-        <Button fx:id="btnBrowseDat" text="Examinar..." onAction="#onBrowseDat" 
-                GridPane.rowIndex="2" GridPane.columnIndex="2" prefWidth="100"/>
-        
-        <Label text="Carpeta de Exportados:" GridPane.rowIndex="3" GridPane.columnIndex="0" 
-               styleClass="setup-label"/>
-        <TextField fx:id="txtExportPath" GridPane.rowIndex="3" GridPane.columnIndex="1" prefWidth="450"
+        <TextField fx:id="txtExportPath" GridPane.rowIndex="2" GridPane.columnIndex="1" prefWidth="450"
                    promptText="Ej: C:/AO/export"/>
         <Button fx:id="btnBrowseExport" text="Examinar..." onAction="#onBrowseExport" 
-                GridPane.rowIndex="3" GridPane.columnIndex="2" prefWidth="100"/>
+                GridPane.rowIndex="2" GridPane.columnIndex="2" prefWidth="100"/>
     </GridPane>
 
     <!-- Indexing System Selection -->
@@ -70,9 +63,9 @@
                         <Image url="@images/indexing_traditional.png"/>
                     </image>
                 </ImageView>
-                <Label text="Sistema Tradicional" styleClass="setup-card-title"/>
+                <Label text="Sistema Clásico" styleClass="setup-card-title"/>
                 <Label text="Índices directos a gráficos" styleClass="setup-card-desc" wrapText="true"/>
-                <Label text="(Recomendado 0.13.0)" styleClass="setup-card-badge" style="-fx-text-fill: #50c878;"/>
+                <Label text="(Sistema Estándar)" styleClass="setup-card-badge" style="-fx-text-fill: #50c878;"/>
             </VBox>
             
             <!-- Sistema de Moldes -->
@@ -123,9 +116,8 @@
     <!-- Info Box -->
     <VBox spacing="5" styleClass="setup-info-box">
         <Label text="ℹ️ Información de Rutas:" styleClass="setup-info-title"/>
-        <Label text="• Gráficos: Archivos .bmp/.png" styleClass="setup-info-text"/>
-        <Label text="• Init: Archivos .ind (Graficos.ind, etc)" styleClass="setup-info-text"/>
-        <Label text="• Dat: Archivos .dat del servidor" styleClass="setup-info-text"/>
+        <Label text="• Gráficos: Imágenes .bmp/.png del cliente." styleClass="setup-info-text"/>
+        <Label text="• Init: Carpetas donde están los archivos de indices." styleClass="setup-info-text"/>
     </VBox>
     
     <!-- Buttons -->

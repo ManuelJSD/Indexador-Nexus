@@ -8,18 +8,18 @@ public class ConfigManager {
   private static volatile ConfigManager instance;
 
   private String graphicsDir;
-  private String initDir;
-  private String datDir;
+  private String initDir; // Carpeta de Índices (Init/Dat)
   private String exportDir;
   private String backgroundColor = "#EA3FF7"; // Default magenta
-  private String indexingSystem = "MOLD"; // Default: Sistema de Moldes
+  private String indexingSystem = "CLASSIC"; // Default: Sistema Clásico
   private String appTheme = "DARK"; // Default: Tema Oscuro
 
   private static final String CONFIG_FILE_NAME = "config.ini";
   // Guardar en el directorio de la aplicación
   private static final String CONFIG_FILE_PATH = CONFIG_FILE_NAME;
 
-  private ConfigManager() {}
+  private ConfigManager() {
+  }
 
   public static ConfigManager getInstance() {
     if (instance == null) {
@@ -52,7 +52,7 @@ public class ConfigManager {
   }
 
   public String getDatDir() {
-    return normalizePath(datDir);
+    return normalizePath(initDir);
   }
 
   public String getExportDir() {
@@ -90,7 +90,7 @@ public class ConfigManager {
   }
 
   public void setDatDir(String datDir) {
-    this.datDir = datDir;
+    this.initDir = datDir;
   }
 
   public void setExportDir(String exportDir) {
@@ -118,10 +118,8 @@ public class ConfigManager {
 
             if (key.equals("Graficos")) {
               graphicsDir = value;
-            } else if (key.equals("Init")) {
+            } else if (key.equalsIgnoreCase("Init") || key.equalsIgnoreCase("Dat")) {
               initDir = value;
-            } else if (key.equals("Dat")) {
-              datDir = value;
             } else if (key.equals("Exportados")) {
               exportDir = value;
             } else if (key.equals("BackgroundColor")) {
@@ -149,8 +147,6 @@ public class ConfigManager {
       writer.write("Graficos=" + graphicsDir);
       writer.newLine();
       writer.write("Init=" + initDir);
-      writer.newLine();
-      writer.write("Dat=" + datDir);
       writer.newLine();
       writer.write("Exportados=" + exportDir);
       writer.newLine();

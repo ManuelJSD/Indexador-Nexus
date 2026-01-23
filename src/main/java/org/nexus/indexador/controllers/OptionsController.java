@@ -25,13 +25,13 @@ public class OptionsController {
   private TextField txtInitPath;
 
   @FXML
-  private TextField txtDatPath;
-
-  @FXML
   private TextField txtExportPath;
 
   @FXML
   private ComboBox<String> cmbTheme;
+
+  @FXML
+  private ComboBox<String> cmbIndexingSystem;
 
   private ConfigManager configManager;
 
@@ -62,7 +62,6 @@ public class OptionsController {
     // Rutas
     txtGraphicsPath.setText(configManager.getGraphicsDir());
     txtInitPath.setText(configManager.getInitDir());
-    txtDatPath.setText(configManager.getDatDir());
     txtExportPath.setText(configManager.getExportDir());
 
     // Tema
@@ -72,6 +71,15 @@ public class OptionsController {
       cmbTheme.getSelectionModel().select("Claro");
     } else {
       cmbTheme.getSelectionModel().select("Oscuro");
+    }
+
+    // Sistema de Indexación
+    cmbIndexingSystem.setItems(FXCollections.observableArrayList("Clásico", "Moldes"));
+    String currentSystem = configManager.getIndexingSystem();
+    if ("MOLD".equalsIgnoreCase(currentSystem)) {
+      cmbIndexingSystem.getSelectionModel().select("Moldes");
+    } else {
+      cmbIndexingSystem.getSelectionModel().select("Clásico");
     }
   }
 
@@ -94,17 +102,6 @@ public class OptionsController {
     String path = browseDirectory("Seleccionar carpeta de Init", txtInitPath.getText());
     if (path != null) {
       txtInitPath.setText(path);
-    }
-  }
-
-  /**
-   * Examinar carpeta de Dat.
-   */
-  @FXML
-  private void onBrowseDat() {
-    String path = browseDirectory("Seleccionar carpeta de Dat", txtDatPath.getText());
-    if (path != null) {
-      txtDatPath.setText(path);
     }
   }
 
@@ -145,7 +142,7 @@ public class OptionsController {
     // Guardar Rutas
     configManager.setGraphicsDir(txtGraphicsPath.getText());
     configManager.setInitDir(txtInitPath.getText());
-    configManager.setDatDir(txtDatPath.getText());
+    configManager.setDatDir(txtInitPath.getText()); // Unified
     configManager.setExportDir(txtExportPath.getText());
 
     // Guardar Tema
@@ -155,6 +152,20 @@ public class OptionsController {
       themeCode = "LIGHT";
     }
     configManager.setAppTheme(themeCode);
+
+    // Guardar Sistema de Indexación
+    String selectedSystem = cmbIndexingSystem.getSelectionModel().getSelectedItem();
+    String systemCode = "CLASSIC";
+    if ("Moldes".equals(selectedSystem)) {
+      systemCode = "MOLD";
+    }
+    configManager.setIndexingSystem(systemCode);
+
+    try {
+      org.nexus.indexador.gamedata.DataManager.getInstance().updateIndexLoader();
+    } catch (java.io.IOException e) {
+      org.nexus.indexador.utils.Logger.getInstance().error("Error al actualizar el cargador de índices", e);
+    }
 
     // Aplicar tema inmediatamente a todas las ventanas
     WindowManager.getInstance().updateThemeForAll(themeCode);

@@ -25,22 +25,19 @@
                               <Label styleClass="config-label" text="Gráficos:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
                               <TextField fx:id="txtGraphicsPath" prefWidth="400" GridPane.columnIndex="1" GridPane.rowIndex="0" />
                               <Button fx:id="btnBrowseGraphics" onAction="#onBrowseGraphics" prefWidth="40" text="..." GridPane.columnIndex="2" GridPane.rowIndex="0" />
-                              <Label styleClass="config-label" text="Init:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                              <Label styleClass="config-label" text="Índices:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
                               <TextField fx:id="txtInitPath" prefWidth="400" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                               <Button fx:id="btnBrowseInit" onAction="#onBrowseInit" prefWidth="40" text="..." GridPane.columnIndex="2" GridPane.rowIndex="1" />
-                              <Label styleClass="config-label" text="Dat:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-                              <TextField fx:id="txtDatPath" prefWidth="400" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                              <Button fx:id="btnBrowseDat" onAction="#onBrowseDat" prefWidth="40" text="..." GridPane.columnIndex="2" GridPane.rowIndex="2" />
-                              <Label styleClass="config-label" text="Exportados:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
-                              <TextField fx:id="txtExportPath" prefWidth="400" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                              <Button fx:id="btnBrowseExport" onAction="#onBrowseExport" prefWidth="40" text="..." GridPane.columnIndex="2" GridPane.rowIndex="3" />
+                              <Label styleClass="config-label" text="Exportados:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                              <TextField fx:id="txtExportPath" prefWidth="400" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <Button fx:id="btnBrowseExport" onAction="#onBrowseExport" prefWidth="40" text="..." GridPane.columnIndex="2" GridPane.rowIndex="2" />
                            </children>
                         </GridPane>
                      </children>
                   </AnchorPane>
             </content>
           </Tab>
-          <Tab text="Apariencia">
+          <Tab text="Preferencias">
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
@@ -48,6 +45,9 @@
                            <children>
                               <Label styleClass="config-label" text="Tema de la Aplicación:" />
                               <ComboBox fx:id="cmbTheme" prefWidth="200.0" promptText="Seleccionar Tema" GridPane.columnIndex="1" />
+                              
+                              <Label styleClass="config-label" text="Sistema de Indexación:" GridPane.rowIndex="1" />
+                              <ComboBox fx:id="cmbIndexingSystem" prefWidth="200.0" promptText="Seleccionar Sistema" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                            </children>
                         </GridPane>
                      </children>

@@ -46,12 +46,16 @@ public class HelmetsController {
   @FXML
   public Label lblNGrafico;
   @FXML
+  public Label lblStd;
+  @FXML
   public Label lblStartX;
   @FXML
   public Label lblStartY;
 
   @FXML
   public TextField txtNGrafico;
+  @FXML
+  public TextField txtStd;
   @FXML
   public TextField txtStartX;
   @FXML
@@ -84,6 +88,8 @@ public class HelmetsController {
   public Button btnAdd;
   @FXML
   public Button btnDelete;
+  @FXML
+  public Button btnReload;
 
   private HelmetData helmetDataManager;
   private ObservableList<HelmetData> helmetList;
@@ -187,8 +193,10 @@ public class HelmetsController {
       short Texture = selectedHelmet.getTexture();
       short StartX = selectedHelmet.getStartX();
       short StartY = selectedHelmet.getStartY();
+      int Std = selectedHelmet.getStd();
 
       txtNGrafico.setText(String.valueOf(Texture));
+      txtStd.setText(String.valueOf(Std));
       txtStartX.setText(String.valueOf(StartX));
       txtStartY.setText(String.valueOf(StartY));
     } else {
@@ -209,9 +217,11 @@ public class HelmetsController {
 
   private void setVisibleMold(boolean visible) {
     txtNGrafico.setVisible(visible);
+    txtStd.setVisible(visible);
     txtStartX.setVisible(visible);
     txtStartY.setVisible(visible);
     lblNGrafico.setVisible(visible);
+    lblStd.setVisible(visible);
     lblStartX.setVisible(visible);
     lblStartY.setVisible(visible);
   }
@@ -416,6 +426,7 @@ public class HelmetsController {
       // Comenzamos aplicar los cambios:
       try {
         if (selectedHelmet.getSystemType() == IndexingSystem.MOLD) {
+          selectedHelmet.setStd(Integer.parseInt(txtStd.getText()));
           selectedHelmet.setTexture(Short.parseShort(txtNGrafico.getText()));
           selectedHelmet.setStartX(Short.parseShort(txtStartX.getText()));
           selectedHelmet.setStartY(Short.parseShort(txtStartY.getText()));
@@ -460,6 +471,18 @@ public class HelmetsController {
 
     // Agregar el nuevo elemento a helmetList
     helmetList.add(newHelmetData);
+  }
+
+  @FXML
+  void btnReload_OnAction(ActionEvent event) {
+    try {
+      dataManager.readHelmetFile();
+      loadHelmetData();
+    } catch (java.io.IOException e) {
+      if (logger != null) {
+        logger.error("Error al recargar cascos", e);
+      }
+    }
   }
 
   /**

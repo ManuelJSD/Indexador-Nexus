@@ -25,9 +25,6 @@ public class InitialSetupController {
   private TextField txtInitPath;
 
   @FXML
-  private TextField txtDatPath;
-
-  @FXML
   private TextField txtExportPath;
 
   @FXML
@@ -44,7 +41,7 @@ public class InitialSetupController {
 
   private Stage stage;
   private Runnable onComplete;
-  private String selectedIndexingSystem = "TRADITIONAL"; // Default: Sistema Tradicional
+  private String selectedIndexingSystem = "CLASSIC"; // Default: Sistema Clásico
   private String selectedTheme = "DARK"; // Default: Tema Oscuro
 
   /**
@@ -71,7 +68,7 @@ public class InitialSetupController {
    */
   @FXML
   private void onTraditionalSystemClick() {
-    selectedIndexingSystem = "TRADITIONAL";
+    selectedIndexingSystem = "CLASSIC";
     updateCardSelection();
   }
 
@@ -103,8 +100,8 @@ public class InitialSetupController {
     cardTraditionalSystem.getStyleClass().remove("setup-card-selected-traditional");
     cardMoldSystem.getStyleClass().remove("setup-card-selected");
 
-    if ("TRADITIONAL".equals(selectedIndexingSystem)) {
-      // Tradicional seleccionado
+    if ("CLASSIC".equals(selectedIndexingSystem)) {
+      // Clásico seleccionado
       if (!cardTraditionalSystem.getStyleClass().contains("setup-card-selected-traditional")) {
         cardTraditionalSystem.getStyleClass().add("setup-card-selected-traditional");
       }
@@ -184,17 +181,6 @@ public class InitialSetupController {
   }
 
   /**
-   * Examinar carpeta de Dat.
-   */
-  @FXML
-  private void onBrowseDat() {
-    String path = browseDirectory("Seleccionar carpeta de Dat");
-    if (path != null) {
-      txtDatPath.setText(path);
-    }
-  }
-
-  /**
    * Examinar carpeta de Exportados.
    */
   @FXML
@@ -223,13 +209,13 @@ public class InitialSetupController {
   private void onFinish() {
     // Validar que todas las rutas estén configuradas
     if (txtGraphicsPath.getText().isEmpty() || txtInitPath.getText().isEmpty()
-        || txtDatPath.getText().isEmpty() || txtExportPath.getText().isEmpty()) {
+        || txtExportPath.getText().isEmpty()) {
 
       Alert alert = new Alert(Alert.AlertType.WARNING);
       alert.setTitle("Configuración Incompleta");
       alert.setHeaderText("Por favor, configure todas las rutas");
       alert.setContentText(
-          "Todas las carpetas son necesarias para el correcto funcionamiento de la aplicación.");
+          "Las rutas de Gráficos, Índices y Exportación son necesarias.");
       alert.showAndWait();
       return;
     }
@@ -238,7 +224,7 @@ public class InitialSetupController {
     ConfigManager config = ConfigManager.getInstance();
     config.setGraphicsDir(txtGraphicsPath.getText());
     config.setInitDir(txtInitPath.getText());
-    config.setDatDir(txtDatPath.getText());
+    config.setDatDir(txtInitPath.getText()); // Sync Dat with Init
     config.setExportDir(txtExportPath.getText());
 
     // Guardar sistema de indexado seleccionado

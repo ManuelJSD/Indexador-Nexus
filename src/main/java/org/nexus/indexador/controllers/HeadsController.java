@@ -46,12 +46,16 @@ public class HeadsController {
   @FXML
   public Label lblNGrafico;
   @FXML
+  public Label lblStd;
+  @FXML
   public Label lblStartX;
   @FXML
   public Label lblStartY;
 
   @FXML
   public TextField txtNGrafico;
+  @FXML
+  public TextField txtStd;
   @FXML
   public TextField txtStartX;
   @FXML
@@ -84,6 +88,8 @@ public class HeadsController {
   public Button btnAdd;
   @FXML
   public Button btnDelete;
+  @FXML
+  public Button btnReload;
 
   private HeadData headDataManager;
   private ObservableList<HeadData> headList;
@@ -195,8 +201,10 @@ public class HeadsController {
       short Texture = selectedHead.getTexture();
       short StartX = selectedHead.getStartX();
       short StartY = selectedHead.getStartY();
+      int Std = selectedHead.getStd();
 
       txtNGrafico.setText(String.valueOf(Texture));
+      txtStd.setText(String.valueOf(Std));
       txtStartX.setText(String.valueOf(StartX));
       txtStartY.setText(String.valueOf(StartY));
     } else {
@@ -217,9 +225,11 @@ public class HeadsController {
 
   private void setVisibleMold(boolean visible) {
     txtNGrafico.setVisible(visible);
+    txtStd.setVisible(visible);
     txtStartX.setVisible(visible);
     txtStartY.setVisible(visible);
     lblNGrafico.setVisible(visible);
+    lblStd.setVisible(visible);
     lblStartX.setVisible(visible);
     lblStartY.setVisible(visible);
   }
@@ -427,6 +437,7 @@ public class HeadsController {
       // Comenzamos aplicar los cambios:
       try {
         if (selectedHead.getSystemType() == IndexingSystem.MOLD) {
+          selectedHead.setStd(Integer.parseInt(txtStd.getText()));
           selectedHead.setTexture(Short.parseShort(txtNGrafico.getText()));
           selectedHead.setStartX(Short.parseShort(txtStartX.getText()));
           selectedHead.setStartY(Short.parseShort(txtStartY.getText()));
@@ -471,6 +482,16 @@ public class HeadsController {
 
     // Agregar el nuevo elemento a headList
     headList.add(newHeadData);
+  }
+
+  @FXML
+  void btnReload_OnAction(ActionEvent event) {
+    try {
+      dataManager.readHeadFile();
+      loadHeadData();
+    } catch (java.io.IOException e) {
+      logger.error("Error al recargar cabezas", e);
+    }
   }
 
   /**

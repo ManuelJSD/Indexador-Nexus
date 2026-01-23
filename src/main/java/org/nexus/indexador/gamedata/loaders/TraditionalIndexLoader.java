@@ -7,13 +7,15 @@ import org.nexus.indexador.gamedata.models.*;
 import org.nexus.indexador.utils.ConfigManager;
 import org.nexus.indexador.utils.Logger;
 import org.nexus.indexador.utils.byteMigration;
+import org.nexus.indexador.utils.ResourceResolver;
 
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Implementación del cargador para el sistema tradicional con detección dinámica y guardado fiel.
+ * Implementación del cargador para el sistema tradicional con detección
+ * dinámica y guardado fiel.
  */
 public class TraditionalIndexLoader implements IndexLoader {
 
@@ -34,7 +36,7 @@ public class TraditionalIndexLoader implements IndexLoader {
   public ObservableList<HeadData> loadHeads() throws IOException {
     logger.info("Cargando datos de cabezas (Sistema Tradicional)...");
     ObservableList<HeadData> headList = FXCollections.observableArrayList();
-    File archivo = new File(configManager.getInitDir() + "cabezas.ind");
+    File archivo = ResourceResolver.getHeadsInd(configManager.getInitDir());
 
     try (RandomAccessFile file = new RandomAccessFile(archivo, "r")) {
       IndFileFormat format = detectFormat(file, 8, 16);
@@ -70,7 +72,7 @@ public class TraditionalIndexLoader implements IndexLoader {
   public ObservableList<HelmetData> loadHelmets() throws IOException {
     logger.info("Cargando datos de cascos (Sistema Tradicional)...");
     ObservableList<HelmetData> helmetList = FXCollections.observableArrayList();
-    File archivo = new File(configManager.getInitDir() + "cascos.ind");
+    File archivo = ResourceResolver.getHelmetsInd(configManager.getInitDir());
 
     try (RandomAccessFile file = new RandomAccessFile(archivo, "r")) {
       IndFileFormat format = detectFormat(file, 8, 16);
@@ -106,7 +108,7 @@ public class TraditionalIndexLoader implements IndexLoader {
   public ObservableList<BodyData> loadBodies() throws IOException {
     logger.info("Cargando datos de cuerpos (Sistema Tradicional)...");
     ObservableList<BodyData> bodyList = FXCollections.observableArrayList();
-    File archivo = new File(configManager.getInitDir() + "personajes.ind");
+    File archivo = ResourceResolver.getBodiesInd(configManager.getInitDir());
 
     try (RandomAccessFile file = new RandomAccessFile(archivo, "r")) {
       IndFileFormat format = detectFormat(file, 12, 20); // 4 indices + 2 shorts
@@ -155,7 +157,7 @@ public class TraditionalIndexLoader implements IndexLoader {
   private ObservableList<ShieldData> loadShieldsBinary() throws IOException {
     logger.info("Cargando datos de escudos (Binario)...");
     ObservableList<ShieldData> shieldList = FXCollections.observableArrayList();
-    File archivo = new File(configManager.getInitDir() + "escudos.ind");
+    File archivo = ResourceResolver.getShieldsInd(configManager.getInitDir());
 
     try (RandomAccessFile file = new RandomAccessFile(archivo, "r")) {
       IndFileFormat format = detectFormat(file, 8, 16);
@@ -187,10 +189,9 @@ public class TraditionalIndexLoader implements IndexLoader {
     ObservableList<ShieldData> shieldList = FXCollections.observableArrayList();
 
     // Intentar primero en ExportDir con .ini
-    File archivo = new File(configManager.getExportDir() + "Escudos.ini");
+    File archivo = ResourceResolver.getShieldsText(configManager.getExportDir());
     if (!archivo.exists()) {
-      // Intentar en InitDir con .dat (legacy)
-      archivo = new File(configManager.getInitDir() + "Escudos.dat");
+      archivo = ResourceResolver.getShieldsText(configManager.getInitDir());
     }
 
     if (!archivo.exists())
@@ -244,7 +245,7 @@ public class TraditionalIndexLoader implements IndexLoader {
   public ObservableList<FXData> loadFXs() throws IOException {
     logger.info("Cargando datos de FXs...");
     ObservableList<FXData> fxList = FXCollections.observableArrayList();
-    File archivo = new File(configManager.getInitDir() + "fxs.ind");
+    File archivo = ResourceResolver.getFxsInd(configManager.getInitDir());
 
     try (RandomAccessFile file = new RandomAccessFile(archivo, "r")) {
       IndFileFormat format = detectFormat(file, 6, 8); // Int=2+2+2, Long=4+2+2
@@ -277,7 +278,7 @@ public class TraditionalIndexLoader implements IndexLoader {
   public ObservableList<GrhData> loadGrhs() throws IOException {
     logger.info("Cargando datos de gráficos (Grh)...");
     ObservableList<GrhData> grhList = FXCollections.observableArrayList();
-    File archivo = new File(configManager.getInitDir() + "graficos.ind");
+    File archivo = ResourceResolver.getGraphicsInd(configManager.getInitDir());
 
     try (RandomAccessFile file = new RandomAccessFile(archivo, "r")) {
       handleGrhHeader(file);
@@ -333,7 +334,7 @@ public class TraditionalIndexLoader implements IndexLoader {
   private ObservableList<WeaponData> loadWeaponsBinary() throws IOException {
     logger.info("Cargando datos de armas (Binario)...");
     ObservableList<WeaponData> weaponList = FXCollections.observableArrayList();
-    File archivo = new File(configManager.getInitDir() + "armas.ind");
+    File archivo = ResourceResolver.getWeaponsInd(configManager.getInitDir());
 
     try (RandomAccessFile file = new RandomAccessFile(archivo, "r")) {
       IndFileFormat format = detectFormat(file, 8, 16);
@@ -365,10 +366,9 @@ public class TraditionalIndexLoader implements IndexLoader {
     ObservableList<WeaponData> weaponList = FXCollections.observableArrayList();
 
     // Intentar primero en ExportDir con .ini
-    File archivo = new File(configManager.getExportDir() + "Armas.ini");
+    File archivo = ResourceResolver.getWeaponsText(configManager.getExportDir());
     if (!archivo.exists()) {
-      // Intentar en InitDir con .dat (legacy)
-      archivo = new File(configManager.getInitDir() + "Armas.dat");
+      archivo = ResourceResolver.getWeaponsText(configManager.getInitDir());
     }
 
     if (!archivo.exists())
@@ -420,7 +420,7 @@ public class TraditionalIndexLoader implements IndexLoader {
 
   @Override
   public void saveHeads(ObservableList<HeadData> entries) throws IOException {
-    saveIndFile("cabezas.ind", "HEADS", file -> {
+    saveIndFile(ResourceResolver.getHeadsInd(configManager.getInitDir()), "HEADS", file -> {
       file.writeShort(byteMigration.bigToLittle_Short((short) entries.size()));
       IndFileFormat format = detectedFormats.get("HEADS");
       boolean isLong = (format != null) ? format.isLong() : true;
@@ -438,7 +438,7 @@ public class TraditionalIndexLoader implements IndexLoader {
 
   @Override
   public void saveHelmets(ObservableList<HelmetData> entries) throws IOException {
-    saveIndFile("cascos.ind", "HELMETS", file -> {
+    saveIndFile(ResourceResolver.getHelmetsInd(configManager.getInitDir()), "HELMETS", file -> {
       file.writeShort(byteMigration.bigToLittle_Short((short) entries.size()));
       IndFileFormat format = detectedFormats.get("HELMETS");
       boolean isLong = (format != null) ? format.isLong() : true;
@@ -456,7 +456,7 @@ public class TraditionalIndexLoader implements IndexLoader {
 
   @Override
   public void saveBodies(ObservableList<BodyData> entries) throws IOException {
-    saveIndFile("personajes.ind", "BODIES", file -> {
+    saveIndFile(ResourceResolver.getBodiesInd(configManager.getInitDir()), "BODIES", file -> {
       file.writeShort(byteMigration.bigToLittle_Short((short) entries.size()));
       IndFileFormat format = detectedFormats.get("BODIES");
       boolean isLong = (format != null) ? format.isLong() : true;
@@ -476,7 +476,7 @@ public class TraditionalIndexLoader implements IndexLoader {
 
   @Override
   public void saveShields(ObservableList<ShieldData> entries) throws IOException {
-    saveIndFile("escudos.ind", "SHIELDS", file -> {
+    saveIndFile(ResourceResolver.getShieldsInd(configManager.getInitDir()), "SHIELDS", file -> {
       file.writeShort(byteMigration.bigToLittle_Short((short) entries.size()));
       IndFileFormat format = detectedFormats.get("SHIELDS");
       boolean isLong = (format != null) ? format.isLong() : true;
@@ -494,7 +494,7 @@ public class TraditionalIndexLoader implements IndexLoader {
 
   @Override
   public void saveFXs(ObservableList<FXData> entries) throws IOException {
-    saveIndFile("fxs.ind", "FXS", file -> {
+    saveIndFile(ResourceResolver.getFxsInd(configManager.getInitDir()), "FXS", file -> {
       file.writeShort(byteMigration.bigToLittle_Short((short) entries.size()));
       IndFileFormat format = detectedFormats.get("FXS");
       boolean isLong = (format != null) ? format.isLong() : true;
@@ -512,7 +512,7 @@ public class TraditionalIndexLoader implements IndexLoader {
 
   @Override
   public void saveGrhs(ObservableList<GrhData> entries) throws IOException {
-    saveIndFile("graficos.ind", "GRAFICOS", file -> {
+    saveIndFile(ResourceResolver.getGraphicsInd(configManager.getInitDir()), "GRAFICOS", file -> {
       file.writeInt(byteMigration.bigToLittle_Int(1)); // Version placeholder
       file.writeInt(byteMigration.bigToLittle_Int(entries.size()));
 
@@ -538,7 +538,7 @@ public class TraditionalIndexLoader implements IndexLoader {
 
   @Override
   public void saveWeapons(ObservableList<WeaponData> entries) throws IOException {
-    saveIndFile("armas.ind", "WEAPONS", file -> {
+    saveIndFile(ResourceResolver.getWeaponsInd(configManager.getInitDir()), "WEAPONS", file -> {
       file.writeShort(byteMigration.bigToLittle_Short((short) entries.size()));
       IndFileFormat format = detectedFormats.get("WEAPONS");
       boolean isLong = (format != null) ? format.isLong() : true;
@@ -560,12 +560,13 @@ public class TraditionalIndexLoader implements IndexLoader {
     void accept(RandomAccessFile file) throws IOException;
   }
 
-  private void saveIndFile(String filename, String formatKey, SaveAction action)
+  private void saveIndFile(File archive, String formatKey, SaveAction action)
       throws IOException {
-    File archive = new File(configManager.getInitDir() + filename);
     IndFileFormat format = detectedFormats.get(formatKey);
-    long offset =
-        (format != null) ? format.getDataOffset() : (filename.equals("graficos.ind") ? 263 : 0);
+    long offset = (format != null) ? format.getDataOffset()
+        : (archive.getName().equalsIgnoreCase("graficos.ind") || archive.getName().equalsIgnoreCase("graphics.ind")
+            ? 263
+            : 0);
 
     try (RandomAccessFile file = new RandomAccessFile(archive, "rw")) {
       // Si hay cabecera (offset > 0), saltar o escribir placeholder
@@ -649,9 +650,9 @@ public class TraditionalIndexLoader implements IndexLoader {
   public ObservableList<HeadData> loadHeadsText() throws IOException {
     logger.info("Cargando cabezas desde texto...");
     ObservableList<HeadData> headList = FXCollections.observableArrayList();
-    File archivo = new File(configManager.getExportDir() + "Cabezas.ini");
+    File archivo = ResourceResolver.getHeadsText(configManager.getExportDir());
     if (!archivo.exists()) {
-      archivo = new File(configManager.getInitDir() + "Cabezas.dat");
+      archivo = ResourceResolver.getHeadsText(configManager.getInitDir());
     }
 
     if (!archivo.exists())
@@ -699,9 +700,9 @@ public class TraditionalIndexLoader implements IndexLoader {
   public ObservableList<HelmetData> loadHelmetsText() throws IOException {
     logger.info("Cargando cascos desde texto...");
     ObservableList<HelmetData> helmetList = FXCollections.observableArrayList();
-    File archivo = new File(configManager.getExportDir() + "Cascos.ini");
+    File archivo = ResourceResolver.getHelmetsText(configManager.getExportDir());
     if (!archivo.exists()) {
-      archivo = new File(configManager.getInitDir() + "Cascos.dat");
+      archivo = ResourceResolver.getHelmetsText(configManager.getInitDir());
     }
 
     if (!archivo.exists())
@@ -749,9 +750,9 @@ public class TraditionalIndexLoader implements IndexLoader {
   public ObservableList<BodyData> loadBodiesText() throws IOException {
     logger.info("Cargando cuerpos desde texto...");
     ObservableList<BodyData> bodyList = FXCollections.observableArrayList();
-    File archivo = new File(configManager.getExportDir() + "Cuerpos.ini");
+    File archivo = ResourceResolver.getBodiesText(configManager.getExportDir());
     if (!archivo.exists()) {
-      archivo = new File(configManager.getInitDir() + "Cuerpos.dat");
+      archivo = ResourceResolver.getBodiesText(configManager.getInitDir());
     }
 
     if (!archivo.exists())
@@ -808,9 +809,9 @@ public class TraditionalIndexLoader implements IndexLoader {
   public ObservableList<FXData> loadFXsText() throws IOException {
     logger.info("Cargando FXs desde texto...");
     ObservableList<FXData> fxList = FXCollections.observableArrayList();
-    File archivo = new File(configManager.getExportDir() + "FXs.ini");
+    File archivo = ResourceResolver.getFxsText(configManager.getExportDir());
     if (!archivo.exists()) {
-      archivo = new File(configManager.getInitDir() + "FXs.dat");
+      archivo = ResourceResolver.getFxsText(configManager.getInitDir());
     }
 
     if (!archivo.exists())
@@ -863,12 +864,9 @@ public class TraditionalIndexLoader implements IndexLoader {
   public ObservableList<GrhData> loadGrhsText() throws IOException {
     logger.info("Cargando GRHs desde texto...");
     ObservableList<GrhData> grhList = FXCollections.observableArrayList();
-    File archivo = new File(configManager.getExportDir() + "Graficos.ini");
+    File archivo = ResourceResolver.getGraphicsText(configManager.getExportDir());
     if (!archivo.exists()) {
-      archivo = new File(configManager.getInitDir() + "Graficos.ini");
-    }
-    if (!archivo.exists()) {
-      archivo = new File(configManager.getInitDir() + "Graficos.dat");
+      archivo = ResourceResolver.getGraphicsText(configManager.getInitDir());
     }
 
     if (!archivo.exists())

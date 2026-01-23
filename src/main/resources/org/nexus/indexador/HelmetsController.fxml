@@ -11,7 +11,8 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="528.0" styleClass="root-pane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nexus.indexador.controllers.HelmetsController">
    <children>
-      <TextField fx:id="txtSearch" layoutX="14.0" layoutY="14.0" prefHeight="25.0" prefWidth="176.0" promptText="Buscar ID..." />
+      <TextField fx:id="txtSearch" layoutX="14.0" layoutY="14.0" prefHeight="25.0" prefWidth="140.0" promptText="Buscar ID..." />
+      <Button fx:id="btnReload" layoutX="158.0" layoutY="14.0" mnemonicParsing="false" onAction="#btnReload_OnAction" prefHeight="25.0" prefWidth="32.0" text="🔄" />
       <ListView fx:id="lstHelmets" layoutX="14.0" layoutY="44.0" prefHeight="278.0" prefWidth="176.0" styleClass="data-list" />
       <StackPane layoutX="240.0" layoutY="86.0" prefHeight="82.0" prefWidth="80.0" styleClass="preview-box-param">
          <children>
@@ -34,6 +35,8 @@
          </children>
       </StackPane>
       <!-- MOLD SYSTEM CONTROLS (Hidden in Traditional) -->
+      <Label fx:id="lblStd" layoutX="211.0" layoutY="228.0" text="Molde ID:" />
+      <TextField fx:id="txtStd" layoutX="279.0" layoutY="224.0" prefHeight="25.0" prefWidth="211.0" />
       <Label fx:id="lblNGrafico" layoutX="211.0" layoutY="256.0" text="Nº Grafico:" />
       <Label fx:id="lblStartX" layoutX="211.0" layoutY="284.0" text="Start X:" />
       <Label fx:id="lblStartY" layoutX="211.0" layoutY="312.0" text="Start Y:" />

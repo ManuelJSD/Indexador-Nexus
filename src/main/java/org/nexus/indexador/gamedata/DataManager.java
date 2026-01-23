@@ -56,11 +56,16 @@ public class DataManager {
     initializeIndexLoader();
   }
 
+  public void updateIndexLoader() throws IOException {
+    initializeIndexLoader();
+    reloadResources("ALL");
+  }
+
   private void initializeIndexLoader() throws IOException {
     String systemConfig = configManager.getIndexingSystem();
-    if ("TRADITIONAL".equals(systemConfig)) {
+    if ("CLASSIC".equals(systemConfig) || "TRADITIONAL".equals(systemConfig)) {
       indexLoader = new org.nexus.indexador.gamedata.loaders.TraditionalIndexLoader();
-      logger.info("Sistema de indexado: Tradicional");
+      logger.info("Sistema de indexado: Clásico");
     } else {
       indexLoader = new org.nexus.indexador.gamedata.loaders.MoldIndexLoader();
       logger.info("Sistema de indexado: Moldes");

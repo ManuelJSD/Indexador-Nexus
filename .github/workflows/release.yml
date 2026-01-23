@@ -39,6 +39,5 @@ jobs:
       with:
         files: |
           indexador-nexus-windows.zip
-          target/libs/*.jar
         draft: false
         prerelease: false

@@ -35,12 +35,59 @@ public class AutoTilingService {
   }
 
   /**
-   * Detecta regiones contiguas de píxeles no transparentes en una imagen. Utiliza
-   * un algoritmo de Flood Fill (BFS).
+   * Main entry point with full control
+   */
+  public List<Rectangle> detectSprites(Image image, int toleranceX, int toleranceY, boolean enableGridSplit) {
+    // 1. Raw Detection
+    List<Rectangle> regions = detectRawSprites(image);
+
+    if (!regions.isEmpty()) {
+      // 2. Merge
+      if (toleranceX > 0 || toleranceY > 0) {
+        regions = mergeRegions(regions, toleranceX, toleranceY);
+      }
+
+      regions = mergeOrphanedSparks(regions);
+
+      // 3. Optional Split
+      if (enableGridSplit) {
+        regions = refineBySplittingOversizedBlobs(regions);
+      }
+
+      // 3.5 Noise Filter
+      regions = removeNoise(regions);
+
+      // 4. Sort
+      sortRegions(regions);
+
+      logger.info("Smart Detección (X:" + toleranceX + ", Y:" + toleranceY + ", Split:" + enableGridSplit + ") : "
+          + regions.size() + " sprites.");
+    }
+    return regions;
+  }
+
+  public List<Rectangle> detectSprites(Image image, int toleranceX, int toleranceY) {
+    return detectSprites(image, toleranceX, toleranceY, true);
+  }
+
+  /**
+   * Raw detection without merging or splitting.
+   * Also serves as the deprecated no-args method for backward compatibility
+   * (though behavior changes slightly
+   * as original might have had implicit defaults, but this base extraction is
+   * safer).
    */
   public List<Rectangle> detectSprites(Image image) {
-    List<Rectangle> regions = new ArrayList<>();
+    // For backward compatibility, if this method was expected to do full processing
+    // with defaults:
+    // return detectSprites(image, 2, 2, true);
+    // But based on previous file structure, there was a raw extraction phase.
+    // Let's make this the raw extraction method.
+    return detectRawSprites(image);
+  }
 
+  private List<Rectangle> detectRawSprites(Image image) {
+    List<Rectangle> regions = new ArrayList<>();
     if (image == null)
       return regions;
 
@@ -69,36 +116,6 @@ public class AutoTilingService {
           regions.add(region);
         }
       }
-    }
-
-    sortRegions(regions);
-
-    logger.info("Se detectaron " + regions.size() + " sprites.");
-    return regions;
-  }
-
-  public List<Rectangle> detectSprites(Image image, int mergeTolerance) {
-    return detectSprites(image, 2, mergeTolerance);
-  }
-
-  public List<Rectangle> detectSprites(Image image, int tolX, int tolY) {
-    List<Rectangle> regions = detectSprites(image);
-
-    if (!regions.isEmpty()) {
-      if (tolX > 0 || tolY > 0) {
-        regions = mergeRegions(regions, tolX, tolY);
-      }
-
-      regions = mergeOrphanedSparks(regions);
-
-      // Post-Refinement: Split oversized blobs that likely contain multiple merged
-      // frames
-      regions = refineBySplittingOversizedBlobs(regions);
-
-      sortRegions(regions);
-
-      logger
-          .info("Smart Detección (X:" + tolX + ", Y:" + tolY + ") + Orphans + Split: " + regions.size() + " sprites.");
     }
     return regions;
   }
@@ -464,5 +481,87 @@ public class AutoTilingService {
       }
     }
     return false;
+  }
+
+  public List<Rectangle> normalizeRegions(List<Rectangle> regions, int imgWidth, int imgHeight) {
+    if (regions == null || regions.isEmpty())
+      return regions;
+
+    double maxW = 0;
+    double maxH = 0;
+
+    for (Rectangle r : regions) {
+      maxW = Math.max(maxW, r.getWidth());
+      maxH = Math.max(maxH, r.getHeight());
+    }
+
+    List<Rectangle> normalized = new ArrayList<>();
+    for (Rectangle r : regions) {
+      double centerX = r.getX() + (r.getWidth() / 2.0);
+      double centerY = r.getY() + (r.getHeight() / 2.0);
+
+      double newX = centerX - (maxW / 2.0);
+      double newY = centerY - (maxH / 2.0);
+
+      // Shift to fit inside bounds (prefer shifting over cropping)
+      if (newX < 0)
+        newX = 0;
+      if (newY < 0)
+        newY = 0;
+      if (newX + maxW > imgWidth)
+        newX = imgWidth - maxW; // Shift left
+      if (newY + maxH > imgHeight)
+        newY = imgHeight - maxH; // Shift up
+
+      // Safety Clamp (if image is smaller than maxW/H)
+      if (newX < 0)
+        newX = 0;
+      if (newY < 0)
+        newY = 0;
+      double finalW = Math.min(maxW, imgWidth - newX);
+      double finalH = Math.min(maxH, imgHeight - newY);
+
+      normalized.add(new Rectangle(newX, newY, finalW, finalH));
+    }
+    return normalized;
+  }
+
+  // Backward compatibility wrapper (though ideally should not be used without
+  // dims)
+  public List<Rectangle> normalizeRegions(List<Rectangle> regions) {
+    if (regions.isEmpty())
+      return regions;
+    // Heuristic: try to guess or just use huge bounds?
+    // Better to force caller to provide bounds.
+    // Assuming 4096 to prevent regression if old code calls it, but we should
+    // update MainController.
+    return normalizeRegions(regions, 4096, 4096);
+  }
+
+  private List<Rectangle> removeNoise(List<Rectangle> regions) {
+    if (regions.size() < 3)
+      return regions; // Don't filter if we have very few sprites
+
+    double totalArea = 0;
+    double maxArea = 0;
+    for (Rectangle r : regions) {
+      double area = r.getWidth() * r.getHeight();
+      totalArea += area;
+      if (area > maxArea)
+        maxArea = area;
+    }
+
+    double avgArea = totalArea / regions.size();
+
+    // Threshold: 5% of Average Area OR 1% of Max Area (Safety)
+    double threshold = Math.max(avgArea * 0.05, maxArea * 0.01);
+
+    List<Rectangle> filtered = new ArrayList<>();
+    for (Rectangle r : regions) {
+      if (r.getWidth() * r.getHeight() > threshold) {
+        filtered.add(r);
+      }
+    }
+    return filtered;
   }
 }

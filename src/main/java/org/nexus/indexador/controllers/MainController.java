@@ -2065,12 +2065,26 @@ public class MainController {
     }
 
     // Smart Auto-Index
-    // Stricter Horizontal (2px) to prevent merging frames
-    // Looser Vertical (16px) to capture tall sparks
+    // Default tolerances
     int tolX = 2;
     int tolY = 16;
 
-    ImageDetectionResult result = loadAndDetectSpritesDirect(fileNum, tolX, tolY);
+    // Disable Grid Split for Bodies (Personajes) to prevent cutting tall frames
+    boolean enableGridSplit = type != null
+        && (type.toLowerCase().startsWith("anim") || type.toLowerCase().startsWith("fx"));
+
+    // Specific Tolerances and Settings based on Type
+    if ("Personaje".equalsIgnoreCase(type)) {
+      // Strict vertical tolerance to prevent row merging
+      tolX = 0;
+      tolY = 0;
+      enableGridSplit = false;
+    } else if (type != null && type.toLowerCase().startsWith("anim")) {
+      tolX = 0;
+      tolY = 10;
+    }
+
+    ImageDetectionResult result = loadAndDetectSpritesDirect(fileNum, tolX, tolY, enableGridSplit);
     if (result != null) {
       // Si es superficies, aplicar split ANTES de la preview para que el usuario vea
       // la rejilla
@@ -2093,6 +2107,14 @@ public class MainController {
 
         result.regions = org.nexus.indexador.utils.AutoTilingService.getInstance()
             .splitRegions(result.regions, 32, 32, atlasCols, atlasRows, reader);
+      }
+
+      // Normalization check for Animations and Bodies
+      if ("Personaje".equalsIgnoreCase(type) || (type != null && type.toLowerCase().startsWith("anim"))) {
+        int imgW = (int) result.image.getWidth();
+        int imgH = (int) result.image.getHeight();
+        result.regions = org.nexus.indexador.utils.AutoTilingService.getInstance().normalizeRegions(result.regions,
+            imgW, imgH);
       }
 
       boolean confirmed = showDetectionPreview(result, "Auto-Indexar " + type,
@@ -2149,7 +2171,7 @@ public class MainController {
     }
   }
 
-  private ImageDetectionResult loadAndDetectSpritesDirect(int fileNum, int tolX, int tolY) {
+  private ImageDetectionResult loadAndDetectSpritesDirect(int fileNum, int tolX, int tolY, boolean enableGridSplit) {
     String imagePath = configManager.getGraphicsDir() + File.separator + fileNum + ".png";
 
     File f = new File(imagePath);
@@ -2168,7 +2190,7 @@ public class MainController {
       return null;
     }
 
-    List<Rectangle> regions = AutoTilingService.getInstance().detectSprites(image, tolX, tolY);
+    List<Rectangle> regions = AutoTilingService.getInstance().detectSprites(image, tolX, tolY, enableGridSplit);
     // Log for debug but also return
     logger.info("Se detectaron " + regions.size() + " sprites.");
     return new ImageDetectionResult(fileNum, image, regions);
@@ -2290,7 +2312,6 @@ public class MainController {
       grhList.add(newGrh);
       if (grhDataMap != null)
         grhDataMap.put(grhId, newGrh);
-      lstIndices.getItems().add(String.valueOf(grhId));
       createdIds.add(grhId);
     }
 
@@ -2327,7 +2348,6 @@ public class MainController {
       grhList.add(animGrh);
       if (grhDataMap != null)
         grhDataMap.put(currentId, animGrh);
-      lstIndices.getItems().add(String.valueOf(currentId) + " (Animación)");
       animCount++;
     }
 
@@ -2445,7 +2465,6 @@ public class MainController {
     grhList.add(animGrh);
     if (grhDataMap != null)
       grhDataMap.put(currentId, animGrh);
-    lstIndices.getItems().add(String.valueOf(currentId) + " (Animación)");
     dataManager.setGrhCount(currentId);
   }
 

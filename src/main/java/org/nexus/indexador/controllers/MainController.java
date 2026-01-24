@@ -1950,10 +1950,14 @@ public class MainController {
       }
     }
 
-    ImageDetectionResult result = loadAndDetectSpritesDirect(fileNum);
+    // Smart Auto-Index
+    // Stricter Horizontal (2px) to prevent merging frames
+    // Looser Vertical (16px) to capture tall sparks
+    int tolX = 2;
+    int tolY = 16;
+
+    ImageDetectionResult result = loadAndDetectSpritesDirect(fileNum, tolX, tolY);
     if (result != null) {
-      // Si es superficies, aplicar split ANTES de la preview para que el usuario vea
-      // la rejilla
       // Si es superficies, aplicar split ANTES de la preview para que el usuario vea
       // la rejilla
       if (type != null && type.toLowerCase().startsWith("superficie")) {
@@ -2031,7 +2035,7 @@ public class MainController {
     }
   }
 
-  private ImageDetectionResult loadAndDetectSpritesDirect(int fileNum) {
+  private ImageDetectionResult loadAndDetectSpritesDirect(int fileNum, int tolX, int tolY) {
     String imagePath = configManager.getGraphicsDir() + File.separator + fileNum + ".png";
 
     File f = new File(imagePath);
@@ -2050,7 +2054,7 @@ public class MainController {
       return null;
     }
 
-    List<Rectangle> regions = AutoTilingService.getInstance().detectSprites(image);
+    List<Rectangle> regions = AutoTilingService.getInstance().detectSprites(image, tolX, tolY);
     // Log for debug but also return
     logger.info("Se detectaron " + regions.size() + " sprites.");
     return new ImageDetectionResult(fileNum, image, regions);

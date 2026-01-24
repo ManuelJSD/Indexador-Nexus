@@ -22,6 +22,8 @@ import org.nexus.indexador.utils.Logger;
 import org.nexus.indexador.utils.ToastNotification;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Stack;
 
@@ -286,7 +288,23 @@ public class ManualIndexerController {
         if (chkGridDetection != null && chkGridDetection.isSelected()) {
             autoDetectGrid();
         } else {
-            autoDetectBlobs();
+            // Ask for tolerance
+            TextInputDialog dialog = new TextInputDialog("15");
+            dialog.setTitle("Auto-Indexado");
+            dialog.setHeaderText("Configuración de Fusión");
+            dialog.setContentText("Tolerancia de fusión (px):");
+
+            Optional<String> result = dialog.showAndWait();
+            if (result.isPresent()) {
+                int tolerance = 15;
+                try {
+                    tolerance = Integer.parseInt(result.get());
+                } catch (NumberFormatException e) {
+                    ToastNotification.show(imageView.getScene().getWindow(),
+                            "Valor inválido, usando por defecto (15px)");
+                }
+                autoDetectBlobs(tolerance);
+            }
         }
     }
 
@@ -339,7 +357,7 @@ public class ManualIndexerController {
         }
     }
 
-    private void autoDetectBlobs() {
+    private void autoDetectBlobs(int tolerance) {
         Image img = imageView.getImage();
         if (img == null)
             return;
@@ -398,12 +416,81 @@ public class ManualIndexerController {
         }
 
         if (blobsFound > 0) {
-            ToastNotification.show(imageView.getScene().getWindow(), "¡Se han detectado " + blobsFound + " objetos!");
-            if (!stagingList.isEmpty())
-                lstStaging.getSelectionModel().select(0);
+            // Post-processing: Merge nearby blobs for detailed animations
+            List<GrhData> blobs = new ArrayList<>(
+                    stagingList.subList(stagingList.size() - blobsFound, stagingList.size()));
+            stagingList.removeAll(blobs); // Remove unmerged
+
+            List<GrhData> merged = mergeBlobs(blobs, tolerance);
+            stagingList.addAll(merged);
+
+            ToastNotification.show(imageView.getScene().getWindow(),
+                    "¡Se han detectado " + merged.size() + " objetos (Fusionados)!");
+            if (!stagingList.isEmpty()) {
+                // Select the first new item
+                int firstNewIndex = stagingList.size() - merged.size();
+                if (firstNewIndex >= 0) {
+                    lstStaging.getSelectionModel().select(firstNewIndex);
+                }
+            }
         } else {
             ToastNotification.show(imageView.getScene().getWindow(), "No se detectaron objetos.");
         }
+    }
+
+    private java.util.List<GrhData> mergeBlobs(java.util.List<GrhData> blobs, int distanceThreshold) {
+        if (blobs.isEmpty())
+            return blobs;
+
+        boolean changed = true;
+        while (changed) {
+            changed = false;
+            for (int i = 0; i < blobs.size(); i++) {
+                GrhData a = blobs.get(i);
+                for (int j = i + 1; j < blobs.size(); j++) {
+                    GrhData b = blobs.get(j);
+
+                    // Check intersection or proximity
+                    if (shouldMerge(a, b, distanceThreshold)) {
+                        // Merge b into a
+                        short newX = (short) Math.min(a.getsX(), b.getsX());
+                        short newY = (short) Math.min(a.getsY(), b.getsY());
+                        short newMaxX = (short) Math.max(a.getsX() + a.getPixelWidth(), b.getsX() + b.getPixelWidth());
+                        short newMaxY = (short) Math.max(a.getsY() + a.getPixelHeight(),
+                                b.getsY() + b.getPixelHeight());
+
+                        a.setsX(newX);
+                        a.setsY(newY);
+                        a.setPixelWidth((short) (newMaxX - newX));
+                        a.setPixelHeight((short) (newMaxY - newY));
+
+                        blobs.remove(j);
+                        changed = true;
+                        // Break inner loop to restart or continue safely?
+                        // With j removed, j is now pointing to next element, but it's simpler to break
+                        // and restart
+                        // or decrement j. Let's decrement j to continue checking 'a' against others.
+                        j--;
+                    }
+                }
+            }
+        }
+        return blobs;
+    }
+
+    private boolean shouldMerge(GrhData a, GrhData b, int threshold) {
+        // Expand A by threshold
+        int ax1 = a.getsX() - threshold;
+        int ay1 = a.getsY() - threshold;
+        int ax2 = a.getsX() + a.getPixelWidth() + threshold;
+        int ay2 = a.getsY() + a.getPixelHeight() + threshold;
+
+        int bx1 = b.getsX();
+        int by1 = b.getsY();
+        int bx2 = b.getsX() + b.getPixelWidth();
+        int by2 = b.getsY() + b.getPixelHeight();
+
+        return ax1 < bx2 && ax2 > bx1 && ay1 < by2 && ay2 > by1;
     }
 
     private boolean colorsMatch(Color c1, Color c2) {

@@ -6,7 +6,7 @@
 
   <groupId>org.nexus</groupId>
   <artifactId>indexador</artifactId>
-  <version>0.9.0</version>
+  <version>0.9.1</version>
   <packaging>jar</packaging>
   <name>Indexador Nexus</name>
   <description>Editor de índices para Argentum Online</description>

@@ -38,6 +38,7 @@ import org.nexus.indexador.services.UIService;
 import java.io.*;
 import java.util.*;
 import javafx.scene.paint.Color; // Importar Color
+import javafx.scene.Group; // Import Group
 import org.nexus.indexador.Main;
 
 public class MainController {
@@ -191,6 +192,9 @@ public class MainController {
   private ImageView imgGrafico;
 
   @FXML
+  private Group grpPreview; // Inject Group
+
+  @FXML
   private Rectangle rectanguloIndice;
 
   @FXML
@@ -258,6 +262,11 @@ public class MainController {
   // Valores de traducción originales del ImageView al arrastrar el mouse.
   private double orgTranslateX, orgTranslateY;
 
+  // Variables para el panning del visor derecho
+  private double previewOrgSceneX, previewOrgSceneY;
+  private double previewOrgTranslateX, previewOrgTranslateY;
+  private double rectOrgTranslateX, rectOrgTranslateY;
+
   public ConfigManager getConfigManager() {
     return this.configManager;
   }
@@ -279,6 +288,7 @@ public class MainController {
     logger.info("Inicializando controlador MainController");
 
     loadGrh();
+    setupDataSync();
     setupGrhListListener();
     setupFilterTextFieldListener();
     setupSliderZoom();
@@ -294,6 +304,14 @@ public class MainController {
 
     // Aplicar color de fondo configurado
     updateBackgroundColor();
+
+    // Configurar clip para evitar desbordamiento visual sobre las pestañas
+    if (panePreviewBackground != null) {
+      Rectangle clip = new Rectangle();
+      clip.widthProperty().bind(panePreviewBackground.widthProperty());
+      clip.heightProperty().bind(panePreviewBackground.heightProperty());
+      panePreviewBackground.setClip(clip);
+    }
 
     logger.info("Controlador MainController inicializado correctamente");
   }
@@ -353,6 +371,34 @@ public class MainController {
     } catch (IOException e) {
       logger.error("Error al cargar los datos de gráficos", e);
       updateStatusBar("Error al cargar datos", 0, 0, false);
+    }
+  }
+
+  private void setupDataSync() {
+    if (grhList != null) {
+      grhList.addListener((javafx.collections.ListChangeListener<GrhData>) c -> {
+        while (c.next()) {
+          if (c.wasAdded()) {
+            for (GrhData addedItem : c.getAddedSubList()) {
+              String indice = String.valueOf(addedItem.getGrh());
+              if (addedItem.getNumFrames() > 1) {
+                indice += " (Animación)";
+              }
+              lstIndices.getItems().add(indice);
+
+              // Update Map and status
+              if (grhDataMap != null) {
+                grhDataMap.put(addedItem.getGrh(), addedItem);
+              }
+            }
+
+            Platform.runLater(() -> {
+              lblIndices.setText("Indices cargados: " + grhList.size());
+              updateStatusBar("Índices añadidos externamente", grhList.size(), 0, false);
+            });
+          }
+        }
+      });
     }
   }
 
@@ -470,6 +516,74 @@ public class MainController {
       ((ImageView) (event.getSource())).setTranslateX(newTranslateX);
       ((ImageView) (event.getSource())).setTranslateY(newTranslateY);
     }
+  }
+
+  /**
+   * Maneja el evento de presionar el mouse en el visor de vista previa (derecho).
+   */
+  @FXML
+  private void onMousePressedPreview(MouseEvent event) {
+    if (event.isSecondaryButtonDown()) {
+      previewOrgSceneX = event.getSceneX();
+      previewOrgSceneY = event.getSceneY();
+
+      // Capturar posición del Grupo
+      if (grpPreview != null) {
+        previewOrgTranslateX = grpPreview.getTranslateX();
+        previewOrgTranslateY = grpPreview.getTranslateY();
+      }
+    }
+  }
+
+  /**
+   * Maneja el evento de arrastrar el mouse en el visor de vista previa (derecho).
+   */
+  @FXML
+  private void onMouseDraggedPreview(MouseEvent event) {
+    if (event.isSecondaryButtonDown() && grpPreview != null) {
+      double offsetX = event.getSceneX() - previewOrgSceneX;
+      double offsetY = event.getSceneY() - previewOrgSceneY;
+
+      double newTranslateX = previewOrgTranslateX + offsetX;
+      double newTranslateY = previewOrgTranslateY + offsetY;
+
+      // Mover todo el Grupo (Imagen + Rectángulo)
+      grpPreview.setTranslateX(newTranslateX);
+      grpPreview.setTranslateY(newTranslateY);
+    }
+  }
+
+  /**
+   * Maneja el evento de scroll (zoom) en el visor de vista previa (derecho).
+   */
+  @FXML
+  private void onScrollPreview(javafx.scene.input.ScrollEvent event) {
+    if (grpPreview == null)
+      return;
+
+    double delta = event.getDeltaY();
+    double scaleFactor = 1.05;
+    double currentScale = grpPreview.getScaleX();
+
+    if (delta < 0) {
+      // Zoom out
+      currentScale /= scaleFactor;
+    } else {
+      // Zoom in
+      currentScale *= scaleFactor;
+    }
+
+    // Limitar zoom
+    if (currentScale < 0.1)
+      currentScale = 0.1;
+    if (currentScale > 10.0)
+      currentScale = 10.0;
+
+    // Escalar todo el Grupo
+    grpPreview.setScaleX(currentScale);
+    grpPreview.setScaleY(currentScale);
+
+    event.consume();
   }
 
   /**

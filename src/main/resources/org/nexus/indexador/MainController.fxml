@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.Group?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
@@ -371,10 +372,12 @@
             </content>
         </ScrollPane>
 
-        <Pane fx:id="panePreviewBackground" AnchorPane.rightAnchor="10.0" layoutY="96.0" prefHeight="330.0" prefWidth="520.0" styleClass="preview-pane">
+        <Pane fx:id="panePreviewBackground" AnchorPane.rightAnchor="10.0" layoutY="96.0" prefHeight="330.0" prefWidth="520.0" styleClass="preview-pane" onScroll="#onScrollPreview" onMousePressed="#onMousePressedPreview" onMouseDragged="#onMouseDraggedPreview">
             <children>
-                <ImageView fx:id="imgGrafico" fitHeight="374.0" fitWidth="508.0" layoutX="5.0" layoutY="6.0" pickOnBounds="true" preserveRatio="true" smooth="false" />
-                <Rectangle fx:id="rectanguloIndice" fill="TRANSPARENT" stroke="RED" strokeWidth="1.0" />
+                <Group fx:id="grpPreview">
+                    <ImageView fx:id="imgGrafico" fitHeight="374.0" fitWidth="508.0" layoutX="5.0" layoutY="6.0" pickOnBounds="true" preserveRatio="true" smooth="false" mouseTransparent="true" />
+                    <Rectangle fx:id="rectanguloIndice" fill="TRANSPARENT" stroke="RED" strokeWidth="1.0" mouseTransparent="true" />
+                </Group>
             </children>
         </Pane>
 

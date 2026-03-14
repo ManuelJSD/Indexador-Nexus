@@ -8,6 +8,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.nexus.indexador.controllers.LoadingController;
 import org.nexus.indexador.utils.Logger;
+import org.nexus.indexador.utils.ProfileManager;
 
 import java.io.IOException;
 import javafx.scene.image.Image;
@@ -28,15 +29,17 @@ public class Main extends Application {
     // Configurar icono
     setAppIcon(stage);
 
-    // Verificar si es la primera vez que se ejecuta
-    org.nexus.indexador.utils.ConfigManager config = org.nexus.indexador.utils.ConfigManager.getInstance();
+    // Cargar la lista de perfiles
+    ProfileManager profileManager = ProfileManager.getInstance();
+    profileManager.cargar();
 
-    if (!config.configExists()) {
-      // Primera vez - mostrar wizard de configuración
-      showInitialSetup(() -> showLoadingScreen(stage));
+    if (profileManager.isEmpty()) {
+      // Sin perfiles → wizard inicial que creará el primer perfil
+      String configPath = profileManager.generarConfigPath("default");
+      showInitialSetup(configPath, "Mi Perfil", () -> showLoadingScreen(stage));
     } else {
-      // Ya configurado - mostrar pantalla de carga directamente
-      showLoadingScreen(stage);
+      // Con perfiles → mostrar selector
+      showProfileSelector(stage);
     }
 
     // Chequear actualizaciones en segundo plano
@@ -49,9 +52,79 @@ public class Main extends Application {
   }
 
   /**
-   * Muestra el wizard de configuración inicial.
+   * Muestra la pantalla del selector de perfiles.
+   *
+   * @param stage Stage principal de la aplicación.
    */
-  private void showInitialSetup(Runnable onComplete) {
+  private void showProfileSelector(Stage stage) {
+    try {
+      FXMLLoader fxmlLoader = new FXMLLoader(
+          Main.class.getResource("/org/nexus/indexador/ProfileSelectorController.fxml"));
+      Parent root = fxmlLoader.load();
+      Scene scene = new Scene(root);
+
+      // Aplicar tema DARK por defecto antes de cargar un perfil
+      String darkTheme = Main.class.getResource("styles/dark-theme.css").toExternalForm();
+      scene.getStylesheets().add(darkTheme);
+
+      org.nexus.indexador.controllers.ProfileSelectorController controller =
+          fxmlLoader.getController();
+
+      Stage selectorStage = new Stage();
+      controller.setStage(selectorStage);
+
+      // Al seleccionar un perfil → pantalla de carga
+      controller.setOnPerfilSeleccionado(perfil -> showLoadingScreen(stage));
+
+      // Al crear un nuevo perfil → diálogo de nombre → wizard → carga directa
+      controller.setOnNuevoPerfil(() -> {
+        ProfileManager pm = ProfileManager.getInstance();
+        String nuevoNombre = pedirNombrePerfil();
+        if (nuevoNombre == null || nuevoNombre.trim().isEmpty()) {
+          // Cancelado → volver a mostrar el selector
+          showProfileSelector(stage);
+          return;
+        }
+        String configPath = pm.generarConfigPath(nuevoNombre.trim());
+        showInitialSetup(configPath, nuevoNombre.trim(), () -> showLoadingScreen(stage));
+      });
+
+      selectorStage.setTitle("Indexador Nexus - Selección de Perfil");
+      setAppIcon(selectorStage);
+      selectorStage.setScene(scene);
+      selectorStage.setResizable(false);
+      selectorStage.show();
+
+      logger.info("Selector de perfiles mostrado (" +
+          ProfileManager.getInstance().getPerfiles().size() + " perfiles)");
+    } catch (IOException e) {
+      logger.error("Error al cargar el selector de perfiles", e);
+    }
+  }
+
+  /**
+   * Solicita al usuario el nombre del nuevo perfil mediante un diálogo de texto.
+   *
+   * @return El nombre introducido, o {@code null} si canceló o dejó vacío.
+   */
+  private String pedirNombrePerfil() {
+    javafx.scene.control.TextInputDialog dialog =
+        new javafx.scene.control.TextInputDialog("Nuevo Perfil");
+    dialog.setTitle("Nuevo Perfil");
+    dialog.setHeaderText("Crear un nuevo perfil de configuración");
+    dialog.setContentText("Nombre del perfil:");
+    setAppIcon((Stage) dialog.getDialogPane().getScene().getWindow());
+    return dialog.showAndWait().orElse(null);
+  }
+
+  /**
+   * Muestra el wizard de configuración inicial.
+   *
+   * @param targetConfigPath Ruta donde se guardará el .ini del nuevo perfil.
+   * @param profileName      Nombre propuesto para el perfil.
+   * @param onComplete       Callback a ejecutar al finalizar.
+   */
+  private void showInitialSetup(String targetConfigPath, String profileName, Runnable onComplete) {
     try {
       FXMLLoader fxmlLoader = new FXMLLoader(
           Main.class.getResource("/org/nexus/indexador/InitialSetupController.fxml"));
@@ -63,10 +136,13 @@ public class Main extends Application {
       scene.getStylesheets().add(darkTheme);
 
       // Configurar controller
-      org.nexus.indexador.controllers.InitialSetupController controller = fxmlLoader.getController();
+      org.nexus.indexador.controllers.InitialSetupController controller =
+          fxmlLoader.getController();
 
       Stage setupStage = new Stage();
       controller.setStage(setupStage);
+      controller.setTargetConfigPath(targetConfigPath);
+      controller.setProfileName(profileName);
       controller.setOnComplete(onComplete);
 
       setupStage.setTitle("Indexador Nexus - Configuración Inicial");
@@ -75,7 +151,7 @@ public class Main extends Application {
       setupStage.setResizable(false);
       setupStage.show();
 
-      logger.info("Wizard de configuración inicial mostrado");
+      logger.info("Wizard de configuración inicial mostrado (perfil: " + profileName + ")");
     } catch (IOException e) {
       logger.error("Error al cargar wizard de configuración", e);
     }
@@ -83,17 +159,20 @@ public class Main extends Application {
 
   /**
    * Muestra la pantalla de carga principal.
+   *
+   * @param stage Stage principal de la aplicación.
    */
   private void showLoadingScreen(Stage stage) {
-    FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("/org/nexus/indexador/LoadingController.fxml"));
+    FXMLLoader fxmlLoader =
+        new FXMLLoader(Main.class.getResource("/org/nexus/indexador/LoadingController.fxml"));
 
     try {
       Parent root = fxmlLoader.load();
       Scene scene = new Scene(root);
 
-      // Aplicar tema oscuro
-      String darkTheme = Main.class.getResource("styles/dark-theme.css").toExternalForm();
-      scene.getStylesheets().add(darkTheme);
+      // Aplicar tema según la config del perfil activo
+      String theme = org.nexus.indexador.utils.ConfigManager.getInstance().getAppTheme();
+      org.nexus.indexador.utils.WindowManager.getInstance().applyTheme(scene, theme);
 
       // Obtener el controlador y pasar el Stage
       LoadingController controller = fxmlLoader.getController();
@@ -125,7 +204,7 @@ public class Main extends Application {
 
   /**
    * Establece el icono de la aplicación para un Stage dado.
-   * 
+   *
    * @param stage El escenario al que aplicar el icono.
    */
   public static void setAppIcon(Stage stage) {
@@ -137,22 +216,23 @@ public class Main extends Application {
     } catch (Exception e) {
       System.err.println("No se pudo cargar el icono de la aplicación: " + e.getMessage());
     }
-
   }
 
   /**
    * Muestra una alerta informando sobre una nueva actualización.
-   * 
+   *
    * @param newVersion La versión nueva disponible.
    */
   private void showUpdateAlert(String newVersion) {
-    javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+    javafx.scene.control.Alert alert =
+        new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
     alert.setTitle("Actualización Disponible");
     alert.setHeaderText("¡Nueva versión disponible!");
     alert.setContentText("La versión " + newVersion + " está disponible para descargar.\n" +
         "Actualmente estás usando la versión " + VERSION + ".");
 
-    javafx.scene.control.ButtonType btnGoToGitHub = new javafx.scene.control.ButtonType("Ir a GitHub");
+    javafx.scene.control.ButtonType btnGoToGitHub =
+        new javafx.scene.control.ButtonType("Ir a GitHub");
     javafx.scene.control.ButtonType btnClose = new javafx.scene.control.ButtonType("Cerrar",
         javafx.scene.control.ButtonBar.ButtonData.CANCEL_CLOSE);
 
@@ -166,7 +246,8 @@ public class Main extends Application {
       if (type == btnGoToGitHub) {
         try {
           java.awt.Desktop.getDesktop()
-              .browse(new java.net.URI("https://github.com/ManuelJSD/Indexador-Nexus/releases/latest"));
+              .browse(new java.net.URI(
+                  "https://github.com/ManuelJSD/Indexador-Nexus/releases/latest"));
         } catch (Exception e) {
           logger.error("Error al abrir navegador", e);
         }

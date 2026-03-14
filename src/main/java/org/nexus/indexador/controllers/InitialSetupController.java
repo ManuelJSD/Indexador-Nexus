@@ -9,6 +9,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import org.nexus.indexador.utils.ConfigManager;
 import org.nexus.indexador.utils.Logger;
+import org.nexus.indexador.utils.ProfileManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,6 +29,9 @@ public class InitialSetupController {
   private TextField txtExportPath;
 
   @FXML
+  private TextField txtProfileName;
+
+  @FXML
   private VBox cardMoldSystem;
 
   @FXML
@@ -43,6 +47,18 @@ public class InitialSetupController {
   private Runnable onComplete;
   private String selectedIndexingSystem = "CLASSIC"; // Default: Sistema Clásico
   private String selectedTheme = "DARK"; // Default: Tema Oscuro
+
+  /**
+   * Ruta del archivo .ini donde se guardará la configuración del nuevo perfil.
+   * Inyectada desde {@link org.nexus.indexador.Main}.
+   */
+  private String targetConfigPath;
+
+  /**
+   * Nombre del perfil que se creará al finalizar el wizard.
+   * Inyectado desde {@link org.nexus.indexador.Main}.
+   */
+  private String profileName;
 
   /**
    * Inicializa el controller.
@@ -145,7 +161,9 @@ public class InitialSetupController {
   }
 
   /**
-   * Inicializa el controller con el stage y callback.
+   * Inicializa el controller con el stage.
+   *
+   * @param stage Stage del wizard.
    */
   public void setStage(Stage stage) {
     this.stage = stage;
@@ -153,9 +171,34 @@ public class InitialSetupController {
 
   /**
    * Establece el callback a ejecutar cuando se complete la configuración.
+   *
+   * @param onComplete Runnable a ejecutar tras guardar.
    */
   public void setOnComplete(Runnable onComplete) {
     this.onComplete = onComplete;
+  }
+
+  /**
+   * Establece la ruta del archivo .ini donde se guardará la configuración.
+   *
+   * @param targetConfigPath Ruta relativa al directorio de la aplicación.
+   */
+  public void setTargetConfigPath(String targetConfigPath) {
+    this.targetConfigPath = targetConfigPath;
+  }
+
+  /**
+   * Indica al controller el nombre sugerido para el perfil.
+   * Se pre-rellena en {@link #txtProfileName} cuando la UI ya esté lista.
+   *
+   * @param profileName Nombre propuesto para el perfil.
+   */
+  public void setProfileName(String profileName) {
+    this.profileName = profileName;
+    // Pre-rellenar el campo si el nodo ya está inyectado
+    if (txtProfileName != null && (profileName != null)) {
+      txtProfileName.setText(profileName);
+    }
   }
 
   /**
@@ -220,19 +263,39 @@ public class InitialSetupController {
       return;
     }
 
-    // Guardar configuración
+    // Guardar configuración en memoria
     ConfigManager config = ConfigManager.getInstance();
     config.setGraphicsDir(txtGraphicsPath.getText());
     config.setInitDir(txtInitPath.getText());
-    config.setDatDir(txtInitPath.getText()); // Sync Dat with Init
+    config.setDatDir(txtInitPath.getText());
     config.setExportDir(txtExportPath.getText());
-
-    // Guardar sistema de indexado seleccionado
     config.setIndexingSystem(selectedIndexingSystem);
     config.setAppTheme(selectedTheme);
 
+    // Si el usuario escribió un nombre en el campo, éste tiene prioridad
+    String nombreFinal = (txtProfileName != null && !txtProfileName.getText().trim().isEmpty())
+        ? txtProfileName.getText().trim()
+        : profileName;
+
+    // Determinar ruta de destino
+    File destino = (targetConfigPath != null)
+        ? new File(targetConfigPath)
+        : new File("config.ini");
+
     try {
-      config.writeConfig();
+      // Guardar la configuración en el archivo de destino
+      config.writeConfig(destino);
+
+      // Registrar el perfil en ProfileManager si tenemos nombre y ruta de perfil
+      if (targetConfigPath != null) {
+        ProfileManager pm = ProfileManager.getInstance();
+        String nombre = (nombreFinal != null && !nombreFinal.isEmpty())
+            ? nombreFinal
+            : destino.getName().replace(".ini", "");
+        org.nexus.indexador.utils.ProfileEntry entry =
+            pm.agregarPerfil(nombre, targetConfigPath);
+        pm.setPerfilActivo(entry);
+      }
 
       // Cerrar wizard y continuar con la aplicación
       stage.close();
@@ -249,7 +312,6 @@ public class InitialSetupController {
       alert.setContentText("Error: " + e.getMessage());
       alert.showAndWait();
     } catch (Exception e) {
-      // Capturar cualquier otra excepción
       Logger.getInstance().error("Error inesperado al finalizar configuración", e);
       Alert alert = new Alert(Alert.AlertType.ERROR);
       alert.setTitle("Error Inesperado");

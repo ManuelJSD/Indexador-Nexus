@@ -77,6 +77,9 @@ public class MainController {
   public MenuItem mnuCode;
 
   @FXML
+  public MenuItem mnuCambiarPerfil;
+
+  @FXML
   public Menu mnuReload;
 
   @FXML
@@ -584,6 +587,49 @@ public class MainController {
     grpPreview.setScaleY(currentScale);
 
     event.consume();
+  }
+
+  /**
+   * Cambia al selector de perfiles sin cerrar la aplicación.
+   * Si el usuario selecciona un perfil distinto, recarga la configuración y los datos.
+   */
+  @FXML
+  private void mnuCambiarPerfil_OnAction() {
+    try {
+      javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
+          getClass().getResource("/org/nexus/indexador/ProfileSelectorController.fxml"));
+      javafx.scene.Parent root = loader.load();
+      javafx.scene.Scene scene = new javafx.scene.Scene(root);
+
+      // Aplicar el tema actual
+      String tema = configManager.getAppTheme();
+      windowManager.applyTheme(scene, tema);
+
+      ProfileSelectorController ctrl = loader.getController();
+      javafx.stage.Stage dialStage = new javafx.stage.Stage();
+      dialStage.initModality(Modality.APPLICATION_MODAL);
+      dialStage.setTitle("Cambiar Perfil");
+      Main.setAppIcon(dialStage);
+      ctrl.setStage(dialStage);
+
+      // Al seleccionar perfil: reinicializar el loader y recargar datos en la UI
+      ctrl.setOnPerfilSeleccionado(perfil -> {
+        try {
+          dataManager.updateIndexLoader();  // Reinicializa loader + recarga "ALL"
+          loadGrh();
+          logger.info("Perfil cambiado a: " + perfil.getNombre());
+        } catch (Exception ex) {
+          logger.error("Error al recargar datos tras cambio de perfil", ex);
+        }
+      });
+
+      dialStage.setScene(scene);
+      dialStage.setResizable(false);
+      dialStage.showAndWait();
+    } catch (Exception e) {
+      logger.error("Error al abrir el selector de perfiles", e);
+      showWarningAlert("Error", "No se pudo abrir el selector de perfiles: " + e.getMessage());
+    }
   }
 
   /**

@@ -520,3 +520,94 @@
     -fx-border-color: #d32f2f;
     -fx-text-fill: white;
 }
+
+/* =========================================================
+   Profile Selector Styles (light)
+   ========================================================= */
+
+.profile-root {
+    -fx-background-color: #f5f5f5;
+}
+
+.profile-header {
+    -fx-background-color: #ebebeb;
+    -fx-border-color: #cccccc;
+    -fx-border-width: 0 0 1 0;
+}
+
+.profile-title {
+    -fx-text-fill: #222222;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+.profile-subtitle {
+    -fx-text-fill: #666666;
+    -fx-font-size: 12px;
+}
+
+.profile-section-label {
+    -fx-text-fill: #555555;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.profile-list {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cccccc;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-font-size: 13px;
+}
+
+.profile-action-btn {
+    -fx-background-color: #e8e8e8;
+    -fx-text-fill: #333333;
+    -fx-background-radius: 5;
+    -fx-border-color: #cccccc;
+    -fx-border-radius: 5;
+    -fx-cursor: hand;
+    -fx-font-size: 12px;
+    -fx-padding: 7 12 7 12;
+}
+
+.profile-action-btn:hover {
+    -fx-background-color: #d8d8d8;
+    -fx-border-color: #4a90d9;
+}
+
+.profile-action-btn:disabled {
+    -fx-opacity: 0.4;
+}
+
+.profile-btn-danger {
+    -fx-border-color: #e0a0a0;
+}
+
+.profile-btn-danger:hover {
+    -fx-background-color: #c0392b;
+    -fx-border-color: #c0392b;
+    -fx-text-fill: white;
+}
+
+.profile-btn-new {
+    -fx-border-color: #a0d0a0;
+}
+
+.profile-btn-new:hover {
+    -fx-background-color: #27ae60;
+    -fx-border-color: #27ae60;
+    -fx-text-fill: white;
+}
+
+.profile-btn-open {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-padding: 9 18 9 18;
+}
+
+.profile-hint {
+    -fx-text-fill: #aaaaaa;
+    -fx-font-size: 11px;
+    -fx-font-style: italic;
+}

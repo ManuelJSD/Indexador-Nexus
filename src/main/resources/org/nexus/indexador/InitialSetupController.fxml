@@ -25,26 +25,31 @@
 
     <!-- Paths Configuration -->
     <GridPane hgap="10" vgap="15">
-        <Label text="Carpeta de Gráficos:" GridPane.rowIndex="0" GridPane.columnIndex="0" 
+        <Label text="Nombre del perfil:" GridPane.rowIndex="0" GridPane.columnIndex="0"
                styleClass="setup-label"/>
-        <TextField fx:id="txtGraphicsPath" GridPane.rowIndex="0" GridPane.columnIndex="1" prefWidth="450" 
+        <TextField fx:id="txtProfileName" GridPane.rowIndex="0" GridPane.columnIndex="1" prefWidth="450"
+                   promptText="Ej: Servidor Clásico, AO Off, etc."/>
+
+        <Label text="Carpeta de Gráficos:" GridPane.rowIndex="1" GridPane.columnIndex="0" 
+               styleClass="setup-label"/>
+        <TextField fx:id="txtGraphicsPath" GridPane.rowIndex="1" GridPane.columnIndex="1" prefWidth="450" 
                    promptText="Ej: C:/AO/graphics"/>
         <Button fx:id="btnBrowseGraphics" text="Examinar..." onAction="#onBrowseGraphics" 
-                GridPane.rowIndex="0" GridPane.columnIndex="2" prefWidth="100"/>
-        
-        <Label text="Carpeta de Índices:" GridPane.rowIndex="1" GridPane.columnIndex="0" 
-               styleClass="setup-label"/>
-        <TextField fx:id="txtInitPath" GridPane.rowIndex="1" GridPane.columnIndex="1" prefWidth="450"
-                   promptText="Ej: C:/AO/init"/>
-        <Button fx:id="btnBrowseInit" text="Examinar..." onAction="#onBrowseInit" 
                 GridPane.rowIndex="1" GridPane.columnIndex="2" prefWidth="100"/>
         
-        <Label text="Carpeta de Exportados:" GridPane.rowIndex="2" GridPane.columnIndex="0" 
+        <Label text="Carpeta de Índices:" GridPane.rowIndex="2" GridPane.columnIndex="0" 
                styleClass="setup-label"/>
-        <TextField fx:id="txtExportPath" GridPane.rowIndex="2" GridPane.columnIndex="1" prefWidth="450"
+        <TextField fx:id="txtInitPath" GridPane.rowIndex="2" GridPane.columnIndex="1" prefWidth="450"
+                   promptText="Ej: C:/AO/init"/>
+        <Button fx:id="btnBrowseInit" text="Examinar..." onAction="#onBrowseInit" 
+                GridPane.rowIndex="2" GridPane.columnIndex="2" prefWidth="100"/>
+        
+        <Label text="Carpeta de Exportados:" GridPane.rowIndex="3" GridPane.columnIndex="0" 
+               styleClass="setup-label"/>
+        <TextField fx:id="txtExportPath" GridPane.rowIndex="3" GridPane.columnIndex="1" prefWidth="450"
                    promptText="Ej: C:/AO/export"/>
         <Button fx:id="btnBrowseExport" text="Examinar..." onAction="#onBrowseExport" 
-                GridPane.rowIndex="2" GridPane.columnIndex="2" prefWidth="100"/>
+                GridPane.rowIndex="3" GridPane.columnIndex="2" prefWidth="100"/>
     </GridPane>
 
     <!-- Indexing System Selection -->

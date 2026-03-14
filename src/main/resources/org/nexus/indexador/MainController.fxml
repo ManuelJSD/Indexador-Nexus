@@ -115,6 +115,14 @@
                             </items>
                         </Menu>
                         <SeparatorMenuItem />
+                        <MenuItem fx:id="mnuCambiarPerfil" mnemonicParsing="false"
+                                  onAction="#mnuCambiarPerfil_OnAction"
+                                  text="Cambiar Perfil...">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="P" control="DOWN" meta="UP" shift="DOWN" shortcut="UP"/>
+                            </accelerator>
+                        </MenuItem>
+                        <SeparatorMenuItem />
                         <MenuItem fx:id="mnuClose" mnemonicParsing="false" onAction="#mnuClose_OnAction" text="Cerrar">
                             <accelerator>
                                 <KeyCodeCombination alt="UP" code="Q" control="DOWN" meta="UP" shift="UP" shortcut="UP"/>

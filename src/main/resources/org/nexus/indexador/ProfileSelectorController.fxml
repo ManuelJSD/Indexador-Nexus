@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.nexus.indexador.controllers.ProfileSelectorController"
+            styleClass="profile-root"
+            prefWidth="640" prefHeight="480">
+
+    <!-- === CABECERA === -->
+    <top>
+        <VBox styleClass="profile-header" spacing="4">
+            <padding><Insets top="24" right="30" bottom="20" left="30"/></padding>
+            <Label text="Seleccionar Perfil" styleClass="profile-title"/>
+            <Label text="Elige una configuración para continuar, o crea un perfil nuevo."
+                   styleClass="profile-subtitle"/>
+        </VBox>
+    </top>
+
+    <!-- === CONTENIDO CENTRAL === -->
+    <center>
+        <HBox spacing="16">
+            <padding><Insets top="0" right="30" bottom="0" left="30"/></padding>
+
+            <!-- Lista de perfiles -->
+            <VBox HBox.hgrow="ALWAYS" spacing="8">
+                <Label text="Perfiles disponibles:" styleClass="profile-section-label"/>
+                <ListView fx:id="listViewPerfiles" styleClass="profile-list" VBox.vgrow="ALWAYS"
+                          HBox.hgrow="ALWAYS"/>
+            </VBox>
+
+            <!-- Panel de acciones -->
+            <VBox spacing="8" minWidth="140" alignment="TOP_CENTER">
+                <padding><Insets top="26"/></padding>
+
+                <Button fx:id="btnMoverArriba" text="▲ Subir"
+                        onAction="#onMoverArriba"
+                        styleClass="profile-action-btn"
+                        maxWidth="Infinity"/>
+
+                <Button fx:id="btnMoverAbajo" text="▼ Bajar"
+                        onAction="#onMoverAbajo"
+                        styleClass="profile-action-btn"
+                        maxWidth="Infinity"/>
+
+                <Separator/>
+
+                <Button fx:id="btnRenombrar" text="✏ Renombrar"
+                        onAction="#onRenombrar"
+                        styleClass="profile-action-btn"
+                        maxWidth="Infinity"/>
+
+                <Button fx:id="btnEliminar" text="✕ Eliminar"
+                        onAction="#onEliminar"
+                        styleClass="profile-action-btn profile-btn-danger"
+                        maxWidth="Infinity"/>
+
+                <Separator/>
+
+                <Button text="＋ Nuevo Perfil"
+                        onAction="#onNuevoPerfil"
+                        styleClass="profile-action-btn profile-btn-new"
+                        maxWidth="Infinity"/>
+            </VBox>
+        </HBox>
+    </center>
+
+    <!-- === PIE === -->
+    <bottom>
+        <VBox spacing="0">
+            <Separator/>
+            <HBox spacing="10" alignment="CENTER_RIGHT">
+                <padding><Insets top="14" right="30" bottom="16" left="30"/></padding>
+                <Label text="Doble clic en un perfil para abrirlo directamente"
+                       styleClass="profile-hint" HBox.hgrow="ALWAYS"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button fx:id="btnAbrir" text="Abrir Perfil"
+                        onAction="#onAbrir"
+                        styleClass="button-primary profile-btn-open"
+                        prefWidth="130"/>
+            </HBox>
+        </VBox>
+    </bottom>
+
+</BorderPane>

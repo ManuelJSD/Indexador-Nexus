@@ -611,3 +611,60 @@
     -fx-font-size: 11px;
     -fx-font-style: italic;
 }
+
+/* =========================================================
+   Redesign UI Styles (BorderPane Layout)
+   ========================================================= */
+
+.panel-left {
+    -fx-background-color: #fcfcfc;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 0 1 0 0;
+}
+
+.panel-right {
+    -fx-background-color: #fafafa;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 0 0 0 1;
+}
+
+.panel-center {
+    -fx-background-color: #ffffff;
+}
+
+.canvas-container {
+    -fx-background-color: #eaeaea;
+}
+
+.preview-container {
+    -fx-background-color: #f4f4f4;
+    -fx-border-color: #d0d0d0;
+    -fx-border-width: 1 0 0 0;
+}
+
+.button-primary-large {
+    -fx-background-color: #4a90d9;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 4;
+}
+
+.button-primary-large:hover {
+    -fx-background-color: #5aa0e9;
+}
+
+.button-small {
+    -fx-font-size: 11px;
+    -fx-padding: 4 8;
+}
+
+.button-danger {
+    -fx-background-color: #e0a0a0;
+    -fx-text-fill: #333;
+}
+
+.button-danger:hover {
+    -fx-background-color: #c0392b;
+    -fx-text-fill: white;
+}

@@ -462,4 +462,32 @@ public class DataManager {
     // Update count
     setGrhCount(grhList.size());
   }
+
+  /**
+   * Busca animaciones que dependen de los Grh IDs a intercambiar y devuelve las nuevas referencias.
+   */
+  public Map<GrhData, int[]> getAffectedAnimationsForSwap(int id1, int id2) {
+    Map<GrhData, int[]> affected = new HashMap<>();
+    for (GrhData anim : grhList) {
+      if (anim.getNumFrames() > 1 && anim.getFrames() != null) {
+        boolean isAffected = false;
+        int[] frames = anim.getFrames();
+        int[] newFrames = frames.clone();
+        for (int i = 1; i <= anim.getNumFrames(); i++) {
+          if (frames[i] == id1) {
+            newFrames[i] = id2;
+            isAffected = true;
+          } else if (frames[i] == id2) {
+            newFrames[i] = id1;
+            isAffected = true;
+          }
+        }
+        if (isAffected) {
+          affected.put(anim, newFrames);
+        }
+      }
+    }
+    return affected;
+  }
 }
+

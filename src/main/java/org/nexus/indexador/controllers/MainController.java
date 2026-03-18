@@ -15,6 +15,10 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.image.PixelReader;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
+import javafx.scene.input.DragEvent;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.control.*;
 import org.nexus.indexador.gamedata.DataManager;
@@ -453,6 +457,154 @@ public class MainController {
         }
       }
     });
+
+    // Configurar Drag and Drop y ContextMenu para Swap
+    lstIndices.setCellFactory(lv -> {
+      ListCell<String> cell = new ListCell<>() {
+        @Override
+        protected void updateItem(String item, boolean empty) {
+          super.updateItem(item, empty);
+          if (empty || item == null) {
+            setText(null);
+          } else {
+            setText(item);
+          }
+        }
+      };
+
+      cell.setOnDragDetected(event -> {
+        if (!cell.isEmpty()) {
+          Dragboard db = cell.startDragAndDrop(TransferMode.MOVE);
+          ClipboardContent content = new ClipboardContent();
+          content.putString(cell.getItem().split(" ")[0]); // Extraer número
+          db.setContent(content);
+          event.consume();
+        }
+      });
+
+      cell.setOnDragOver(event -> {
+        if (event.getGestureSource() != cell && event.getDragboard().hasString() && !cell.isEmpty()) {
+          event.acceptTransferModes(TransferMode.MOVE);
+        }
+        event.consume();
+      });
+
+      cell.setOnDragEntered(event -> {
+        if (event.getGestureSource() != cell && event.getDragboard().hasString() && !cell.isEmpty()) {
+          cell.setStyle("-fx-background-color: lightgreen; -fx-text-fill: black;");
+        }
+      });
+
+      cell.setOnDragExited(event -> {
+        cell.setStyle("");
+      });
+
+      cell.setOnDragDropped(event -> {
+        Dragboard db = event.getDragboard();
+        boolean success = false;
+        if (db.hasString() && !cell.isEmpty()) {
+          try {
+            int sourceGrhId = Integer.parseInt(db.getString().replaceAll("[^0-9]", ""));
+            int targetGrhId = Integer.parseInt(cell.getItem().split(" ")[0].replaceAll("[^0-9]", ""));
+            if (sourceGrhId != targetGrhId) {
+              swapGrhsFlow(sourceGrhId, targetGrhId);
+              success = true;
+            }
+          } catch (Exception e) {}
+        }
+        event.setDropCompleted(success);
+        event.consume();
+      });
+
+      // Context Menu
+      ContextMenu contextMenu = new ContextMenu();
+      MenuItem swapItem = new MenuItem("Intercambiar Grh (Swap)...");
+      swapItem.setOnAction(event -> {
+        if (!cell.isEmpty()) {
+          int sourceGrhId = Integer.parseInt(cell.getItem().split(" ")[0].replaceAll("[^0-9]", ""));
+          promptSwapGrh(sourceGrhId);
+        }
+      });
+      contextMenu.getItems().add(swapItem);
+      cell.contextMenuProperty().bind(
+        javafx.beans.binding.Bindings.when(cell.emptyProperty()).then((ContextMenu)null).otherwise(contextMenu)
+      );
+
+      return cell;
+    });
+  }
+
+  private void promptSwapGrh(int sourceGrhId) {
+    TextInputDialog dialog = new TextInputDialog();
+    dialog.setTitle("Intercambiar Gráfico (Swap)");
+    dialog.setHeaderText("Intercambiando Grh " + sourceGrhId);
+    dialog.setContentText("Ingrese el índice del Grh con el que desea intercambiar:");
+
+    Optional<String> result = dialog.showAndWait();
+    result.ifPresent(targetStr -> {
+      try {
+        int targetId = Integer.parseInt(targetStr.trim());
+        if (targetId > 0 && targetId != sourceGrhId) {
+            swapGrhsFlow(sourceGrhId, targetId);
+        }
+      } catch (NumberFormatException e) {
+        uiService.showError("Error", "Debe ingresar un número válido.");
+      }
+    });
+  }
+
+  private void swapGrhsFlow(int sourceGrhId, int targetGrhId) {
+    GrhData grh1 = dataManager.getGrh(sourceGrhId);
+    GrhData grh2 = dataManager.getGrh(targetGrhId);
+
+    if (grh1 == null && grh2 == null) {
+      uiService.showError("Error", "Al menos uno de los Grh debe existir.");
+      return;
+    }
+    
+    // Si uno no existe, creamos uno vacío temporalmente en memoria para ocupar el hueco
+    if (grh1 == null) {
+        grh1 = new GrhData(); grh1.setGrh(sourceGrhId); dataManager.addGrh(grh1);
+    }
+    if (grh2 == null) {
+        grh2 = new GrhData(); grh2.setGrh(targetGrhId); dataManager.addGrh(grh2);
+    }
+
+    Map<GrhData, int[]> affectedAnims = dataManager.getAffectedAnimationsForSwap(sourceGrhId, targetGrhId);
+    if (!affectedAnims.isEmpty()) {
+      Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+      confirm.setTitle("Animaciones Afectadas");
+      confirm.setHeaderText("Se encontraron " + affectedAnims.size() + " animaciones vinculadas a estos gráficos.");
+      confirm.setContentText("¿Deseas actualizar también los frames internos de esas animaciones para reflejar el cambio y evitar corrupción visual?");
+      ButtonType yes = new ButtonType("Sí, actualizar referencias", ButtonBar.ButtonData.YES);
+      ButtonType no = new ButtonType("No, dejar como están", ButtonBar.ButtonData.NO);
+      ButtonType cancel = new ButtonType("Cancelar", ButtonBar.ButtonData.CANCEL_CLOSE);
+      confirm.getButtonTypes().setAll(yes, no, cancel);
+      
+      Optional<ButtonType> res = confirm.showAndWait();
+      if (!res.isPresent() || res.get() == cancel) {
+          return;
+      }
+      if (res.get() == no) {
+          affectedAnims.clear();
+      }
+    }
+
+    org.nexus.indexador.utils.actions.SwapGrhAction action = new org.nexus.indexador.utils.actions.SwapGrhAction(grh1, grh2, affectedAnims);
+    UndoManager.getInstance().executeAction(action);
+    
+    updateUndoRedoStatus();
+    
+    // Refresh visual
+    int selectedIdx = lstIndices.getSelectionModel().getSelectedIndex();
+    if (selectedIdx >= 0) {
+        updateEditor(grhList.get(selectedIdx));
+        updateViewer(grhList.get(selectedIdx));
+    }
+    lstIndices.refresh();
+    
+    logger.info("Intercambio exitoso entre Grh " + sourceGrhId + " y Grh " + targetGrhId);
+    uiService.showInfo("Éxito", "Swap completado con éxito");
   }
 
   /**

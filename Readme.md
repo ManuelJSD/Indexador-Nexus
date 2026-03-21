@@ -27,7 +27,7 @@ Indexador para Argentum Online totalmente **Multiplataforma** (Windows, Linux, m
 
 ## Capturas de Pantalla
 
-<img width="1366" height="830" alt="Captura de pantalla 2026-01-22 202854" src="https://github.com/user-attachments/assets/8012a20e-8d20-4ff8-b4cc-3e0f8b518cbf" />
+<img width="1364" height="992" alt="image" src="https://github.com/user-attachments/assets/daf08579-16a4-4e07-a898-cbff9e4e2ab3" />
 
 ## Requisitos del Sistema
 

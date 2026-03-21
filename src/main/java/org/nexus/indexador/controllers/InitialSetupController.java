@@ -60,6 +60,12 @@ public class InitialSetupController {
    */
   private String profileName;
 
+  /** Indica si estamos editando un perfil existente. */
+  private boolean isEditMode = false;
+
+  /** Índice del perfil original en ProfileManager si estamos en modo edición. */
+  private int originalIndex = -1;
+
   /**
    * Inicializa el controller.
    */
@@ -202,6 +208,39 @@ public class InitialSetupController {
   }
 
   /**
+   * Configura el modo de edición con los datos del perfil existente.
+   *
+   * @param index Índice del perfil en ProfileManager.
+   * @param entry Datos del perfil.
+   */
+  public void setEditMode(int index, org.nexus.indexador.utils.ProfileEntry entry) {
+    this.isEditMode = true;
+    this.originalIndex = index;
+    setTargetConfigPath(entry.getConfigPath());
+    setProfileName(entry.getNombre());
+
+    try {
+      // Cargar la configuración actual en memoria
+      ConfigManager config = ConfigManager.getInstance();
+      config.resetToDefaults();
+      config.readConfig(entry.getConfigFile());
+
+      // Rellenar la UI (sin normalizar para evitar duplicar separadores si el usuario vuelve a elegir)
+      // Aunque ConfigManager normaliza en los getters, aquí queremos lo que haya en los campos.
+      txtGraphicsPath.setText(config.getGraphicsDir());
+      txtInitPath.setText(config.getInitDir());
+      txtExportPath.setText(config.getExportDir());
+      this.selectedIndexingSystem = config.getIndexingSystem();
+      this.selectedTheme = config.getAppTheme();
+
+      updateCardSelection();
+      updateThemeSelection();
+    } catch (IOException e) {
+      Logger.getInstance().error("Error al cargar configuración para edición", e);
+    }
+  }
+
+  /**
    * Examinar carpeta de gráficos.
    */
   @FXML
@@ -286,12 +325,15 @@ public class InitialSetupController {
       // Guardar la configuración en el archivo de destino
       config.writeConfig(destino);
 
-      // Registrar el perfil en ProfileManager si tenemos nombre y ruta de perfil
-      if (targetConfigPath != null) {
-        ProfileManager pm = ProfileManager.getInstance();
-        String nombre = (nombreFinal != null && !nombreFinal.isEmpty())
-            ? nombreFinal
-            : destino.getName().replace(".ini", "");
+      ProfileManager pm = ProfileManager.getInstance();
+      String nombre = (nombreFinal != null && !nombreFinal.isEmpty())
+          ? nombreFinal
+          : destino.getName().replace(".ini", "");
+
+      // Registrar o actualizar el perfil en ProfileManager
+      if (isEditMode) {
+        pm.actualizarPerfil(originalIndex, nombre, targetConfigPath);
+      } else if (targetConfigPath != null) {
         org.nexus.indexador.utils.ProfileEntry entry =
             pm.agregarPerfil(nombre, targetConfigPath);
         pm.setPerfilActivo(entry);

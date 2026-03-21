@@ -89,6 +89,11 @@ public class Main extends Application {
         showInitialSetup(configPath, nuevoNombre.trim(), () -> showLoadingScreen(stage));
       });
 
+      // Al editar un perfil existente → wizard en modo edición
+      controller.setOnEditarPerfil((indice, perfil) -> {
+        showEditSetup(perfil, indice, () -> showLoadingScreen(stage));
+      });
+
       selectorStage.setTitle("Indexador Nexus - Selección de Perfil");
       setAppIcon(selectorStage);
       selectorStage.setScene(scene);
@@ -154,6 +159,46 @@ public class Main extends Application {
       logger.info("Wizard de configuración inicial mostrado (perfil: " + profileName + ")");
     } catch (IOException e) {
       logger.error("Error al cargar wizard de configuración", e);
+    }
+  }
+
+  /**
+   * Muestra el wizard de configuración en modo edición.
+   *
+   * @param perfil     Perfil a editar.
+   * @param index      Índice del perfil en la lista.
+   * @param onComplete Callback a ejecutar al finalizar.
+   */
+  private void showEditSetup(org.nexus.indexador.utils.ProfileEntry perfil, int index,
+      Runnable onComplete) {
+    try {
+      FXMLLoader fxmlLoader = new FXMLLoader(
+          Main.class.getResource("/org/nexus/indexador/InitialSetupController.fxml"));
+      Parent root = fxmlLoader.load();
+      Scene scene = new Scene(root);
+
+      // Aplicar tema oscuro (el wizard es dark por diseño)
+      String darkTheme = Main.class.getResource("styles/dark-theme.css").toExternalForm();
+      scene.getStylesheets().add(darkTheme);
+
+      // Configurar controller
+      org.nexus.indexador.controllers.InitialSetupController controller =
+          fxmlLoader.getController();
+
+      Stage setupStage = new Stage();
+      controller.setStage(setupStage);
+      controller.setEditMode(index, perfil);
+      controller.setOnComplete(onComplete);
+
+      setupStage.setTitle("Indexador Nexus - Editar Perfil");
+      setAppIcon(setupStage);
+      setupStage.setScene(scene);
+      setupStage.setResizable(false);
+      setupStage.show();
+
+      logger.info("Wizard de edición mostrado (perfil: " + perfil.getNombre() + ")");
+    } catch (IOException e) {
+      logger.error("Error al cargar wizard de edición", e);
     }
   }
 

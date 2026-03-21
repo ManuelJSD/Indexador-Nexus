@@ -55,6 +55,11 @@
 
                 <Separator/>
 
+                <Button fx:id="btnEditar" text="⚙ Editar"
+                        onAction="#onEditar"
+                        styleClass="profile-action-btn"
+                        maxWidth="Infinity"/>
+
                 <Button fx:id="btnRenombrar" text="✏ Renombrar"
                         onAction="#onRenombrar"
                         styleClass="profile-action-btn"

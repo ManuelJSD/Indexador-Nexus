@@ -39,3 +39,6 @@ profiles/
 profile/
 profiles.json
 *.ini
+
+.agents/
+skills-lock.json

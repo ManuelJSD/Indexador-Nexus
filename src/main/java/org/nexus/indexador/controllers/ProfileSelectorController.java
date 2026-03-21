@@ -38,6 +38,9 @@ public class ProfileSelectorController {
   private Button btnRenombrar;
 
   @FXML
+  private Button btnEditar;
+
+  @FXML
   private Button btnEliminar;
 
   @FXML
@@ -50,6 +53,9 @@ public class ProfileSelectorController {
 
   /** Callback invocado cuando el usuario quiere crear un nuevo perfil. */
   private Runnable onNuevoPerfil;
+
+  /** Callback invocado cuando el usuario quiere editar un perfil existente. */
+  private java.util.function.BiConsumer<Integer, ProfileEntry> onEditarPerfil;
 
   private final ProfileManager profileManager = ProfileManager.getInstance();
   private final Logger logger = Logger.getInstance();
@@ -110,6 +116,15 @@ public class ProfileSelectorController {
     this.onNuevoPerfil = callback;
   }
 
+  /**
+   * Callback invocado cuando el usuario hace clic en "Editar".
+   *
+   * @param callback BiConsumer que recibe el índice y el {@link ProfileEntry}.
+   */
+  public void setOnEditarPerfil(java.util.function.BiConsumer<Integer, ProfileEntry> callback) {
+    this.onEditarPerfil = callback;
+  }
+
   // -------------------------------------------------------------------------
   // Acciones de botones
   // -------------------------------------------------------------------------
@@ -154,6 +169,23 @@ public class ProfileSelectorController {
     if (onNuevoPerfil != null) {
       stage.close();
       Platform.runLater(onNuevoPerfil);
+    }
+  }
+
+  /**
+   * Abre el wizard de configuración en modo edición para el perfil seleccionado.
+   */
+  @FXML
+  private void onEditar() {
+    int indice = listViewPerfiles.getSelectionModel().getSelectedIndex();
+    if (indice < 0) {
+      return;
+    }
+    ProfileEntry perfil = perfilesObservables.get(indice);
+
+    if (onEditarPerfil != null) {
+      stage.close();
+      Platform.runLater(() -> onEditarPerfil.accept(indice, perfil));
     }
   }
 
@@ -263,6 +295,7 @@ public class ProfileSelectorController {
     int total = perfilesObservables.size();
 
     btnAbrir.setDisable(indice < 0);
+    btnEditar.setDisable(indice < 0);
     btnRenombrar.setDisable(indice < 0);
     btnEliminar.setDisable(indice < 0);
     btnMoverArriba.setDisable(indice <= 0);

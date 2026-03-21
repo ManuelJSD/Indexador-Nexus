@@ -90,7 +90,7 @@ public class ProfileManager {
   /**
    * Renombra el perfil en la posición indicada y persiste.
    *
-   * @param indice     Índice en la lista.
+   * @param indice      Índice en la lista.
    * @param nuevoNombre Nuevo nombre.
    */
   public void renombrarPerfil(int indice, String nuevoNombre) {
@@ -98,6 +98,23 @@ public class ProfileManager {
       return;
     }
     perfiles.get(indice).setNombre(nuevoNombre);
+    guardar();
+  }
+
+  /**
+   * Actualiza los datos de un perfil existente y persiste.
+   *
+   * @param indice      Índice en la lista.
+   * @param nuevoNombre Nuevo nombre.
+   * @param nuevoPath   Nueva ruta al .ini.
+   */
+  public void actualizarPerfil(int indice, String nuevoNombre, String nuevoPath) {
+    if (indice < 0 || indice >= perfiles.size()) {
+      return;
+    }
+    ProfileEntry p = perfiles.get(indice);
+    p.setNombre(nuevoNombre);
+    p.setConfigPath(nuevoPath);
     guardar();
   }
 

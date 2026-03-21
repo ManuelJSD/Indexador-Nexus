@@ -9,6 +9,8 @@ module org.nexus.indexador {
 
 	exports org.nexus.indexador;
 	exports org.nexus.indexador.controllers;
+	exports org.nexus.indexador.utils;
 
 	opens org.nexus.indexador.controllers to javafx.fxml;
+	opens org.nexus.indexador.utils to javafx.fxml;
 }

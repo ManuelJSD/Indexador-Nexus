@@ -32,3 +32,7 @@ logs/
 
 # Release
 release/
+
+# Perfiles Multi-entorno (System Profiles)
+profiles/
+profiles.json

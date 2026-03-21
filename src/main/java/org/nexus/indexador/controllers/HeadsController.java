@@ -79,6 +79,11 @@ public class HeadsController {
   @FXML
   public TextField txtHeadLeft;
   @FXML
+  public TitledPane tpnMolde;
+  @FXML
+  public TitledPane tpnTradicional;
+
+  @FXML
   public Label lblNCabezas;
   @FXML
   public TextField txtSearch; // New search field
@@ -114,6 +119,20 @@ public class HeadsController {
       // headDataManager = new HeadData(); // No se usa, comentado
       loadHeadData();
       setupHeadListListener();
+      
+      if (headList != null && !headList.isEmpty()) {
+          HeadData firstData = headList.get(0);
+          if (firstData.getSystemType() == IndexingSystem.MOLD) {
+              setVisibleMold(true);
+              setVisibleTraditional(false);
+          } else {
+              setVisibleMold(false);
+              setVisibleTraditional(true);
+          }
+      } else {
+          setVisibleMold(false);
+          setVisibleTraditional(false);
+      }
     } catch (Exception e) {
       System.err.println("Error al inicializar HeadsController:");
       e.printStackTrace();
@@ -232,6 +251,11 @@ public class HeadsController {
     lblStd.setVisible(visible);
     lblStartX.setVisible(visible);
     lblStartY.setVisible(visible);
+    
+    if (tpnMolde != null) {
+        tpnMolde.setVisible(visible);
+        tpnMolde.setManaged(visible);
+    }
   }
 
   private void setVisibleTraditional(boolean visible) {
@@ -243,6 +267,11 @@ public class HeadsController {
     lblHeadDown.setVisible(visible);
     lblHeadRight.setVisible(visible);
     lblHeadLeft.setVisible(visible);
+    
+    if (tpnTradicional != null) {
+        tpnTradicional.setVisible(visible);
+        tpnTradicional.setManaged(visible);
+    }
   }
 
   /**

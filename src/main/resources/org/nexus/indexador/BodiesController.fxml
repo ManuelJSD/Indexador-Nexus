@@ -28,7 +28,7 @@
       <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
    </padding>
    <left>
-      <VBox spacing="10.0" BorderPane.alignment="CENTER">
+      <VBox spacing="10.0" BorderPane.alignment="CENTER" styleClass="panel-left">
          <children>
             <Label styleClass="label-header" text="Listado de Cuerpos" />
             <TextField fx:id="txtSearch" promptText="Buscar ID..." />
@@ -46,10 +46,10 @@
       </VBox>
    </left>
    <center>
-      <VBox spacing="15.0" BorderPane.alignment="CENTER">
+      <VBox spacing="15.0" BorderPane.alignment="CENTER" styleClass="panel-center">
          <children>
             <!-- Large Preview Area -->
-            <VBox styleClass="preview-box-param" VBox.vgrow="ALWAYS">
+            <VBox styleClass="canvas-container" VBox.vgrow="ALWAYS">
                <children>
                   <VBox style="-fx-background-color: #2b2b2b; -fx-padding: 5;" spacing="5.0">
                      <children>
@@ -142,7 +142,7 @@
                   <Label text="Head Offset Y:" />
                   <TextField fx:id="txtHeadOffsetY" prefWidth="80.0" />
                   <Pane HBox.hgrow="ALWAYS" />
-                  <Button fx:id="btnSave" defaultButton="true" mnemonicParsing="false" onAction="#btnSave_OnAction" prefHeight="35.0" prefWidth="150.0" style="-fx-font-size: 14px;" text="Guardar Cambios" />
+                  <Button fx:id="btnSave" defaultButton="true" mnemonicParsing="false" onAction="#btnSave_OnAction" prefHeight="35.0" prefWidth="150.0" styleClass="button-primary-large" text="Guardar Cambios" />
                </children>
             </HBox>
          </children>

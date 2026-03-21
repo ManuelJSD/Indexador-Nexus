@@ -79,6 +79,11 @@ public class HelmetsController {
   @FXML
   public TextField txtHelmLeft;
   @FXML
+  public TitledPane tpnMolde;
+  @FXML
+  public TitledPane tpnTradicional;
+
+  @FXML
   public Label lblNCascos;
   @FXML
   public TextField txtSearch;
@@ -113,6 +118,20 @@ public class HelmetsController {
 
       loadHelmetData();
       setupHelmetListListener();
+      
+      if (helmetList != null && !helmetList.isEmpty()) {
+          HelmetData firstData = helmetList.get(0);
+          if (firstData.getSystemType() == IndexingSystem.MOLD) {
+              setVisibleMold(true);
+              setVisibleTraditional(false);
+          } else {
+              setVisibleMold(false);
+              setVisibleTraditional(true);
+          }
+      } else {
+          setVisibleMold(false);
+          setVisibleTraditional(false);
+      }
     } catch (Exception e) {
       System.err.println("Error al inicializar HelmetsController:");
       e.printStackTrace();
@@ -224,6 +243,11 @@ public class HelmetsController {
     lblStd.setVisible(visible);
     lblStartX.setVisible(visible);
     lblStartY.setVisible(visible);
+    
+    if (tpnMolde != null) {
+        tpnMolde.setVisible(visible);
+        tpnMolde.setManaged(visible);
+    }
   }
 
   private void setVisibleTraditional(boolean visible) {
@@ -235,6 +259,11 @@ public class HelmetsController {
     lblHelmDown.setVisible(visible);
     lblHelmRight.setVisible(visible);
     lblHelmLeft.setVisible(visible);
+    
+    if (tpnTradicional != null) {
+        tpnTradicional.setVisible(visible);
+        tpnTradicional.setManaged(visible);
+    }
   }
 
   /**

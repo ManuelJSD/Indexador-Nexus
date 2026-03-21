@@ -171,6 +171,37 @@ public class HelmetsController {
     }
 
     lstHelmets.setItems(filteredData);
+    
+    // Inyectar Custom Thumbnail Factory
+    lstHelmets.setCellFactory(listView -> new org.nexus.indexador.utils.ui.ThumbnailListCell() {
+        @Override
+        protected javafx.scene.image.Image loadThumbnailForIndex(int zeroBasedIndex) {
+            if (zeroBasedIndex < 0 || zeroBasedIndex >= helmetList.size()) return null;
+            HelmetData helmet = helmetList.get(zeroBasedIndex);
+            
+            if (helmet.getSystemType() == IndexingSystem.MOLD) {
+                String imagePath = configManager.getGraphicsDir() + helmet.getTexture() + ".png";
+                if (!new java.io.File(imagePath).exists()) {
+                    imagePath = configManager.getGraphicsDir() + helmet.getTexture() + ".bmp";
+                }
+                if (!new java.io.File(imagePath).exists()) return null;
+                
+                int textureX2 = 27;
+                int textureY2 = 32;
+                int textureX1 = helmet.getStartX();
+                int textureY1 = helmet.getStartY();
+                
+                return imageCache.getCroppedImage(imagePath, textureX1, textureY1, textureX2, textureY2);
+            } else {
+                int[] grhs = helmet.getGrhIndex();
+                if (grhs != null && grhs.length > 2 && grhs[2] > 0) {
+                    org.nexus.indexador.gamedata.models.GrhData grh = dataManager.getGrh(grhs[2]);
+                    return loadImageFromGrh(grh);
+                }
+            }
+            return null;
+        }
+    });
   }
 
   /**
@@ -474,8 +505,12 @@ public class HelmetsController {
         drawHelmets(selectedHelmet, 1);
         drawHelmets(selectedHelmet, 2);
         drawHelmets(selectedHelmet, 3);
+        
+        // Refresco de miniaturas
+        lstHelmets.refresh();
 
         System.out.println(("¡Cambios aplicados!"));
+        org.nexus.indexador.utils.ui.Toast.show("¡Casco guardado correctamente!", btnSave.getScene().getWindow());
       } catch (NumberFormatException e) {
         System.out.println("Error de formato numérico: " + e.getMessage());
       }

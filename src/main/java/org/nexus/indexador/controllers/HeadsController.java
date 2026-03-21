@@ -174,6 +174,37 @@ public class HeadsController {
     lstHeads.setItems(filteredData);
 
     lstHeads.setItems(filteredData);
+    
+    // Inyectar Custom Thumbnail Factory
+    lstHeads.setCellFactory(listView -> new org.nexus.indexador.utils.ui.ThumbnailListCell() {
+        @Override
+        protected javafx.scene.image.Image loadThumbnailForIndex(int zeroBasedIndex) {
+            if (zeroBasedIndex < 0 || zeroBasedIndex >= headList.size()) return null;
+            HeadData head = headList.get(zeroBasedIndex);
+            
+            if (head.getSystemType() == IndexingSystem.MOLD) {
+                String imagePath = configManager.getGraphicsDir() + head.getTexture() + ".png";
+                if (!new java.io.File(imagePath).exists()) {
+                    imagePath = configManager.getGraphicsDir() + head.getTexture() + ".bmp";
+                }
+                if (!new java.io.File(imagePath).exists()) return null;
+                
+                int textureX2 = 27;
+                int textureY2 = 32;
+                int textureX1 = head.getStartX();
+                int textureY1 = head.getStartY();
+                
+                return imageCache.getCroppedImage(imagePath, textureX1, textureY1, textureX2, textureY2);
+            } else {
+                int[] grhs = head.getGrhIndex();
+                if (grhs != null && grhs.length > 2 && grhs[2] > 0) {
+                    org.nexus.indexador.gamedata.models.GrhData grh = dataManager.getGrh(grhs[2]);
+                    return loadImageFromGrh(grh);
+                }
+            }
+            return null;
+        }
+    });
   }
 
   /**
@@ -485,8 +516,11 @@ public class HeadsController {
         drawHeads(selectedHead, 1);
         drawHeads(selectedHead, 2);
         drawHeads(selectedHead, 3);
+        // Force refresh del listview para que cambie el thumb si hubo redibujo visual
+        lstHeads.refresh();
 
         System.out.println(("¡Cambios aplicados!"));
+        org.nexus.indexador.utils.ui.Toast.show("¡Cambios guardados con éxito!", btnSave.getScene().getWindow());
       } catch (NumberFormatException e) {
         System.out.println("Error de formato numérico: " + e.getMessage());
       }

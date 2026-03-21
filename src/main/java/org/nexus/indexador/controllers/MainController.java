@@ -460,15 +460,37 @@ public class MainController {
 
     // Configurar Drag and Drop y ContextMenu para Swap
     lstIndices.setCellFactory(lv -> {
-      ListCell<String> cell = new ListCell<>() {
+      org.nexus.indexador.utils.ui.ThumbnailListCell cell = new org.nexus.indexador.utils.ui.ThumbnailListCell() {
         @Override
-        protected void updateItem(String item, boolean empty) {
-          super.updateItem(item, empty);
-          if (empty || item == null) {
-            setText(null);
-          } else {
-            setText(item);
-          }
+        public void updateItem(String item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty || item == null) {
+                setText(null);
+            } else {
+                // Removemos setText() explícito porque base usa setGraphic y el item viene decorado ya
+            }
+        }
+        
+        @Override
+        protected Image loadThumbnailForItem(String rawItem) {
+             try {
+                 int grhId = Integer.parseInt(rawItem.replaceAll("[^0-9]", ""));
+                 GrhData currentGrh = grhDataMap.get(grhId);
+                 if (currentGrh != null) {
+                     // Si es animado sacamos el primer frame para previsualizar, si no, es el propio Grh
+                     int targetDbId = (currentGrh.getNumFrames() > 1) ? currentGrh.getFrame(1) : currentGrh.getGrh();
+                     GrhData finalGrh = grhDataMap.get(targetDbId);
+                     
+                     if (finalGrh != null) {
+                         String path = configManager.getGraphicsDir() + finalGrh.getFileNum() + ".png";
+                         if (!new File(path).exists()) {
+                             path = configManager.getGraphicsDir() + finalGrh.getFileNum() + ".bmp";
+                         }
+                         return imageCache.getCroppedImage(path, finalGrh.getsX(), finalGrh.getsY(), finalGrh.getTileWidth(), finalGrh.getTileHeight());
+                     }
+                 }
+             } catch(Exception e){}
+             return null;
         }
       };
 

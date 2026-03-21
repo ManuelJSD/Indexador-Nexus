@@ -25,6 +25,7 @@ pom.xml
 Thumbs.db
 
 # App Specific
+config.ini
 src/main/resources/config.ini
 src/main/resources/exportados/*.ini
 logs/
@@ -35,4 +36,6 @@ release/
 
 # Perfiles Multi-entorno (System Profiles)
 profiles/
+profile/
 profiles.json
+*.ini

@@ -143,6 +143,33 @@ public class WeaponsController {
       }
 
       lstWeapons.setItems(filteredData);
+      
+      lstWeapons.setCellFactory(listView -> new org.nexus.indexador.utils.ui.ThumbnailListCell() {
+          @Override
+          protected javafx.scene.image.Image loadThumbnailForIndex(int zeroBasedIndex) {
+              if (zeroBasedIndex < 0 || zeroBasedIndex >= weaponList.size()) return null;
+              WeaponData weapon = weaponList.get(zeroBasedIndex);
+              
+              int[] grhs = weapon.getGrhIndex();
+              if (grhs != null && grhs.length > 2) {
+                  int grhId = grhs[2]; // Sur
+                  if (grhId > 0 && grhDataMap.containsKey(grhId)) {
+                      GrhData grhData = grhDataMap.get(grhId);
+                      int frameId = (grhData.getNumFrames() > 1) ? grhData.getFrame(1) : grhData.getGrh();
+                      GrhData finalGrh = grhDataMap.get(frameId);
+                      
+                      if (finalGrh != null) {
+                          String imagePath = configManager.getGraphicsDir() + finalGrh.getFileNum() + ".png";
+                          if (!new File(imagePath).exists()) {
+                              imagePath = configManager.getGraphicsDir() + finalGrh.getFileNum() + ".bmp";
+                          }
+                          return imageCache.getCroppedImage(imagePath, finalGrh.getsX(), finalGrh.getsY(), finalGrh.getTileWidth(), finalGrh.getTileHeight());
+                      }
+                  }
+              }
+              return null;
+          }
+      });
 
       logger.info("Datos de armas cargados: " + weaponList.size() + " armas");
     } catch (IOException e) {
@@ -292,6 +319,9 @@ public class WeaponsController {
         // Guardado real en disco
         dataManager.getIndexLoader().saveWeapons(weaponList);
         logger.info("Armas guardadas en disco correctamente.");
+        
+        lstWeapons.refresh();
+        org.nexus.indexador.utils.ui.Toast.show("¡Arma modificada con éxito!", btnSave.getScene().getWindow());
       } catch (Exception e) {
         logger.error("Error al guardar armas", e);
       }

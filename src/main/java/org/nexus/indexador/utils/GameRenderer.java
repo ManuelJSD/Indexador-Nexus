@@ -127,16 +127,6 @@ public class GameRenderer {
     public void drawFullImage(Image image, GrhData grh) {
         try {
             imgGrafico.setImage(image);
-            double MAX_WIDTH = 508.0;
-            double MAX_HEIGHT = 374.0;
-
-            if (image.getWidth() <= MAX_WIDTH && image.getHeight() <= MAX_HEIGHT) {
-                imgGrafico.setFitWidth(image.getWidth());
-                imgGrafico.setFitHeight(image.getHeight());
-            } else {
-                imgGrafico.setFitWidth(MAX_WIDTH);
-                imgGrafico.setFitHeight(MAX_HEIGHT);
-            }
             drawRectangle(grh);
         } catch (Exception e) {
             logger.error("Error al dibujar la imagen completa", e);
@@ -148,46 +138,28 @@ public class GameRenderer {
             if (imgGrafico.getImage() == null)
                 return;
 
-            double imgViewWidth = imgGrafico.getBoundsInLocal().getWidth();
-            double imgViewHeight = imgGrafico.getBoundsInLocal().getHeight();
-
-            if (imgViewWidth <= 0)
-                imgViewWidth = imgGrafico.getFitWidth();
-            if (imgViewHeight <= 0)
-                imgViewHeight = imgGrafico.getFitHeight();
-
+            double MAX_WIDTH = 508.0;
+            double MAX_HEIGHT = 374.0;
+            
             double originalWidth = imgGrafico.getImage().getWidth();
             double originalHeight = imgGrafico.getImage().getHeight();
 
-            double scaleX = imgViewWidth / originalWidth;
-            double scaleY = imgViewHeight / originalHeight;
-
-            if (imgGrafico.isPreserveRatio()) {
-                double scale = Math.min(scaleX, scaleY);
-                scaleX = scale;
-                scaleY = scale;
+            // Calcular escala determinista basado en el tamaño máximo
+            double scale = 1.0;
+            if (originalWidth > MAX_WIDTH || originalHeight > MAX_HEIGHT) {
+                scale = Math.min(MAX_WIDTH / originalWidth, MAX_HEIGHT / originalHeight);
             }
 
-            double layoutX = 5.0;
-            double layoutY = 6.0;
+            // Forzar las medidas del ImageView para que encaje 100% exacto 
+            // sin padding interior provocado por preserveRatio (aspectos idénticos)
+            imgGrafico.setFitWidth(originalWidth * scale);
+            imgGrafico.setFitHeight(originalHeight * scale);
 
-            double rectX = selectedGrh.getsX() * scaleX + layoutX;
-            double rectY = selectedGrh.getsY() * scaleY + layoutY;
-            double rectWidth = selectedGrh.getTileWidth() * scaleX;
-            double rectHeight = selectedGrh.getTileHeight() * scaleY;
-
-            double xOffset = (imgViewWidth - (originalWidth * scaleX)) / 2;
-            double yOffset = (imgViewHeight - (originalHeight * scaleY)) / 2;
-
-            if (xOffset > 0)
-                rectX += xOffset;
-            if (yOffset > 0)
-                rectY += yOffset;
-
-            rectanguloIndice.setX(rectX);
-            rectanguloIndice.setY(rectY);
-            rectanguloIndice.setWidth(rectWidth);
-            rectanguloIndice.setHeight(rectHeight);
+            // Trazar el rectángulo con matemáticas deterministas Puras Ancladas al 0,0 del ImageView
+            rectanguloIndice.setX(selectedGrh.getsX() * scale);
+            rectanguloIndice.setY(selectedGrh.getsY() * scale);
+            rectanguloIndice.setWidth(selectedGrh.getTileWidth() * scale);
+            rectanguloIndice.setHeight(selectedGrh.getTileHeight() * scale);
             rectanguloIndice.setVisible(true);
         } catch (Exception e) {
             logger.error("Error al dibujar el rectángulo", e);

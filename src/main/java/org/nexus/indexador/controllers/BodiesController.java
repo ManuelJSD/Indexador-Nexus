@@ -165,6 +165,33 @@ public class BodiesController {
       });
     }
     lstBodys.setItems(filteredData);
+    
+    lstBodys.setCellFactory(listView -> new org.nexus.indexador.utils.ui.ThumbnailListCell() {
+        @Override
+        protected javafx.scene.image.Image loadThumbnailForIndex(int zeroBasedIndex) {
+            if (zeroBasedIndex < 0 || zeroBasedIndex >= bodyList.size()) return null;
+            BodyData body = bodyList.get(zeroBasedIndex);
+            
+            int[] grhs = body.getBody();
+            if (grhs != null && grhs.length > 2) {
+                int grhId = grhs[2]; // Sur
+                if (grhId > 0 && grhDataMap.containsKey(grhId)) {
+                    GrhData grhData = grhDataMap.get(grhId);
+                    int frameId = (grhData.getNumFrames() > 1) ? grhData.getFrame(1) : grhData.getGrh();
+                    GrhData finalGrh = grhDataMap.get(frameId);
+                    
+                    if (finalGrh != null) {
+                        String imagePath = configManager.getGraphicsDir() + finalGrh.getFileNum() + ".png";
+                        if (!new File(imagePath).exists()) {
+                            imagePath = configManager.getGraphicsDir() + finalGrh.getFileNum() + ".bmp";
+                        }
+                        return imageCache.getCroppedImage(imagePath, finalGrh.getsX(), finalGrh.getsY(), finalGrh.getTileWidth(), finalGrh.getTileHeight());
+                    }
+                }
+            }
+            return null;
+        }
+    });
   }
 
   private void setupListeners() {
@@ -532,6 +559,9 @@ public class BodiesController {
 
       dataManager.getIndexLoader().saveBodies(bodyList);
       logger.info("Guardado exitoso.");
+      
+      lstBodys.refresh();
+      org.nexus.indexador.utils.ui.Toast.show("¡Cuerpo indexado correctamente!", btnSave.getScene().getWindow());
     } catch (Exception e) {
       logger.error("Error al guardar", e);
     }

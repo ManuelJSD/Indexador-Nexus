@@ -1295,7 +1295,7 @@ public class MainController {
   private void mnuAbout_OnAction() {
     Alert about = new Alert(Alert.AlertType.INFORMATION);
     about.setTitle("Acerca de Indexador Nexus");
-    about.setHeaderText("Indexador Nexus v1.0.0");
+    about.setHeaderText("Indexador Nexus v" + Main.VERSION);
     about.setContentText("Editor de índices para Argentum Online\n\n" + "Características:\n"
         + "• Visualización y edición de GRHs\n" + "• Soporte para animaciones\n"
         + "• Exportación a INI, JSON y CSV\n" + "• Validación de integridad\n"

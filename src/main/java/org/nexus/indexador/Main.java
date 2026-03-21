@@ -16,7 +16,7 @@ import java.io.InputStream;
 
 public class Main extends Application {
 
-  public static final String VERSION = "0.9.1";
+  public static final String VERSION = "0.9.2";
   private static final Logger logger = Logger.getInstance();
 
   @Override
@@ -43,12 +43,26 @@ public class Main extends Application {
     }
 
     // Chequear actualizaciones en segundo plano
-    new Thread(() -> {
-      String latestVersion = org.nexus.indexador.utils.UpdateChecker.checkForUpdates(VERSION);
-      if (latestVersion != null) {
-        javafx.application.Platform.runLater(() -> showUpdateAlert(latestVersion));
-      }
-    }).start();
+    org.nexus.indexador.utils.GithubReleaseChecker.checkForUpdates(release -> {
+      javafx.application.Platform.runLater(new Runnable() {
+        @Override
+        public void run() {
+          Stage mainStage = org.nexus.indexador.utils.WindowManager.getInstance().getWindow("MainController");
+          if (mainStage != null && mainStage.isShowing()) {
+            org.nexus.indexador.utils.ToastNotification.show(mainStage, "Actualización " + release.tagName + " disponible en GitHub");
+            if (!mainStage.getTitle().contains("Actualización")) {
+              mainStage.setTitle(mainStage.getTitle() + " (Hay actualización " + release.tagName + ")");
+            }
+            logger.info("Notificación visual de actualización enviada de forma no intrusiva.");
+          } else {
+            // Reintentar en 2 segundos si la UI de MainController aún no está lista
+            javafx.animation.PauseTransition delay = new javafx.animation.PauseTransition(javafx.util.Duration.seconds(2));
+            delay.setOnFinished(e -> javafx.application.Platform.runLater(this));
+            delay.play();
+          }
+        }
+      });
+    });
   }
 
   /**
@@ -263,40 +277,4 @@ public class Main extends Application {
     }
   }
 
-  /**
-   * Muestra una alerta informando sobre una nueva actualización.
-   *
-   * @param newVersion La versión nueva disponible.
-   */
-  private void showUpdateAlert(String newVersion) {
-    javafx.scene.control.Alert alert =
-        new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
-    alert.setTitle("Actualización Disponible");
-    alert.setHeaderText("¡Nueva versión disponible!");
-    alert.setContentText("La versión " + newVersion + " está disponible para descargar.\n" +
-        "Actualmente estás usando la versión " + VERSION + ".");
-
-    javafx.scene.control.ButtonType btnGoToGitHub =
-        new javafx.scene.control.ButtonType("Ir a GitHub");
-    javafx.scene.control.ButtonType btnClose = new javafx.scene.control.ButtonType("Cerrar",
-        javafx.scene.control.ButtonBar.ButtonData.CANCEL_CLOSE);
-
-    alert.getButtonTypes().setAll(btnGoToGitHub, btnClose);
-
-    // Obtener el Stage de la alerta para asignar el icono
-    Stage alertStage = (Stage) alert.getDialogPane().getScene().getWindow();
-    setAppIcon(alertStage);
-
-    alert.showAndWait().ifPresent(type -> {
-      if (type == btnGoToGitHub) {
-        try {
-          java.awt.Desktop.getDesktop()
-              .browse(new java.net.URI(
-                  "https://github.com/ManuelJSD/Indexador-Nexus/releases/latest"));
-        } catch (Exception e) {
-          logger.error("Error al abrir navegador", e);
-        }
-      }
-    });
-  }
 }

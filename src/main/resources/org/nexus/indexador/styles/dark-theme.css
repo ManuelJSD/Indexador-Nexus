@@ -1,10 +1,10 @@
-/* Base Colors */
+/* Base Colors: VS Code IDE style inspiration */
 .root {
-    -fx-base: #3c3c3c;
-    -fx-background: #3c3c3c;
-    -fx-control-inner-background: #3c3c3c;
-    -fx-control-inner-background-alt: #383838;
-    -fx-text-fill: #e0e0e0;
+    -fx-base: #1e1e1e;
+    -fx-background: #1e1e1e;
+    -fx-control-inner-background: #1e1e1e;
+    -fx-control-inner-background-alt: #252526;
+    -fx-text-fill: #cccccc;
 }
 
 /* ScrollBars */
@@ -28,8 +28,23 @@
 
 .scroll-bar:horizontal .thumb,
 .scroll-bar:vertical .thumb {
-    -fx-background-color: #606060;
-    -fx-background-radius: 5em;
+    -fx-background-color: #424242;
+    -fx-background-radius: 0;
+}
+.scroll-bar:horizontal .thumb:hover,
+.scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #4f4f4f;
+}
+
+/* ScrollPane */
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+    -fx-border-color: transparent;
+}
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
 }
 
 /* Labels */
@@ -40,41 +55,49 @@
 /* Text Inputs */
 .text-field,
 .text-area {
-    -fx-background-color: #2b2b2b;
-    -fx-text-fill: #e0e0e0;
+    -fx-background-color: #3c3c3c;
+    -fx-text-fill: #cccccc;
     -fx-prompt-text-fill: #808080;
-    -fx-border-color: #555555;
-    -fx-border-radius: 3;
+    -fx-background-radius: 2;
+    -fx-border-color: transparent transparent #555555 transparent;
+    -fx-border-width: 1px;
+    -fx-padding: 4 8;
 }
 
 .text-field:focused,
 .text-area:focused {
-    -fx-border-color: #4a90d9;
+    -fx-border-color: #007acc;
+    -fx-background-color: #2b2b2b;
 }
 
 /* Buttons */
 .button {
-    -fx-background-color: #4a4a4a;
+    -fx-background-color: #333333;
     -fx-text-fill: #e0e0e0;
-    -fx-background-radius: 4;
+    -fx-background-radius: 2;
+    -fx-padding: 5 15;
     -fx-cursor: hand;
+    -fx-border-color: transparent;
+    -fx-border-width: 1;
 }
 
 .button:hover {
-    -fx-background-color: #5a5a5a;
+    -fx-background-color: #444444;
+    -fx-border-color: #007acc;
 }
 
 .button:pressed {
-    -fx-background-color: #3a3a3a;
+    -fx-background-color: #007acc;
+    -fx-text-fill: #ffffff;
 }
 
 .button-primary {
-    -fx-background-color: #4a90d9;
+    -fx-background-color: #007acc;
     -fx-text-fill: white;
 }
 
 .button-primary:hover {
-    -fx-background-color: #5aa0e9;
+    -fx-background-color: #0098ff;
 }
 
 /* MenuBar & Menus */
@@ -117,18 +140,52 @@
     -fx-border-color: transparent transparent #555555 transparent;
 }
 
+/* SplitPane */
+.split-pane {
+    -fx-background-color: #1e1e1e;
+    -fx-padding: 0;
+}
+.split-pane *.split-pane-divider {
+    -fx-padding: 0 1 0 1; 
+    -fx-background-color: #333333;
+}
+
+/* TitledPane */
+.titled-pane {
+    -fx-text-fill: #cccccc;
+}
+.titled-pane > .title {
+    -fx-background-color: #2d2d30;
+    -fx-border-color: #1e1e1e;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 5 10;
+}
+.titled-pane > .title > .text {
+    -fx-fill: #cccccc;
+    -fx-font-weight: bold;
+}
+.titled-pane > .content {
+    -fx-background-color: #1e1e1e;
+    -fx-border-color: transparent;
+    -fx-padding: 10;
+}
+
 .list-cell:filled:selected:focused,
 .list-cell:filled:selected {
-    -fx-background-color: #4a90d9;
-    -fx-text-fill: white;
+    -fx-background-color: #094771;
+    -fx-text-fill: #ffffff;
+}
+
+.list-cell:filled:hover {
+    -fx-background-color: #2a2d2e;
 }
 
 .list-cell:even {
-    -fx-background-color: #2b2b2b;
+    -fx-background-color: #252526;
 }
 
 .list-cell:odd {
-    -fx-background-color: #282828;
+    -fx-background-color: #1e1e1e;
 }
 
 /* TabPane */
@@ -158,11 +215,17 @@
 /* Custom Classes extracted from FXML Hardcoded Styles */
 
 .root-pane {
-    -fx-background-color: #424242;
+    -fx-background-color: #1e1e1e;
+}
+
+.panel-left, .panel-right, .panel-center {
+    -fx-background-color: #252526;
 }
 
 .main-menu-bar {
-    -fx-background-color: #999999;
+    -fx-background-color: #2d2d30;
+    -fx-border-width: 0 0 1 0;
+    -fx-border-color: #1e1e1e;
 }
 
 .info-label {

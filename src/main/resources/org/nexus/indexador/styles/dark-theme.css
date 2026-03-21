@@ -1,10 +1,32 @@
-/* Base Colors: VS Code IDE style inspiration */
 .root {
     -fx-base: #1e1e1e;
     -fx-background: #1e1e1e;
     -fx-control-inner-background: #1e1e1e;
     -fx-control-inner-background-alt: #252526;
     -fx-text-fill: #cccccc;
+    
+    /* Nexus Semantic Colors */
+    -nexus-primary: #4a90d9;
+    -nexus-primary-hover: #5ba3ec;
+    -nexus-danger: #d32f2f;
+    -nexus-danger-hover: #e53935;
+    -nexus-success: #50c878;
+    -nexus-card-bg: #2d2d30;
+    -nexus-card-border: #404040;
+    -nexus-card-hover: #3e3e42;
+}
+
+/* UI Components */
+.card {
+    -fx-background-color: -nexus-card-bg;
+    -fx-border-color: -nexus-card-border;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 16;
+}
+
+.card:hover {
+    -fx-background-color: -nexus-card-hover;
 }
 
 /* ScrollBars */
@@ -92,12 +114,23 @@
 }
 
 .button-primary {
-    -fx-background-color: #007acc;
+    -fx-background-color: -nexus-primary;
     -fx-text-fill: white;
 }
 
 .button-primary:hover {
-    -fx-background-color: #0098ff;
+    -fx-background-color: -nexus-primary-hover;
+}
+
+.button-danger {
+    -fx-background-color: transparent;
+    -fx-border-color: -nexus-danger;
+    -fx-text-fill: #e0e0e0;
+}
+
+.button-danger:hover {
+    -fx-background-color: -nexus-danger;
+    -fx-text-fill: white;
 }
 
 /* MenuBar & Menus */
@@ -344,6 +377,22 @@
 
 
 /* ICONS */
+.ikonli-font-icon {
+    -fx-icon-color: #e0e0e0;
+}
+
+.button:hover .ikonli-font-icon {
+    -fx-icon-color: white;
+}
+
+.button-danger .ikonli-font-icon {
+    -fx-icon-color: #ff6b6b;
+}
+
+.button-danger:hover .ikonli-font-icon {
+    -fx-icon-color: white;
+}
+
 .icon {
     -fx-pref-width: 20px;
     -fx-pref-height: 20px;

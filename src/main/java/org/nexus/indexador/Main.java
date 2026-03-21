@@ -17,7 +17,7 @@ import java.io.InputStream;
 public class Main extends Application {
 
   public static final String VERSION = "0.9.1";
-  private final Logger logger = Logger.getInstance();
+  private static final Logger logger = Logger.getInstance();
 
   @Override
   public void start(Stage stage) {
@@ -112,7 +112,7 @@ public class Main extends Application {
    *
    * @return El nombre introducido, o {@code null} si canceló o dejó vacío.
    */
-  private String pedirNombrePerfil() {
+  public static String pedirNombrePerfil() {
     javafx.scene.control.TextInputDialog dialog =
         new javafx.scene.control.TextInputDialog("Nuevo Perfil");
     dialog.setTitle("Nuevo Perfil");
@@ -129,7 +129,7 @@ public class Main extends Application {
    * @param profileName      Nombre propuesto para el perfil.
    * @param onComplete       Callback a ejecutar al finalizar.
    */
-  private void showInitialSetup(String targetConfigPath, String profileName, Runnable onComplete) {
+  public static void showInitialSetup(String targetConfigPath, String profileName, Runnable onComplete) {
     try {
       FXMLLoader fxmlLoader = new FXMLLoader(
           Main.class.getResource("/org/nexus/indexador/InitialSetupController.fxml"));
@@ -169,7 +169,7 @@ public class Main extends Application {
    * @param index      Índice del perfil en la lista.
    * @param onComplete Callback a ejecutar al finalizar.
    */
-  private void showEditSetup(org.nexus.indexador.utils.ProfileEntry perfil, int index,
+  public static void showEditSetup(org.nexus.indexador.utils.ProfileEntry perfil, int index,
       Runnable onComplete) {
     try {
       FXMLLoader fxmlLoader = new FXMLLoader(

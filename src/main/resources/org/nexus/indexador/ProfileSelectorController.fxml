@@ -10,6 +10,7 @@
 <?import javafx.scene.layout.Priority?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 
 <BorderPane xmlns="http://javafx.com/javafx/17"
             xmlns:fx="http://javafx.com/fxml/1"
@@ -43,39 +44,63 @@
             <VBox spacing="8" minWidth="140" alignment="TOP_CENTER">
                 <padding><Insets top="26"/></padding>
 
-                <Button fx:id="btnMoverArriba" text="▲ Subir"
+                <Button fx:id="btnMoverArriba" text="Subir"
                         onAction="#onMoverArriba"
                         styleClass="profile-action-btn"
-                        maxWidth="Infinity"/>
+                        maxWidth="Infinity">
+                    <graphic>
+                        <FontIcon iconLiteral="fas-arrow-up" />
+                    </graphic>
+                </Button>
 
-                <Button fx:id="btnMoverAbajo" text="▼ Bajar"
+                <Button fx:id="btnMoverAbajo" text="Bajar"
                         onAction="#onMoverAbajo"
                         styleClass="profile-action-btn"
-                        maxWidth="Infinity"/>
+                        maxWidth="Infinity">
+                    <graphic>
+                        <FontIcon iconLiteral="fas-arrow-down" />
+                    </graphic>
+                </Button>
 
                 <Separator/>
 
-                <Button fx:id="btnEditar" text="⚙ Editar"
+                <Button fx:id="btnEditar" text="Editar"
                         onAction="#onEditar"
                         styleClass="profile-action-btn"
-                        maxWidth="Infinity"/>
+                        maxWidth="Infinity">
+                    <graphic>
+                        <FontIcon iconLiteral="fas-cog" />
+                    </graphic>
+                </Button>
 
-                <Button fx:id="btnRenombrar" text="✏ Renombrar"
+                <Button fx:id="btnRenombrar" text="Renombrar"
                         onAction="#onRenombrar"
                         styleClass="profile-action-btn"
-                        maxWidth="Infinity"/>
+                        maxWidth="Infinity">
+                    <graphic>
+                        <FontIcon iconLiteral="fas-pencil-alt" />
+                    </graphic>
+                </Button>
 
-                <Button fx:id="btnEliminar" text="✕ Eliminar"
+                <Button fx:id="btnEliminar" text="Eliminar"
                         onAction="#onEliminar"
-                        styleClass="profile-action-btn profile-btn-danger"
-                        maxWidth="Infinity"/>
+                        styleClass="profile-action-btn button-danger"
+                        maxWidth="Infinity">
+                    <graphic>
+                        <FontIcon iconLiteral="fas-trash" />
+                    </graphic>
+                </Button>
 
                 <Separator/>
 
-                <Button text="＋ Nuevo Perfil"
+                <Button text="Nuevo Perfil"
                         onAction="#onNuevoPerfil"
                         styleClass="profile-action-btn profile-btn-new"
-                        maxWidth="Infinity"/>
+                        maxWidth="Infinity">
+                    <graphic>
+                        <FontIcon iconLiteral="fas-plus" />
+                    </graphic>
+                </Button>
             </VBox>
         </HBox>
     </center>

@@ -157,6 +157,19 @@
 
 /* Custom Classes extracted from FXML Hardcoded Styles */
 
+/* UI Components */
+.card {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cccccc;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 16;
+}
+
+.card:hover {
+    -fx-background-color: #f9f9f9;
+}
+
 .root-pane {
     -fx-background-color: #f4f4f4;
 }
@@ -283,6 +296,22 @@
 }
 
 /* ICONS */
+.ikonli-font-icon {
+    -fx-icon-color: #333333;
+}
+
+.button:hover .ikonli-font-icon {
+    -fx-icon-color: black;
+}
+
+.button-danger .ikonli-font-icon {
+    -fx-icon-color: #d32f2f;
+}
+
+.button-danger:hover .ikonli-font-icon {
+    -fx-icon-color: white;
+}
+
 .icon {
     -fx-pref-width: 20px;
     -fx-pref-height: 20px;

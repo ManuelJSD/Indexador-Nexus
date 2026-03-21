@@ -16,6 +16,8 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.control.Spinner?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 <?import javafx.scene.control.ColorPicker?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TitledPane?>
@@ -244,65 +246,65 @@
                 <items>
                     <Button fx:id="tbtnSave" onAction="#mnuIndexbyMemory" styleClass="toolbar-button">
                         <graphic>
-                            <StackPane styleClass="icon, icon-save" />
+                            <FontIcon iconLiteral="fas-save" iconSize="16" />
                         </graphic>
                         <tooltip><Tooltip text="Guardar en memoria (Ctrl+S)" /></tooltip>
                     </Button>
                     <Separator orientation="VERTICAL" />
                     <Button fx:id="tbtnUndo" onAction="#mnuUndo_OnAction" styleClass="toolbar-button">
                         <graphic>
-                            <StackPane styleClass="icon, icon-undo" />
+                            <FontIcon iconLiteral="fas-undo" iconSize="16" />
                         </graphic>
                         <tooltip><Tooltip text="Deshacer (Ctrl+Z)" /></tooltip>
                     </Button>
                     <Button fx:id="tbtnRedo" onAction="#mnuRedo_OnAction" styleClass="toolbar-button">
                         <graphic>
-                            <StackPane styleClass="icon, icon-redo" />
+                            <FontIcon iconLiteral="fas-redo" iconSize="16" />
                         </graphic>
                         <tooltip><Tooltip text="Rehacer (Ctrl+Y)" /></tooltip>
                     </Button>
                     <Separator orientation="VERTICAL" />
                     <Button fx:id="tbtnCopy" onAction="#mnuCopy_OnAction" styleClass="toolbar-button">
                         <graphic>
-                            <StackPane styleClass="icon, icon-copy" />
+                            <FontIcon iconLiteral="fas-copy" iconSize="16" />
                         </graphic>
                         <tooltip><Tooltip text="Copiar GRH (Ctrl+C)" /></tooltip>
                     </Button>
                     <Button fx:id="tbtnPaste" onAction="#mnuPaste_OnAction" styleClass="toolbar-button">
                         <graphic>
-                            <StackPane styleClass="icon, icon-paste" />
+                            <FontIcon iconLiteral="fas-paste" iconSize="16" />
                         </graphic>
                         <tooltip><Tooltip text="Pegar GRH (Ctrl+V)" /></tooltip>
                     </Button>
                     <Button fx:id="tbtnDuplicate" onAction="#mnuDuplicate_OnAction" styleClass="toolbar-button">
                         <graphic>
-                            <StackPane styleClass="icon, icon-duplicate" />
+                            <FontIcon iconLiteral="fas-clone" iconSize="16" />
                         </graphic>
                         <tooltip><Tooltip text="Duplicar GRH (Ctrl+D)" /></tooltip>
                     </Button>
                     <Separator orientation="VERTICAL" />
                     <Button fx:id="tbtnNew" onAction="#btnAdd_OnAction" styleClass="toolbar-button">
                         <graphic>
-                            <StackPane styleClass="icon, icon-add" />
+                            <FontIcon iconLiteral="fas-plus" iconSize="16" />
                         </graphic>
                         <tooltip><Tooltip text="Nuevo GRH" /></tooltip>
                     </Button>
                     <Button fx:id="tbtnDelete" onAction="#btnDelete_OnAction" styleClass="toolbar-button">
                         <graphic>
-                            <StackPane styleClass="icon, icon-delete" />
+                            <FontIcon iconLiteral="fas-trash" iconSize="16" />
                         </graphic>
                         <tooltip><Tooltip text="Eliminar GRH seleccionado" /></tooltip>
                     </Button>
                     <Separator orientation="VERTICAL" />
                     <Button fx:id="tbtnValidate" onAction="#mnuValidate_OnAction" styleClass="toolbar-button">
                         <graphic>
-                            <StackPane styleClass="icon, icon-check" />
+                            <FontIcon iconLiteral="fas-check-circle" iconSize="16" />
                         </graphic>
                         <tooltip><Tooltip text="Validar integridad (Ctrl+Shift+V)" /></tooltip>
                     </Button>
                     <Button fx:id="tbtnAutoIndex" onAction="#mnuAutoIndexWizard_OnAction" styleClass="toolbar-button">
                         <graphic>
-                            <StackPane styleClass="icon, icon-auto" />
+                            <FontIcon iconLiteral="fas-magic" iconSize="16" />
                         </graphic>
                         <tooltip><Tooltip text="Asistente de Auto-Indexación" /></tooltip>
                     </Button>
@@ -436,14 +438,14 @@
                         </columnConstraints>
                         
                         <Label fx:id="lblPosX" text="X:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-                        <TextField fx:id="txtPosX" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                        <Spinner fx:id="txtPosX" GridPane.rowIndex="0" GridPane.columnIndex="1" editable="true" amountToStepBy="1" min="0" max="65535"/>
                         <Label fx:id="lblPosY" text="Y:" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
-                        <TextField fx:id="txtPosY" GridPane.rowIndex="0" GridPane.columnIndex="3"/>
+                        <Spinner fx:id="txtPosY" GridPane.rowIndex="0" GridPane.columnIndex="3" editable="true" amountToStepBy="1" min="0" max="65535"/>
                         
                         <Label fx:id="lblAncho" text="W:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-                        <TextField fx:id="txtAncho" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                        <Spinner fx:id="txtAncho" GridPane.rowIndex="1" GridPane.columnIndex="1" editable="true" amountToStepBy="1" min="1" max="65535"/>
                         <Label fx:id="lblAlto" text="H:" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
-                        <TextField fx:id="txtAlto" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
+                        <Spinner fx:id="txtAlto" GridPane.rowIndex="1" GridPane.columnIndex="3" editable="true" amountToStepBy="1" min="1" max="65535"/>
                     </GridPane>
                 </VBox>
             </TitledPane>
@@ -458,7 +460,7 @@
                             <ColumnConstraints hgrow="ALWAYS"/>
                         </columnConstraints>
                         <Label fx:id="lblNumFrames1" text="Speed:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-                        <TextField fx:id="txtSpeed" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                        <Spinner fx:id="txtSpeed" GridPane.rowIndex="0" GridPane.columnIndex="1" editable="true" amountToStepBy="0.1" min="0.0" max="1000.0"/>
                     </GridPane>
                     <HBox spacing="10">
                         <Button fx:id="btnAddFrame" text="+ Añadir" onAction="#btnAddFrame_OnAction" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
@@ -480,9 +482,18 @@
         <HBox fx:id="statusBar" alignment="CENTER_LEFT" prefHeight="30.0" spacing="20.0" styleClass="status-bar">
             <padding><Insets left="15.0" right="15.0"/></padding>
             <children>
-                <Label fx:id="lblStatus" text="Listo" styleClass="status-label-ok" />
-                <Label fx:id="lblGrhCount" text="GRHs: 0" styleClass="status-label" />
-                <Label fx:id="lblAnimCount" text="Animaciones: 0" styleClass="status-label" />
+                <HBox alignment="CENTER" spacing="5">
+                    <FontIcon iconLiteral="fas-info-circle" iconSize="12" />
+                    <Label fx:id="lblStatus" text="Listo" styleClass="status-label-ok" />
+                </HBox>
+                <HBox alignment="CENTER" spacing="5">
+                    <FontIcon iconLiteral="fas-layer-group" iconSize="12" />
+                    <Label fx:id="lblGrhCount" text="GRHs: 0" styleClass="status-label" />
+                </HBox>
+                <HBox alignment="CENTER" spacing="5">
+                    <FontIcon iconLiteral="fas-film" iconSize="12" />
+                    <Label fx:id="lblAnimCount" text="Animaciones: 0" styleClass="status-label" />
+                </HBox>
                 <Label fx:id="lblModified" text="" styleClass="status-label-warn" />
                 <Pane HBox.hgrow="ALWAYS" />
                 <ProgressBar fx:id="progressMain" prefWidth="200.0" progress="0.0" visible="false" />

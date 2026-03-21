@@ -141,22 +141,22 @@ public class MainController {
   private TextField txtImagen;
 
   @FXML
-  private TextField txtPosX;
+  private Spinner<Integer> txtPosX;
 
   @FXML
-  private TextField txtPosY;
+  private Spinner<Integer> txtPosY;
 
   @FXML
-  private TextField txtAncho;
+  private Spinner<Integer> txtAncho;
 
   @FXML
-  private TextField txtAlto;
+  private Spinner<Integer> txtAlto;
 
   @FXML
   private TextField txtIndice;
 
   @FXML
-  private TextField txtSpeed;
+  private Spinner<Double> txtSpeed;
 
   @FXML
   private TextField txtFiltro;
@@ -795,6 +795,21 @@ public class MainController {
         } catch (Exception ex) {
           logger.error("Error al recargar datos tras cambio de perfil", ex);
         }
+      });
+
+      // Al crear un nuevo perfil → wizard inicial
+      ctrl.setOnNuevoPerfil(() -> {
+        String nuevoNombre = Main.pedirNombrePerfil();
+        if (nuevoNombre == null || nuevoNombre.trim().isEmpty()) {
+            return;
+        }
+        String configPath = org.nexus.indexador.utils.ProfileManager.getInstance().generarConfigPath(nuevoNombre.trim());
+        Main.showInitialSetup(configPath, nuevoNombre.trim(), this::loadGrh);
+      });
+
+      // Al editar un perfil → asistente de edición
+      ctrl.setOnEditarPerfil((indice, perfil) -> {
+        Main.showEditSetup(perfil, indice, this::loadGrh);
       });
 
       dialStage.setScene(scene);
@@ -3027,6 +3042,32 @@ public class MainController {
   }
 
   // ========== FINAL DEL CONTROLADOR ==========
+
+  @FXML
+  private void toggleFilters() {
+    filterExpanded = !filterExpanded;
+    if (filterExpanded) {
+      lblFilterToggle.setText("▼ Búsqueda y Filtros");
+      paneFilterContent.setVisible(true);
+      paneFilterContent.setManaged(true);
+      
+      javafx.animation.FadeTransition ft = new javafx.animation.FadeTransition(javafx.util.Duration.millis(200), paneFilterContent);
+      ft.setFromValue(0.0);
+      ft.setToValue(1.0);
+      ft.play();
+    } else {
+      lblFilterToggle.setText("▶ Búsqueda y Filtros");
+      
+      javafx.animation.FadeTransition ft = new javafx.animation.FadeTransition(javafx.util.Duration.millis(200), paneFilterContent);
+      ft.setFromValue(1.0);
+      ft.setToValue(0.0);
+      ft.setOnFinished(e -> {
+          paneFilterContent.setVisible(false);
+          paneFilterContent.setManaged(false);
+      });
+      ft.play();
+    }
+  }
 
   private void setupColorPicker() {
     if (cpBackground != null) {

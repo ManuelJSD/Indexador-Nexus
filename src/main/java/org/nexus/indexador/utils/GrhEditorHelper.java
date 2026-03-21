@@ -6,6 +6,8 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import org.nexus.indexador.gamedata.models.GrhData;
 
+import javafx.scene.control.Spinner;
+
 /**
  * Helper class to manage the synchronization between GRH property fields and
  * the GrhData model.
@@ -13,16 +15,16 @@ import org.nexus.indexador.gamedata.models.GrhData;
 public class GrhEditorHelper {
 
     private final TextField txtImagen;
-    private final TextField txtPosX;
-    private final TextField txtPosY;
-    private final TextField txtAncho;
-    private final TextField txtAlto;
-    private final TextField txtSpeed;
+    private final Spinner<Integer> txtPosX;
+    private final Spinner<Integer> txtPosY;
+    private final Spinner<Integer> txtAncho;
+    private final Spinner<Integer> txtAlto;
+    private final Spinner<Double> txtSpeed;
     private final TextField txtIndice;
     private final ListView<String> lstFrames;
 
-    public GrhEditorHelper(TextField txtImagen, TextField txtPosX, TextField txtPosY,
-            TextField txtAncho, TextField txtAlto, TextField txtSpeed,
+    public GrhEditorHelper(TextField txtImagen, Spinner<Integer> txtPosX, Spinner<Integer> txtPosY,
+            Spinner<Integer> txtAncho, Spinner<Integer> txtAlto, Spinner<Double> txtSpeed,
             TextField txtIndice, ListView<String> lstFrames) {
         this.txtImagen = txtImagen;
         this.txtPosX = txtPosX;
@@ -50,11 +52,11 @@ public class GrhEditorHelper {
         float speed = selectedGrh.getSpeed();
 
         txtImagen.setText(String.valueOf(fileGrh));
-        txtPosX.setText(String.valueOf(x));
-        txtPosY.setText(String.valueOf(y));
-        txtAncho.setText(String.valueOf(width));
-        txtAlto.setText(String.valueOf(height));
-        txtSpeed.setText(String.valueOf(speed));
+        txtPosX.getValueFactory().setValue(x);
+        txtPosY.getValueFactory().setValue(y);
+        txtAncho.getValueFactory().setValue(width);
+        txtAlto.getValueFactory().setValue(height);
+        txtSpeed.getValueFactory().setValue((double) speed);
 
         if (nFrames == 1) { // Static
             txtIndice.setText("Grh" + selectedGrh.getGrh() + "=" + nFrames + "-" + fileGrh + "-" + x + "-"
@@ -85,10 +87,10 @@ public class GrhEditorHelper {
 
         try {
             selectedGrh.setFileNum(Integer.parseInt(txtImagen.getText()));
-            selectedGrh.setsX(Short.parseShort(txtPosX.getText()));
-            selectedGrh.setsY(Short.parseShort(txtPosY.getText()));
-            selectedGrh.setTileWidth(Short.parseShort(txtAncho.getText()));
-            selectedGrh.setTileHeight(Short.parseShort(txtAlto.getText()));
+            selectedGrh.setsX(txtPosX.getValue().shortValue());
+            selectedGrh.setsY(txtPosY.getValue().shortValue());
+            selectedGrh.setTileWidth(txtAncho.getValue().shortValue());
+            selectedGrh.setTileHeight(txtAlto.getValue().shortValue());
 
             // Re-generate the index string summary
             updateEditor(selectedGrh);

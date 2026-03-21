@@ -69,6 +69,21 @@ public class ProfileSelectorController {
     perfilesObservables = FXCollections.observableArrayList(profileManager.getPerfiles());
     listViewPerfiles.setItems(perfilesObservables);
 
+    // Custom CellFactory para mejorar el 'touch target' y la tipografía
+    listViewPerfiles.setCellFactory(lv -> new ListCell<ProfileEntry>() {
+      @Override
+      protected void updateItem(ProfileEntry item, boolean empty) {
+        super.updateItem(item, empty);
+        if (empty || item == null) {
+          setText(null);
+          setGraphic(null);
+        } else {
+          setText(item.getNombre());
+          setStyle("-fx-pref-height: 40px; -fx-alignment: CENTER_LEFT; -fx-padding: 0 10 0 10; -fx-font-size: 14px; -fx-font-weight: bold;");
+        }
+      }
+    });
+
     // Seleccionar el primero por defecto si hay perfiles
     if (!perfilesObservables.isEmpty()) {
       listViewPerfiles.getSelectionModel().selectFirst();

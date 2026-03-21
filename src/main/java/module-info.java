@@ -4,6 +4,9 @@ module org.nexus.indexador {
 	requires javafx.base;
 	requires java.desktop;
 	requires com.google.gson;
+	requires org.kordamp.ikonli.core;
+	requires org.kordamp.ikonli.javafx;
+	requires org.kordamp.ikonli.fontawesome5;
 
 	opens org.nexus.indexador to javafx.fxml;
 

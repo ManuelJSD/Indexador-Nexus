@@ -319,12 +319,146 @@ public class MoldIndexLoader implements IndexLoader {
 
   @Override
   public ObservableList<HeadData> loadHeadsText() throws IOException {
-    return traditionalLoader.loadHeadsText();
+    logger.info("Cargando cabezas (Moldes) desde texto...");
+    ObservableList<HeadData> headList = FXCollections.observableArrayList();
+    File archivo = ResourceResolver.getHeadsText(configManager.getExportDir());
+    if (!archivo.exists()) {
+      archivo = ResourceResolver.getHeadsText(configManager.getInitDir());
+    }
+
+    if (!archivo.exists())
+      return headList;
+
+    try (BufferedReader reader = new BufferedReader(new FileReader(archivo))) {
+      String line;
+      int std = 0;
+      short texture = 0, startX = 0, startY = 0;
+      boolean hasData = false;
+
+      while ((line = reader.readLine()) != null) {
+        line = line.trim();
+        if (line.isEmpty() || line.startsWith("[")) {
+          if (hasData) {
+            headList.add(new HeadData(std, texture, startX, startY));
+            std = 0;
+            texture = 0;
+            startX = 0;
+            startY = 0;
+            hasData = false;
+          }
+          continue;
+        }
+        String[] parts = line.split("=");
+        if (parts.length < 2)
+          continue;
+        String key = parts[0].trim().toUpperCase();
+        try {
+          String value = parts[1].trim();
+          int val = Integer.parseInt(value);
+          switch (key) {
+            case "STD":
+              std = val;
+              hasData = true;
+              break;
+            case "TEXTURE":
+              texture = (short) val;
+              hasData = true;
+              break;
+            case "STARTX":
+              startX = (short) val;
+              hasData = true;
+              break;
+            case "STARTY":
+              startY = (short) val;
+              hasData = true;
+              break;
+          }
+        } catch (NumberFormatException e) {
+        }
+      }
+      if (hasData) {
+        headList.add(new HeadData(std, texture, startX, startY));
+      }
+    }
+
+    // Si no se cargó nada como molde, intentar como tradicional (por compatibilidad)
+    if (headList.isEmpty()) {
+      return traditionalLoader.loadHeadsText();
+    }
+
+    return headList;
   }
 
   @Override
   public ObservableList<HelmetData> loadHelmetsText() throws IOException {
-    return traditionalLoader.loadHelmetsText();
+    logger.info("Cargando cascos (Moldes) desde texto...");
+    ObservableList<HelmetData> helmetList = FXCollections.observableArrayList();
+    File archivo = ResourceResolver.getHelmetsText(configManager.getExportDir());
+    if (!archivo.exists()) {
+      archivo = ResourceResolver.getHelmetsText(configManager.getInitDir());
+    }
+
+    if (!archivo.exists())
+      return helmetList;
+
+    try (BufferedReader reader = new BufferedReader(new FileReader(archivo))) {
+      String line;
+      int std = 0;
+      short texture = 0, startX = 0, startY = 0;
+      boolean hasData = false;
+
+      while ((line = reader.readLine()) != null) {
+        line = line.trim();
+        if (line.isEmpty() || line.startsWith("[")) {
+          if (hasData) {
+            helmetList.add(new HelmetData(std, texture, startX, startY));
+            std = 0;
+            texture = 0;
+            startX = 0;
+            startY = 0;
+            hasData = false;
+          }
+          continue;
+        }
+        String[] parts = line.split("=");
+        if (parts.length < 2)
+          continue;
+        String key = parts[0].trim().toUpperCase();
+        try {
+          String value = parts[1].trim();
+          int val = Integer.parseInt(value);
+          switch (key) {
+            case "STD":
+              std = val;
+              hasData = true;
+              break;
+            case "TEXTURE":
+              texture = (short) val;
+              hasData = true;
+              break;
+            case "STARTX":
+              startX = (short) val;
+              hasData = true;
+              break;
+            case "STARTY":
+              startY = (short) val;
+              hasData = true;
+              break;
+          }
+        } catch (NumberFormatException e) {
+        }
+      }
+      if (hasData) {
+        helmetList.add(new HelmetData(std, texture, startX, startY));
+      }
+    }
+
+    // Si no se cargó nada como molde, intentar como tradicional (por compatibilidad)
+    if (helmetList.isEmpty()) {
+      return traditionalLoader.loadHelmetsText();
+    }
+
+    return helmetList;
   }
 
   @Override
@@ -354,12 +488,62 @@ public class MoldIndexLoader implements IndexLoader {
 
   @Override
   public void saveHeadsText(ObservableList<HeadData> entries) throws IOException {
-    traditionalLoader.saveHeadsText(entries);
+    File dir = new File(configManager.getExportDir());
+    if (!dir.exists())
+      dir.mkdirs();
+
+    File archive = new File(configManager.getExportDir() + "Cabezas.ini");
+    try (PrintWriter writer = new PrintWriter(new FileWriter(archive))) {
+      writer.println("[INIT]");
+      writer.println("NumHeads=" + entries.size());
+      for (int i = 0; i < entries.size(); i++) {
+        writer.println();
+        HeadData head = entries.get(i);
+        writer.println("[HEAD" + (i + 1) + "]");
+        if (head.getSystemType() == IndexingSystem.MOLD) {
+          writer.println("Std=" + head.getStd());
+          writer.println("Texture=" + head.getTexture());
+          writer.println("StartX=" + head.getStartX());
+          writer.println("StartY=" + head.getStartY());
+        } else {
+          // Fallback tradicional si hay mezcla de datos
+          int[] grhs = head.getGrhIndex();
+          for (int j = 0; j < 4; j++) {
+            writer.println("Head" + (j + 1) + "=" + grhs[j]);
+          }
+        }
+      }
+    }
   }
 
   @Override
   public void saveHelmetsText(ObservableList<HelmetData> entries) throws IOException {
-    traditionalLoader.saveHelmetsText(entries);
+    File dir = new File(configManager.getExportDir());
+    if (!dir.exists())
+      dir.mkdirs();
+
+    File archive = new File(configManager.getExportDir() + "Cascos.ini");
+    try (PrintWriter writer = new PrintWriter(new FileWriter(archive))) {
+      writer.println("[INIT]");
+      writer.println("NumHelmets=" + entries.size());
+      for (int i = 0; i < entries.size(); i++) {
+        writer.println();
+        HelmetData helmet = entries.get(i);
+        writer.println("[HELMET" + (i + 1) + "]");
+        if (helmet.getSystemType() == IndexingSystem.MOLD) {
+          writer.println("Std=" + helmet.getStd());
+          writer.println("Texture=" + helmet.getTexture());
+          writer.println("StartX=" + helmet.getStartX());
+          writer.println("StartY=" + helmet.getStartY());
+        } else {
+          // Fallback tradicional
+          int[] grhs = helmet.getGrhIndex();
+          for (int j = 0; j < 4; j++) {
+            writer.println("Helmet" + (j + 1) + "=" + grhs[j]);
+          }
+        }
+      }
+    }
   }
 
   @Override

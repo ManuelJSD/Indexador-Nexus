@@ -81,6 +81,9 @@ public class MainController {
   public MenuItem mnuCode;
 
   @FXML
+  public MenuItem mnuReportBug;
+
+  @FXML
   public MenuItem mnuCambiarPerfil;
 
   @FXML
@@ -1305,6 +1308,20 @@ public class MainController {
     Stage stage = (Stage) about.getDialogPane().getScene().getWindow();
     Main.setAppIcon(stage);
     about.showAndWait();
+  }
+
+  /**
+   * Abre el navegador web dirigiendo al usuario a la página de Issues del repositorio
+   * en GitHub para reportar un posible error (bug).
+   */
+  @FXML
+  private void mnuReportBug_OnAction() {
+    try {
+      java.awt.Desktop.getDesktop().browse(new java.net.URI("https://github.com/ManuelJSD/Indexador-Nexus/issues/new"));
+    } catch (Exception e) {
+      logger.error("Error al abrir navegador para reportar un bug", e);
+      uiService.showError("Error", "No se pudo abrir el navegador web para reportar el bug:\n" + e.getMessage());
+    }
   }
 
   /**
